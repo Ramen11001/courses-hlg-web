@@ -3,49 +3,47 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ProductsService } from 'src/app/core/services/course.service';
+import { CourseService } from 'src/app/core/services/course.service';
 /**
- * Component for creating new products.
- * Provides a form to input product details and handles submission to the API.
+ * Component for creating new course.
+ * Provides a form to input course details and handles submission to the API.
  *
  * @component
- * @selector app-create-product
+ * @selector app-create-course
  * @standalone true
  */
 @Component({
-  selector: 'app-create-product',
+  selector: 'app-create-course',
   standalone: true,
-  templateUrl: './create-product.component.html',
+  templateUrl: './create-course.component.html',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
 })
-export class CreateProductComponent {
+export class CreateCourseComponent {
   /**
-   * Form group for product creation.
-   * Contains fields: name, price, description.
+   * Form group for coure creation.
    * @type {FormGroup}
    */
-  productForm: FormGroup;
+  courseForm: FormGroup;
   /**
    * Loading state indicator.
-   * Set to true during form submission.
    * @type {boolean}
    */
   isLoading = false;
   /**
    * Component constructor.
-   * Initializes the product form with validation rules.
+   * Initializes the course form with validation rules.
    *
    * @param {FormBuilder} fb - Angular form builder service
    * @param {Router} router - Angular router for navigation
-   * @param {ProductsService} productService - Product API service
+   * @param {CourseService} courseService - course API service
    */
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private productService: ProductsService,
+    private courseService: CourseService,
   ) {
     // Initialize form with validation rules
-    this.productForm = this.fb.group({
+    this.courseForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       price: [null, [Validators.required, Validators.min(0)]],
       description: ['', Validators.minLength(10)],
@@ -53,49 +51,49 @@ export class CreateProductComponent {
   }
 
   /**
-   * Navigates to the product page.
-   * Uses Angular Router to navigate to '/product' route.
+   * Navigates to the course page.
+   * Uses Angular Router to navigate to '/course' route.
    * @returns {void}
    */
-  navigateToProduct() {
-    this.router.navigate(['/product']);
+  navigateToCourse() {
+    this.router.navigate(['/course']);
   }
 
   /**
    * Handles form submission.
    * - Validates form inputs
    * - Converts price to number
-   * - Calls product service to save new product
-   * - Navigates to product list on success
+   * - Calls course service to save new course
+   * - Navigates to course list on success
    * - Shows error alerts on failure
    *
    * @returns {void}
    */
   onSubmit() {
     // Trigger validation UI for all fields
-    this.productForm.markAllAsTouched();
+    this.courseForm.markAllAsTouched();
 
-    if (this.productForm.valid) {
+    if (this.courseForm.valid) {
       this.isLoading = true;
 
       // Convert price to number type for API
       const formData = {
-        ...this.productForm.value,
-        price: Number(this.productForm.value.price),
+        ...this.courseForm.value,
+        price: Number(this.courseForm.value.price),
       };
-      // Call product service to create new product
-      this.productService.saveProduct(null, formData).subscribe({
+      // Call course service to create new course
+      this.courseService.saveCourse(null, formData).subscribe({
         next: (response) => {
           this.isLoading = false;
-          // Navigate to product list after successful creation
-          this.router.navigate(['/product']);
+          // Navigate to course list after successful creation
+          this.router.navigate(['/course']);
         },
         error: (error) => {
           this.isLoading = false;
           console.error('Error:', error);
           alert(
-            'Error al crear producto: ' +
-              (error.error?.message || error.message),
+            'Error al crear curso: ' +
+            (error.error?.message || error.message),
           );
         },
       });

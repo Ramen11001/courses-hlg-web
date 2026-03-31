@@ -11,7 +11,6 @@ import { CourseService } from "src/app/core/services/course.service";
   selector: 'app-home',
   standalone: true,
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
 })
 export class HomeComponent implements OnInit {
@@ -59,11 +58,11 @@ export class HomeComponent implements OnInit {
     const storedUsername = this.authService.getUsername();
     this.username = storedUsername || 'Usuario';
     this.currentUserId = this.authService.getCurrentUserId();
-    this.getProducts();
+    this.getCourses();
 
     this.filterForm.valueChanges.subscribe((_values) => {
       this.currentPage = 1;
-      this.getProducts();
+      this.getCourses();
     });
   }
     */
@@ -127,12 +126,12 @@ export class HomeComponent implements OnInit {
   }
 
   // Navigates to the course details page.
-  navigateToDetailsProduct(id: number): void {
+  navigateToDetailsCourse(id: number): void {
     this.router.navigate(['/courseDetails/' + id]);
   }
 
   // Navigates to the course creation page.
-  navigateToCreateProduct(): void {
+  navigateToCreateCourse(): void {
     this.router.navigate(['/createCourse']);
   }
 
@@ -175,7 +174,7 @@ export class HomeComponent implements OnInit {
        * Handles form submission.
        * - Call logout function for  logs out the user by removing the stored token
        * - if it is correct it presents the elements,
-       * - if not, it returns to the login and does not let you enter /products
+       * - if not, it returns to the login and does not let you enter /course
        
        *
        * @function

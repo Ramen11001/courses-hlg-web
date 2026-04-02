@@ -35,23 +35,26 @@ export class AuthService {
    * Sends login request to the authentication API.
    *
    * @function
-   * @param {object} user - Contains username and password for authentication.
+   * @param {object} user - Contains email and password for authentication.
    * @returns {Observable<any>} - Returns the server response including authentication token.
    */
   login(user: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/auth/login`, user);
   }
+
+  singUp() {}
+
   /**
    * In charge of storing elements of the user model.
    *
    * @function
    */
-  saveAuthData(token: string, fristName: string, lastName: string, user_id: number): void {
+  saveAuthData(token: string, email: string, user_id: number): void {
     localStorage.setItem('token', token);
-    localStorage.setItem('fristName', fristName);
-    localStorage.setItem('lastName', lastName);
+    localStorage.setItem('email', email);
     localStorage.setItem('user_id', user_id.toString());
   }
+
   /**
    * Logs out the user by removing the stored token and redirecting to the login page.
    *
@@ -59,8 +62,7 @@ export class AuthService {
    */
   logout() {
     localStorage.removeItem('token'); // Delete token
-    localStorage.removeItem('fristName'); // Delete fristName
-    localStorage.removeItem('lastName'); // Delete lastName
+    localStorage.removeItem('email'); // Delete email
     this.router.navigate(['/login']); // Redirige al usuario a /login
   }
   /**
@@ -73,24 +75,6 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
-  /**
-   * fristName from local storage.
-   *
-   * @function
-   * @returns {string|null} - Returns the fristName if available, otherwise null.
-   */
-  getFristname(): string | null {
-    return localStorage.getItem('fristName');
-  }
-  /**
- * lastName from local storage.
- *
- * @function
- * @returns {string|null} - Returns the fristName if available, otherwise null.
- */
-  getLastname(): string | null {
-    return localStorage.getItem('lastName');
-  }
   /**
    * Determines if the user is authenticated by checking for a valid token.
    *
@@ -112,5 +96,26 @@ export class AuthService {
   getCurrentUserId(): number | null {
     const user_id = localStorage.getItem('user_id');
     return user_id ? parseInt(user_id, 10) : null;
+  }
+
+  signUp(user: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/auth/register`, user);
+  }
+  /**
+   * Sends forgot password request to the API
+   * @param {object} data - Contains email
+   * @returns {Observable<any>}
+   */
+  forgotPassword(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/auth/forgot-password`, data);
+  }
+
+  /**
+   * Sends reset password request to the API
+   * @param {object} data - Contains token and new password
+   * @returns {Observable<any>}
+   */
+  resetPassword(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/auth/reset-password`, data);
   }
 }

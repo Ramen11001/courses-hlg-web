@@ -49,10 +49,16 @@ export class AuthService {
    *
    * @function
    */
-  saveAuthData(token: string, email: string, user_id: number): void {
+  saveAuthData(
+    token: string,
+    email: string,
+    user_id: number,
+    firstName: string,
+  ): void {
     localStorage.setItem('token', token);
     localStorage.setItem('email', email);
     localStorage.setItem('user_id', user_id.toString());
+    localStorage.setItem('firstName', firstName);
   }
 
   /**
@@ -117,5 +123,9 @@ export class AuthService {
    */
   resetPassword(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/auth/reset-password`, data);
+  }
+
+  getCurrentUserName(): string | null {
+    return localStorage.getItem('firstName'); // Corregido el nombre de la llave
   }
 }

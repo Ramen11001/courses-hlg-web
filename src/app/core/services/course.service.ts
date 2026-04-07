@@ -1,10 +1,16 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
-import { inject } from "@angular/core";
-import { throwError, Observable, switchMap, catchError } from "rxjs";
-import { environment } from "src/environments/environment";
-import { Course } from "../interfaces/course";
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
+import { inject } from '@angular/core';
+import { throwError, Observable, switchMap, catchError } from 'rxjs';
+import { environment } from 'src/environments/environment';
+import { Course } from '../interfaces/course';
+import { AuthService } from './auth.service';
 
 export class CourseService {
+  private _authService: AuthService = inject(AuthService);
   private apiUrl = `${environment.baseUrl}/course`;
   private http = inject(HttpClient);
   //  private authService = inject(AuthService);
@@ -75,11 +81,9 @@ export class CourseService {
     if (id) {
       return this.getcourseId(id).pipe(
         switchMap((course) => {
-          const currentUser = this.authService.getCurrentUserId();
+          const currentUser = this._authService.getCurrentUserId();
           if (currentUser === null) {
-            return throwError(
-              () => 'Debes iniciar sesión para editar cursos',
-            );
+            return throwError(() => 'Debes iniciar sesión para editar cursos');
           }
           if (course.user_id !== currentUser) {
             return throwError(() => 'Solo puedes editar tus propios cursos');
@@ -95,7 +99,7 @@ export class CourseService {
         catchError((error) => throwError(() => error)),
       );
     } else {
-      const userId = this.authService.getCurrentUserId();
+      const userId = this._authService.getCurrentUserId();
       if (!userId) {
         return throwError(() => new Error('Usuario no autenticado'));
       }

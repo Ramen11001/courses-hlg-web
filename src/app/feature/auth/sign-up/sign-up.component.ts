@@ -7,9 +7,10 @@ import {
   Validators,
 } from '@angular/forms';
 
-import * as md5 from 'md5';
+import md5 from 'md5';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
+
 
 @Component({
   selector: 'app-sign-up',
@@ -67,6 +68,7 @@ export class SignUpComponent {
             response.token,
             response.user.email,
             response.user.id,
+            response.user.firstName,
           );
           this.router.navigate(['/login']);
           //TODO: ToastService

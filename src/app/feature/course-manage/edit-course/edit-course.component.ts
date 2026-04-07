@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -9,6 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CourseService } from 'src/app/core/services/course.service';
 import { Course } from 'src/app/core/interfaces/course';
 import { CommonModule } from '@angular/common';
+import { AuthService } from 'src/app/core/services/auth.service';
 @Component({
   selector: 'app-edit-course',
   templateUrl: './edit-course.component.html',
@@ -16,6 +17,8 @@ import { CommonModule } from '@angular/common';
   imports: [ReactiveFormsModule, CommonModule],
 })
 export class EditCourseComponent {
+  _authService: AuthService = inject(AuthService);
+
   courseForm: FormGroup;
   isLoading = false;
   courseId: number;
@@ -32,6 +35,9 @@ export class EditCourseComponent {
       title: ['', [Validators.minLength(3)]],
       cost: [0],
       description: ['', Validators.minLength(10)],
+      study_plan: ['', Validators.minLength(10)],
+      location: ['', Validators.minLength(10)],
+      //TODO: certificate, area, mode, level,
     });
     this.courseId = Number(this.route.snapshot.paramMap.get('id'));
   }
@@ -54,30 +60,30 @@ export class EditCourseComponent {
     this.isLoading = true;
     this.errorMessage = null;
 
-    /**  TODO:
-     *  const currentUserId = this.authService.getCurrentUserId();
+    const currentUserId = this._authService.getCurrentUserId();
     if (!currentUserId) {
-      this.handleError('Debes iniciar sesión para editar cursos');
+      this.showError('Debes iniciar sesión para editar cursos');
       return;
-    } */
-
+    }
 
     this.courseService.getcourseId(this.courseId).subscribe({
       next: (course: Course) => {
-        /**  TODO:    if (course.user_id !== currentUserId) {
-              this.handleError('No tienes permiso para editar este curso');
-              return;
-            }
-    */
+        if (course.user_id !== currentUserId) {
+          this.showError('No tienes permiso para editar este curso');
+          return;
+        }
+
         this.canEdit = true;
         this.courseForm.patchValue({
-          name: course.title,
-          price: course.cost,
+          title: course.title,
+          cost: course.cost,
           description: course.description,
+          study_plan: course.study_plan,
+          location: course.location,
         });
         this.isLoading = false;
       },
-      error: (err: string) => {
+      error: (err: any) => {
         if (err === 'Curso no encontrado') {
           this.showError('Curso no encontrado');
         } else {
@@ -86,8 +92,10 @@ export class EditCourseComponent {
       },
     });
   }
-  showError(arg0: string) {
-    throw new Error('Method not implemented.');
+  showError(message: string): void {
+    this.errorMessage = message;
+    this.isLoading = false;
+    setTimeout(() => this.router.navigate(['/course']), 2000);
   }
 
   /**
@@ -105,21 +113,19 @@ export class EditCourseComponent {
   onSubmit(): void {
     this.courseForm.markAllAsTouched();
 
-    // Proceed only if form is valid
     if (this.courseForm.valid) {
       this.isLoading = true;
       this.errorMessage = null;
 
       const formData = {
         ...this.courseForm.value,
-        price: Number(this.courseForm.value.price),
-        //TODO:    userId: this.authService.getCurrentUserId()!,
+        cost: Number(this.courseForm.value.cost),
+        userId: this._authService.getCurrentUserId()!,
       };
 
       this.courseService.saveCourse(this.courseId, formData).subscribe({
         next: () => {
           this.isLoading = false;
-
           this.router.navigate(['/course'], {
             state: { message: 'Curso actualizado exitosamente' },
           });
@@ -128,8 +134,7 @@ export class EditCourseComponent {
           this.isLoading = false;
 
           if (error.status === 403) {
-            this.errorMessage =
-              'No tienes permiso para actualizar este curso';
+            this.errorMessage = 'No tienes permiso para actualizar este curso';
           } else if (error.status === 404) {
             this.errorMessage = 'Curso no encontrado';
           } else {
@@ -137,6 +142,10 @@ export class EditCourseComponent {
               'Error al actualizar el curso: ' +
               (error.error?.message || error.message);
           }
+
+          setTimeout(() => {
+            if (this.errorMessage) this.errorMessage = null;
+          }, 3000);
         },
       });
     }

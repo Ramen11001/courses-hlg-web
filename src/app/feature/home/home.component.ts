@@ -1,11 +1,17 @@
-import { CommonModule } from "@angular/common";
-import { HttpClient } from "@angular/common/http";
-import { Component, OnInit, inject, ChangeDetectorRef } from "@angular/core";
-import { FormsModule, ReactiveFormsModule, FormGroup, FormControl } from "@angular/forms";
-import { Router } from "@angular/router";
-import { finalize } from "rxjs";
-import { Course } from "../../core/interfaces/course";
-import { CourseService } from "src/app/core/services/course.service";
+import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormGroup,
+  FormControl,
+} from '@angular/forms';
+import { Router } from '@angular/router';
+import { finalize } from 'rxjs';
+import { Course } from '../../core/interfaces/course';
+import { CourseService } from 'src/app/core/services/course.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -14,6 +20,7 @@ import { CourseService } from "src/app/core/services/course.service";
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
 })
 export class HomeComponent implements OnInit {
+  private _authService: AuthService = inject(AuthService);
 
   course: Course[] = [];
   firstName: string = '';
@@ -46,28 +53,25 @@ export class HomeComponent implements OnInit {
   constructor(
     private router: Router,
     private http: HttpClient,
-  ) { }
+  ) {}
 
-  //TODO: Merge Develo 
+  //TODO: Merge Develo
   ngOnInit(): void {
-    /**
-  const token = this.authService.getToken();
-  if (!token) {
-    this.router.navigate(['/login']);
-  } else {
-    const storedUsername = this.authService.getUsername();
-    this.username = storedUsername || 'Usuario';
-    this.currentUserId = this.authService.getCurrentUserId();
-    this.getCourses();
+    const token = this._authService.getToken();
+    if (!token) {
+      this.router.navigate(['/login']);
+    } else {
+      const storedUsername = this._authService.getCurrentUserName();
+      this.firstName = storedUsername || 'Usuario';
+      this.currentUserId = this._authService.getCurrentUserId();
+      this.getCourse();
 
-    this.filterForm.valueChanges.subscribe((_values) => {
-      this.currentPage = 1;
-      this.getCourses();
-    });
+      this.filterForm.valueChanges.subscribe((_values) => {
+        this.currentPage = 1;
+        this.getCourse();
+      });
+    }
   }
-    */
-  }
-
 
   //Retrieves courses from the backend using search filters and pagination.
   getCourse(): void {
@@ -141,16 +145,13 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['edit/' + id]);
   }
 
-  /**
-   * TODO:
   navigateToLogout(): void {
-    this.authService.logout();
+    this._authService.logout();
   }
- */
 
   /**
    * Deletes a courses by ID and updates local course list.
-   * 
+   *
    * @param {number} id - ID of the course to delete
    */
   deleteCourse(id: number): void {
@@ -179,7 +180,7 @@ export class HomeComponent implements OnInit {
        *
        * @function
        */
-  submit() {
+  onsubmit() {
     // this.authService.logout();
     this.course = [];
     // this.firstName = null;

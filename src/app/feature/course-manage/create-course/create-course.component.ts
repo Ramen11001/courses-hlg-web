@@ -45,8 +45,11 @@ export class CreateCourseComponent {
     // Initialize form with validation rules
     this.courseForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
-      price: [null, [Validators.required, Validators.min(0)]],
-      description: ['', Validators.minLength(10)],
+      cost: [null, [Validators.required, Validators.min(0)]],
+      description: ['', Validators.minLength(20)],
+      study_plan: ['', Validators.minLength(10)],
+      location: ['', Validators.minLength(10)],
+      //TODO: certificate, area, mode, level,
     });
   }
 
@@ -62,7 +65,7 @@ export class CreateCourseComponent {
   /**
    * Handles form submission.
    * - Validates form inputs
-   * - Converts price to number
+   * - Converts cost to number
    * - Calls course service to save new course
    * - Navigates to course list on success
    * - Shows error alerts on failure
@@ -76,10 +79,10 @@ export class CreateCourseComponent {
     if (this.courseForm.valid) {
       this.isLoading = true;
 
-      // Convert price to number type for API
+      // Convert cost to number type for API
       const formData = {
         ...this.courseForm.value,
-        price: Number(this.courseForm.value.price),
+        cost: Number(this.courseForm.value.cost),
       };
       // Call course service to create new course
       this.courseService.saveCourse(null, formData).subscribe({
@@ -92,8 +95,7 @@ export class CreateCourseComponent {
           this.isLoading = false;
           console.error('Error:', error);
           alert(
-            'Error al crear curso: ' +
-            (error.error?.message || error.message),
+            'Error al crear curso: ' + (error.error?.message || error.message),
           );
         },
       });

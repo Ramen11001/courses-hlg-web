@@ -25,31 +25,17 @@
           <!-- Login Form -->
           <form [formGroup]="loginForm" (ngSubmit)="submit()">
 
-            <!-- Frist Name -->
+            <!-- Email -->
             <div class="mb-4">
-              <label for="firstName" class="form-label fw-semibold text-secondary small text-uppercase mb-2">
-                <i class="bi bi-person me-1"></i> Nombre
+              <label for="email" class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                <i class="bi bi-envelope me-1"></i> Correo electrónico
               </label>
-              <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light" id="firstName"
-                formControlName="firstName" placeholder="Tu nombre"
-                [class.is-invalid]="loginForm.get('firstName')?.invalid && loginForm.get('firstName')?.touched">
+              <input type="email" class="form-control form-control-lg rounded-3 border-0 bg-light" id="email"
+                formControlName="email" placeholder="tu@email.com"
+                [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
               <div class="invalid-feedback small mt-1">
                 <i class="bi bi-info-circle me-1"></i>
-                El nombre debe tener al menos 2 caracteres
-              </div>
-            </div>
-
-            <!-- Last Name -->
-            <div class="mb-4">
-              <label for="lastName" class="form-label fw-semibold text-secondary small text-uppercase mb-2">
-                <i class="bi bi-person-badge me-1"></i> Apellido
-              </label>
-              <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light" id="lastName"
-                formControlName="lastName" placeholder="Tu apellido"
-                [class.is-invalid]="loginForm.get('lastName')?.invalid && loginForm.get('lastName')?.touched">
-              <div class="invalid-feedback small mt-1">
-                <i class="bi bi-info-circle me-1"></i>
-                El apellido debe tener al menos 2 caracteres
+                Ingresa un correo electrónico válido
               </div>
             </div>
 
@@ -69,8 +55,8 @@
 
             <!-- Forgot Password Link -->
             <div class="text-center mb-4">
-              <button  class="forgot-password"
-                class="text-decoration-none small btn  fw-semibold text-primary" style="cursor: pointer;" (click)="navigateToForgotPassword()">
+              <button type="button" class="text-decoration-none small btn fw-semibold text-primary p-0"
+                style="cursor: pointer;" (click)="navigateToForgotPassword()">
                 <i class="bi bi-question-circle me-1"></i>
                 ¿Olvidaste tu contraseña?
               </button>
@@ -79,7 +65,7 @@
             <!-- Submit -->
             <div class="d-grid gap-2 mt-4">
               <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-semibold py-3 shadow-sm"
-                [disabled]="loading || loginForm.invalid" (click)="submit()">
+                [disabled]="loading || loginForm.invalid">
                 <div *ngIf="loading" class="d-flex align-items-center justify-content-center gap-2">
                   <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                   <span>Validando...</span>
@@ -93,7 +79,6 @@
 
           </form>
 
-
           <div class="position-relative my-4">
             <hr class="text-secondary opacity-25">
             <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 small text-secondary">
@@ -101,10 +86,10 @@
             </span>
           </div>
 
-          <!-- Sing Up -->
+          <!-- Sign Up -->
           <div class="text-center">
             <button type="button" class="btn btn-outline-secondary rounded-3 fw-semibold px-4 py-2"
-              (click)=" navigateToSingUp()">
+              (click)="navigateToSingUp()">
               <i class="bi bi-person-plus me-2"></i>
               Crear una cuenta nueva
             </button>
@@ -116,7 +101,7 @@
         </div>
       </div>
 
-      <!-- Footer  -->
+      <!-- Footer -->
       <div class="text-center mt-4">
         <small class="text-secondary opacity-50">
           © 2026 - Cursos Holguín

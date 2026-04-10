@@ -71,12 +71,12 @@
                   <span>Validando...</span>
                 </div>
                 <div *ngIf="!loading">
-                  <i class="bi bi-box-arrow-in-right me-2"></i>
-                  Iniciar sesión
+                  <i class="bi bi-box-arrow-in-right me-2" (click)="navigateToHome()">
+                    Iniciar sesión
+                  </i>
                 </div>
               </button>
             </div>
-
           </form>
 
           <div class="position-relative my-4">

@@ -6,12 +6,10 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-
 import md5 from 'md5';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-
-
+import { UserService } from 'src/app/core/services/user.service.service';
 @Component({
   selector: 'app-sign-up',
   standalone: true,
@@ -20,9 +18,11 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrls: ['./sign-up.component.scss'],
 })
 export class SignUpComponent {
-  private _authService: AuthService = inject(AuthService);
 
-  router = inject(Router);
+  private _authService: AuthService = inject(AuthService);
+  private _userService: UserService = inject(UserService);
+  private _router = inject(Router);
+
   errorMessage: string = '';
   loading: boolean = false;
 
@@ -60,35 +60,35 @@ export class SignUpComponent {
       email: this.signUpForm.value.email,
       password: encryptedPassword,
     };
-
-    this._authService.signUp(signUpData).subscribe({
-      next: (response: any) => {
-        if (response.token && response.user) {
-          this._authService.saveAuthData(
-            response.token,
-            response.user.email,
-            response.user.id,
-            response.user.firstName,
-          );
-          this.router.navigate(['/login']);
-          //TODO: ToastService
-        } else {
-          this.router.navigate(['/singUp']);
-          //TODO: ToastService
-        }
-        this.loading = false;
-      },
-      error: (error: any) => {
-        console.error('Error en registro:', error);
-        this.errorMessage =
-          error.error?.message ||
-          'Error al crear la cuenta. Intenta nuevamente.';
-        this.loading = false;
-      },
-    });
+    /**TODO:
+        this._userService.singUp(signUpData).subscribe({
+          next: (response: any) => {
+            if (response.token && response.user) {
+              this._authService.saveAuthData(
+                response.token,
+                response.user.email,
+                response.user.id,
+                response.user.firstName,
+              );
+              this._router.navigate(['/login']);
+              //TODO: ToastService
+            } else {
+              this._router.navigate(['/singUp']);
+              //TODO: ToastService
+            }
+            this.loading = false;
+          },
+          error: (error: any) => {
+            console.error('Error en registro:', error);
+            this.errorMessage =
+              error.error?.message ||
+              'Error al crear la cuenta. Intenta nuevamente.';
+            this.loading = false;
+          },
+        });
+        */
   }
-
   goToLogin() {
-    this.router.navigate(['/login']);
+    this._router.navigate(['/login']);
   }
 }

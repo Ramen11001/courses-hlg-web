@@ -47,28 +47,26 @@ export class LoginComponent {
     const email = this.loginForm.value.email ?? '';
     const password = this.loginForm.value.password ?? '';
 
-   
+
     const encryptedPassword = md5(password).toString();
 
-    
+
     const loginData = {
       email: email,
       password: encryptedPassword,
     };
 
-    
+
     this._authService.login(loginData).subscribe({
       next: (response) => {
         const token = response.token;
         const userEmail = response.user?.email;
         const userId = response.user?.id;
-        const firstName = response.user?.firstName;
 
-        if (token && userEmail && userId && firstName) {
-          this._authService.saveAuthData(token, userEmail, userId, firstName);
-          this.router.navigate(['/home']);
-        } else {
-          this.errorMessage = 'Respuesta del servidor incompleta.';
+        if (token && userEmail && userId) {
+          this._authService.saveAuthData(token, userEmail, userId);
+          //TODO: No va a home 
+          this.navigateToHome()
         }
         this.loading = false;
       },

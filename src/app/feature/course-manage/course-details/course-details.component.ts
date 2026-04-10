@@ -13,6 +13,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { CommentsService } from 'src/app/core/services/comment.service';
 import { CourseService } from 'src/app/core/services/course.service';
 import { Comment } from 'src/app/core/interfaces/comment';
+import { UserService } from 'src/app/core/services/user.service.service';
 
 @Component({
   selector: 'app-course-details',
@@ -21,9 +22,10 @@ import { Comment } from 'src/app/core/interfaces/comment';
   templateUrl: './course-details.component.html',
 })
 export class CoursesDetailsComponent implements OnInit {
-  _authService: AuthService = inject(AuthService);
-  _commentService: CommentsService = inject(CommentsService);
-  _courseService: CourseService = inject(CourseService);
+  private _authService: AuthService = inject(AuthService);
+  private _commentService: CommentsService = inject(CommentsService);
+  private _courseService: CourseService = inject(CourseService);
+  private _userService: UserService = inject(UserService);
 
   course: Course | null = null;
   comments: Comment[] = [];
@@ -52,7 +54,7 @@ export class CoursesDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     const course_id = this.route.snapshot.paramMap.get('id');
-    this.currentUserId = this._authService.getCurrentUserId();
+    this.currentUserId = this._userService.getCurrentUserId();
     if (course_id) {
       this.loadCourse(parseInt(course_id));
     } else {

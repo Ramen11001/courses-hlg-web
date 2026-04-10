@@ -9,7 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CourseService } from 'src/app/core/services/course.service';
 import { Course } from 'src/app/core/interfaces/course';
 import { CommonModule } from '@angular/common';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { UserService } from 'src/app/core/services/user.service.service';
 @Component({
   selector: 'app-edit-course',
   templateUrl: './edit-course.component.html',
@@ -17,7 +17,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
   imports: [ReactiveFormsModule, CommonModule],
 })
 export class EditCourseComponent {
-  _authService: AuthService = inject(AuthService);
+  private _userService: UserService = inject(UserService);
 
   courseForm: FormGroup;
   isLoading = false;
@@ -29,7 +29,6 @@ export class EditCourseComponent {
     private route: ActivatedRoute,
     private router: Router,
     private courseService: CourseService,
-    //private authService: AuthService,
   ) {
     this.courseForm = this.fb.group({
       title: ['', [Validators.minLength(3)]],
@@ -45,22 +44,12 @@ export class EditCourseComponent {
   ngOnInit(): void {
     this.loadCourse();
   }
-  /**
-   * Handles errors by displaying a message and navigating after delay.
-   * @private
-   * @param {string} message - Error message to display
-   */
-  private handleError(message: string): void {
-    this.errorMessage = message;
-    this.isLoading = false;
-    setTimeout(() => this.router.navigate(['/edit/:']), 2000);
-  }
   // Loads course data from API and checks edit permissions.
   loadCourse(): void {
     this.isLoading = true;
     this.errorMessage = null;
 
-    const currentUserId = this._authService.getCurrentUserId();
+    const currentUserId = this._userService.getCurrentUserId();
     if (!currentUserId) {
       this.showError('Debes iniciar sesión para editar cursos');
       return;
@@ -120,7 +109,7 @@ export class EditCourseComponent {
       const formData = {
         ...this.courseForm.value,
         cost: Number(this.courseForm.value.cost),
-        userId: this._authService.getCurrentUserId()!,
+        userId: this._userService.getCurrentUserId()!,
       };
 
       this.courseService.saveCourse(this.courseId, formData).subscribe({

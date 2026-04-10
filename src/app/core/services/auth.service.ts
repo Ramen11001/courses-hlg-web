@@ -42,8 +42,6 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/auth/login`, user);
   }
 
-  singUp() {}
-
   /**
    * In charge of storing elements of the user model.
    *
@@ -53,12 +51,10 @@ export class AuthService {
     token: string,
     email: string,
     user_id: number,
-    firstName: string,
   ): void {
     localStorage.setItem('token', token);
     localStorage.setItem('email', email);
     localStorage.setItem('user_id', user_id.toString());
-    localStorage.setItem('firstName', firstName);
   }
 
   /**
@@ -93,21 +89,6 @@ export class AuthService {
   }
 
   /**
-   * Retrieves the current user's ID from localStorage.
-   * This is more secure than decoding the JWT token on the client side.
-   *
-   * @function
-   * @returns {number | null} - Returns the user ID if available, otherwise null.
-   */
-  getCurrentUserId(): number | null {
-    const user_id = localStorage.getItem('user_id');
-    return user_id ? parseInt(user_id, 10) : null;
-  }
-
-  signUp(user: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/auth/register`, user);
-  }
-  /**
    * Sends forgot password request to the API
    * @param {object} data - Contains email
    * @returns {Observable<any>}
@@ -125,7 +106,8 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/auth/reset-password`, data);
   }
 
+  //et user fristName
   getCurrentUserName(): string | null {
-    return localStorage.getItem('firstName'); // Corregido el nombre de la llave
+    return localStorage.getItem('firstName');
   }
 }

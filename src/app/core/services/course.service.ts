@@ -7,13 +7,12 @@ import { inject } from '@angular/core';
 import { throwError, Observable, switchMap, catchError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Course } from '../interfaces/course';
-import { AuthService } from './auth.service';
+import { UserService } from './user.service.service';
 
 export class CourseService {
-  private _authService: AuthService = inject(AuthService);
+  private _userService: UserService = inject(UserService);
   private apiUrl = `${environment.baseUrl}/course`;
   private http = inject(HttpClient);
-  //  private authService = inject(AuthService);
   private handleError(error: HttpErrorResponse) {
     console.error('Error en la petición:', error);
 
@@ -78,20 +77,24 @@ export class CourseService {
    * @throws {Error} Authentication or ownership errors
    */
   saveCourse(id: number | null, courseData?: Omit<Course, 'user_id'>) {
+    const role = this._userService.getCurrentUserRole();
     if (id) {
       return this.getcourseId(id).pipe(
         switchMap((course) => {
-          const currentUser = this._authService.getCurrentUserId();
+          const currentUser = this._userService.getCurrentUserId();
           if (currentUser === null) {
             return throwError(() => 'Debes iniciar sesión para editar cursos');
           }
           if (course.user_id !== currentUser) {
             return throwError(() => 'Solo puedes editar tus propios cursos');
           }
+          if (role !== "COURSE_SUPPLIER") {
+            return throwError(() => 'Solo puedes editar tus propios cursos si eres profesor');
+          }
           return this.http
             .put<Course>(`${this.apiUrl}/${id}`, courseData)
             .pipe(
-              catchError((error) =>
+              catchError(() =>
                 throwError(() => 'Error al actualizar el curso'),
               ),
             );
@@ -99,9 +102,13 @@ export class CourseService {
         catchError((error) => throwError(() => error)),
       );
     } else {
-      const userId = this._authService.getCurrentUserId();
+      const role = this._userService.getCurrentUserRole();
+      const userId = this._userService.getCurrentUserId();
       if (!userId) {
         return throwError(() => new Error('Usuario no autenticado'));
+      }
+      if (role !== "COURSE_SUPPLIER") {
+        return throwError(() => 'Solo puede crear cursos un profesor');
       }
       const fullCourseData: Course = {
         ...courseData!,

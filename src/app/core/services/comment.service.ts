@@ -7,7 +7,7 @@ import {
 import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Comment } from 'src/app/core/interfaces/comment';
-import { AuthService } from './auth.service';
+import { UserService } from './user.service.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +15,7 @@ import { AuthService } from './auth.service';
 export class CommentsService {
   private apiUrl = `${environment.baseUrl}/comments`;
   private http = inject(HttpClient);
-  private authService = inject(AuthService);
+  private _userService = inject(UserService);
 
   /**
    * Fetches comments for a specific course.
@@ -47,7 +47,7 @@ export class CommentsService {
     id: number | null,
     commentData: Omit<Comment, 'user_id' | 'id' | 'User'>,
   ): Observable<Comment> {
-    const userId = this.authService.getCurrentUserId();
+    const userId = this._userService.getCurrentUserId();
     if (!userId) {
       return throwError(() => new Error('Usuario no autenticado'));
     }

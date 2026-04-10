@@ -3,17 +3,22 @@ import {
   HttpErrorResponse,
   HttpHeaders,
 } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { throwError, Observable, switchMap, catchError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Course } from '../interfaces/course';
 import { UserService } from './user.service.service';
 
+@Injectable({
+  providedIn: 'root',
+})
 export class CourseService {
   private _userService: UserService = inject(UserService);
   private apiUrl = `${environment.baseUrl}/course`;
   private http = inject(HttpClient);
-  private handleError(error: HttpErrorResponse) {
+
+
+  handleError(error: HttpErrorResponse) {
     console.error('Error en la petición:', error);
 
     if (error.status === 403) {

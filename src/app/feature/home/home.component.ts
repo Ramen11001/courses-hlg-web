@@ -10,9 +10,9 @@ import {
 import { Route, Router, ɵEmptyOutletComponent } from '@angular/router';
 import { finalize } from 'rxjs';
 import { Course } from '../../core/interfaces/course';
-import { CourseService } from 'src/app/core/services/course.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { UserService } from 'src/app/core/services/user.service.service';
+import { CourseService } from 'src/app/core/services/course.service';
 
 @Component({
   selector: 'app-home',

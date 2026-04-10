@@ -20,7 +20,7 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class LoginComponent {
   private _authService: AuthService = inject(AuthService);
-  router = inject(Router);
+  private _router = inject(Router);
 
   errorMessage: string = '';
   loading: boolean = false;
@@ -67,8 +67,8 @@ export class LoginComponent {
           this._authService.saveAuthData(token, userEmail, userId);
           //TODO: No va a home 
           this.navigateToHome()
+          this.loading = true;
         }
-        this.loading = false;
       },
       error: (err) => {
         this.errorMessage =
@@ -79,14 +79,14 @@ export class LoginComponent {
   }
 
   navigateToSingUp() {
-    this.router.navigate(['/singUp']);
+    this._router.navigate(['/singUp']);
   }
 
   navigateToForgotPassword() {
-    this.router.navigate(['/forgotPassword']);
+    this._router.navigate(['/forgotPassword']);
   }
 
   navigateToHome() {
-    this.router.navigate(['/home']);
+    this._router.navigate(['/home']);
   }
 }

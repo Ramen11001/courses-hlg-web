@@ -9,18 +9,20 @@
                         <i class="bi bi-mortarboard-fill fs-4 text-primary"></i>
                     </div>
                     <div>
-                        <h1 class="h3 fw-semibold text-dark mb-0">Bienvenido, {{ firstName || 'Estudiante' }}</h1>
+                        <h1 class="h3 fw-semibold text-dark mb-0">Bienvenido, {{ firstName || 'Amigo(a)' }}</h1>
                         <p class="text-secondary small mb-0">Explora y gestiona tus cursos</p>
                     </div>
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="d-flex gap-2">
-                    <button class="btn btn-primary rounded-3 fw-semibold px-4 py-2 shadow-sm"
-                        (click)="navigateToCreateCourse()">
-                        <i class="bi bi-plus-circle me-2"></i>
-                        Crear Curso
-                    </button>
+                    <ng-component *ngIf="cantCreate === true">
+                        <button class="btn btn-primary rounded-3 fw-semibold px-4 py-2 shadow-sm"
+                            (click)="navigateToCreateCourse()">
+                            <i class="bi bi-plus-circle me-2"></i>
+                            Crear Curso
+                        </button>
+                    </ng-component>
                     <button class="btn btn-outline-danger rounded-3 fw-semibold px-4 py-2" (click)="onsubmit()">
                         <i class="bi bi-box-arrow-right me-2"></i>
                         Cerrar Sesión
@@ -94,10 +96,12 @@
                 <div class="text-center py-5">
                     <i class="bi bi-inbox fs-1 text-secondary opacity-50"></i>
                     <p class="text-secondary mt-3">No hay cursos disponibles</p>
-                    <button class="btn btn-outline-primary rounded-3 mt-2" (click)="navigateToCreateCourse()">
-                        <i class="bi bi-plus-circle me-2"></i>
-                        Crear el primer curso
-                    </button>
+                    <ng-component *ngIf="cantCreate === true">
+                        <button class="btn btn-outline-primary rounded-3 mt-2" (click)="navigateToCreateCourse()">
+                            <i class="bi bi-plus-circle me-2"></i>
+                            Crear el primer curso
+                        </button>
+                    </ng-component>
                 </div>
             </div>
 
@@ -167,15 +171,3 @@
         </div>
     </div>
 </div>
-
-<!-- Add custom hover effect -->
-<style>
-    .hover-card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .hover-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.1) !important;
-    }
-</style>

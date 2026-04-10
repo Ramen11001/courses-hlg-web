@@ -7,20 +7,27 @@ import {
   FormGroup,
   FormControl,
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Route, Router, ɵEmptyOutletComponent } from '@angular/router';
 import { finalize } from 'rxjs';
 import { Course } from '../../core/interfaces/course';
 import { CourseService } from 'src/app/core/services/course.service';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { UserService } from 'src/app/core/services/user.service.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   templateUrl: './home.component.html',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  styleUrls: ['./home.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ɵEmptyOutletComponent],
 })
 export class HomeComponent implements OnInit {
+
   private _authService: AuthService = inject(AuthService);
+  private _userService: UserService = inject(UserService);
+  private _courseService: CourseService = inject(CourseService);
+  private _router: Router = inject(Router);
+  private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
   course: Course[] = [];
   firstName: string = '';
@@ -31,10 +38,11 @@ export class HomeComponent implements OnInit {
   hasMore = false;
   currentUserId: number | null = null;
   isLoading: boolean = true;
-  cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
-  //TODO: authService: AuthService = inject(AuthService);
-  courseService: CourseService = inject(CourseService);
+
+  //Role
+  cantCreate: boolean = false
+  role = this._userService.getCurrentUserRole();
 
   //Reactive Form
   filterForm: FormGroup = new FormGroup({
@@ -43,27 +51,16 @@ export class HomeComponent implements OnInit {
     maxPrice: new FormControl(null),
   });
 
-  /**
-   * Initializes HomeComponent and manages user authentication redirection.
-   *
-   * @constructor
-   * @param {Router} router - Manages route navigation.
-   * @param {HttpClient} http - Handles HTTP requests.
-   */
-  constructor(
-    private router: Router,
-    private http: HttpClient,
-  ) {}
 
   //TODO: Merge Develo
   ngOnInit(): void {
     const token = this._authService.getToken();
     if (!token) {
-      this.router.navigate(['/login']);
+      this._router.navigate(['/login']);
     } else {
       const storedUsername = this._authService.getCurrentUserName();
       this.firstName = storedUsername || 'Usuario';
-      this.currentUserId = this._authService.getCurrentUserId();
+      this.currentUserId = this._userService.getCurrentUserId();
       this.getCourse();
 
       this.filterForm.valueChanges.subscribe((_values) => {
@@ -73,11 +70,14 @@ export class HomeComponent implements OnInit {
     }
   }
 
+
+  //TODO: LoadUsers
+
   //Retrieves courses from the backend using search filters and pagination.
   getCourse(): void {
     this.isLoading = true;
     const { filterName, minPrice, maxPrice } = this.filterForm.value;
-    this.courseService
+    this._courseService
       .getCourses(
         filterName,
         minPrice,
@@ -131,18 +131,18 @@ export class HomeComponent implements OnInit {
 
   // Navigates to the course details page.
   navigateToDetailsCourse(id: number): void {
-    this.router.navigate(['/courseDetails/' + id]);
+    this._router.navigate(['/courseDetails/' + id]);
   }
 
   // Navigates to the course creation page.
   navigateToCreateCourse(): void {
-    this.router.navigate(['/createCourse']);
+    this._router.navigate(['/createCourse']);
   }
 
   // Navigates to the course editing page for a specific course.
 
   navigateToEditCourse(id: number): void {
-    this.router.navigate(['edit/' + id]);
+    this._router.navigate(['edit/' + id]);
   }
 
   navigateToLogout(): void {
@@ -159,7 +159,7 @@ export class HomeComponent implements OnInit {
       return;
     }
 
-    this.courseService.deleteCourse(id).subscribe({
+    this._courseService.deleteCourse(id).subscribe({
       next: () => {
         // Update local course array by filtering out deleted course
         this.course = this.course.filter((p) => p.id !== id);
@@ -169,6 +169,14 @@ export class HomeComponent implements OnInit {
         // TODO: Implementar un toastSevice
       },
     });
+  }
+
+  rolePermisson() {
+    if (this.role === "COURSE_SUPPLIER") {
+      this.cantCreate === true
+      this._cdr.detectChanges();
+    }
+    return this.cantCreate
   }
 
   /**
@@ -181,10 +189,11 @@ export class HomeComponent implements OnInit {
        * @function
        */
   onsubmit() {
-    // this.authService.logout();
+    this._authService.logout();
     this.course = [];
-    // this.firstName = null;
+    this.firstName = '';
     this.isLoading = false;
-    this.router.navigate(['/login']);
+    this._router.navigate(['/login']);
   }
+
 }

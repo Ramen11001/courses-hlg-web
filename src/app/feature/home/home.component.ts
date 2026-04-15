@@ -19,10 +19,14 @@ import { CourseService } from 'src/app/core/services/course.service';
   standalone: true,
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, ɵEmptyOutletComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    ɵEmptyOutletComponent,
+  ],
 })
 export class HomeComponent implements OnInit {
-
   private _authService: AuthService = inject(AuthService);
   private _userService: UserService = inject(UserService);
   private _courseService: CourseService = inject(CourseService);
@@ -39,10 +43,8 @@ export class HomeComponent implements OnInit {
   currentUserId: number | null = null;
   isLoading: boolean = true;
 
-
   //Role
-  cantCreate: boolean = false
-  role = this._userService.getCurrentUserRole();
+  cantCreate: boolean = false;
 
   //Reactive Form
   filterForm: FormGroup = new FormGroup({
@@ -51,9 +53,8 @@ export class HomeComponent implements OnInit {
     maxPrice: new FormControl(null),
   });
 
-
   //TODO: Merge Develo
-  ngOnInit(): void {
+  ngOnInit() {
     const token = this._authService.getToken();
     if (!token) {
       this._router.navigate(['/login']);
@@ -66,16 +67,23 @@ export class HomeComponent implements OnInit {
       this.filterForm.valueChanges.subscribe((_values) => {
         this.currentPage = 1;
         this.getCourse();
+        this.rolePermisson();
+        console.log(this._userService.getCurrentUserRole());
+        console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
       });
     }
   }
-
 
   //TODO: LoadUsers
 
   //Retrieves courses from the backend using search filters and pagination.
   getCourse(): void {
     this.isLoading = true;
+    const role = this._userService.getCurrentUserRole();
+    if (role === 'COURSE_SUPPLIER') {
+      this.cantCreate === true;
+      this._cdr.detectChanges();
+    }
     const { filterName, minPrice, maxPrice } = this.filterForm.value;
     this._courseService
       .getCourses(
@@ -88,7 +96,19 @@ export class HomeComponent implements OnInit {
       .pipe(finalize(() => (this.isLoading = false)))
       .subscribe({
         next: (response: Course[]) => {
-          // If the number of course equals the items per page, assume that more course are available.
+          this.course = response.map((course: Course) => {
+            const ratings =
+              course.comments?.map((comment) => comment.rating) || [];
+            const averageRating =
+              ratings.length > 0
+                ? ratings.reduce(
+                    (sum: number, rating: number) => sum + rating,
+                    0,
+                  ) / ratings.length
+                : 0;
+            return { ...course, averageRating };
+          });
+          // If the number of courses equals the items per page, assume that more comments are available.
           this.hasMore = this.course.length === this.itemsPerPage;
         },
         error: (error) => {
@@ -172,11 +192,11 @@ export class HomeComponent implements OnInit {
   }
 
   rolePermisson() {
-    if (this.role === "COURSE_SUPPLIER") {
-      this.cantCreate === true
+    const role = this._userService.getCurrentUserRole();
+    if (role === 'COURSE_SUPPLIER') {
+      this.cantCreate === true;
       this._cdr.detectChanges();
     }
-    return this.cantCreate
   }
 
   /**
@@ -195,5 +215,4 @@ export class HomeComponent implements OnInit {
     this.isLoading = false;
     this._router.navigate(['/login']);
   }
-
 }

@@ -90,9 +90,9 @@
                                 class="form-label fw-semibold text-secondary small text-uppercase mb-2">
                                 <i class="bi bi-geo-alt me-1"></i> Ubicación
                             </label>
+                            <!-- TODO: PONER LAS MODALIDADES Y COSAS QUE FALTAN:-->
                             <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light"
-                                id="location" formControlName="location"
-                                placeholder="Ej: Online, Presencial, Híbrido..."
+                                id="location" formControlName="location" placeholder="Ej: Desoft"
                                 [class.is-invalid]="courseForm.get('location')?.invalid && courseForm.get('location')?.touched">
                             <div class="invalid-feedback small mt-1">
                                 <i class="bi bi-info-circle me-1"></i>
@@ -134,7 +134,7 @@
                     <!-- Cancel Button -->
                     <div class="text-center">
                         <button type="button" class="btn btn-outline-secondary rounded-3 fw-semibold px-4 py-2"
-                            (click)="navigateToCourse()">
+                            (click)=" navigateToHome()">
                             <i class="bi bi-arrow-left me-2"></i>
                             Cancelar y volver
                         </button>

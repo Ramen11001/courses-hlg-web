@@ -55,11 +55,11 @@ export class CreateCourseComponent {
 
   /**
    * Navigates to the course page.
-   * Uses Angular Router to navigate to '/course' route.
+   * Uses Angular Router to navigate to '/home' route.
    * @returns {void}
    */
-  navigateToCourse() {
-    this.router.navigate(['/course']);
+  navigateToHome() {
+    this.router.navigate(['/home']);
   }
 
   /**

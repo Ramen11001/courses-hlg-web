@@ -147,6 +147,61 @@
                                                         </ng-container>
                                                     </div>
 
+                                                    <div *ngIf="isAuthenticated"
+                                                        class="card border card_border m-2 mt-4">
+                                                        <div class="card-body text-black">
+                                                            <h2 class="card-title">Deja tu comentario</h2>
+                                                            <form [formGroup]="commentForm" (ngSubmit)="onSubmit()">
+                                                                <div class="mb-3">
+                                                                    <label for="rating"
+                                                                        class="form-label">Calificación</label>
+                                                                    <select id="rating" formControlName="rating"
+                                                                        class="form-select" [ngClass]="{
+                'is-invalid':
+                  commentForm.get('rating')?.invalid &&
+                  commentForm.get('rating')?.touched,
+              }">
+                                                                        <option value="" disabled selected>
+                                                                            Selecciona una calificación
+                                                                        </option>
+                                                                        <option value="5">★★★★★ (5 - Excelente)</option>
+                                                                        <option value="4">★★★★☆ (4 - Muy bueno)</option>
+                                                                        <option value="3">★★★☆☆ (3 - Bueno)</option>
+                                                                        <option value="2">★★☆☆☆ (2 - Regular)</option>
+                                                                        <option value="1">★☆☆☆☆ (1 - Malo)</option>
+                                                                    </select>
+                                                                    <div *ngIf="
+                commentForm.get('rating')?.invalid &&
+                commentForm.get('rating')?.touched
+              " class="invalid-feedback">
+                                                                        Por favor selecciona una calificación
+                                                                    </div>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="text"
+                                                                        class="form-label">Comentario</label>
+                                                                    <textarea id="text" formControlName="text" rows="4"
+                                                                        class="form-control"
+                                                                        placeholder="Escribe tu comentario aquí..."
+                                                                        required></textarea>
+                                                                    <div *ngIf="
+                commentForm.get('text')?.invalid &&
+                commentForm.get('text')?.touched
+              " class="text-danger text-sm mt-1">
+                                                                        El comentario debe tener al menos 3 caracteres.
+                                                                    </div>
+                                                                </div>
+                                                                <div class="d-flex justify-content-end">
+                                                                    <button type="submit"
+                                                                        [disabled]="commentForm.invalid"
+                                                                        class="btn btn-success fw-bold">
+                                                                        <i class="bi bi-check-circle me-2"></i> Publicar
+                                                                        comentario
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
 
                                                     <small class="text-secondary">
                                                         <i class="bi bi-person-circle me-1"></i>

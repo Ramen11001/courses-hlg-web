@@ -29,8 +29,8 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true,
-    "allowSyntheticDefaultImports": true, // Agrega esta
-    "esModuleInterop": true,              // Agrega esta
+    "allowSyntheticDefaultImports": true, 
+    "esModuleInterop": true,             
     "baseUrl": "./",
   },
 }

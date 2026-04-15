@@ -1,13 +1,5 @@
-
-/**
- * Interface representing a course in the system.
- *
- * @interface
- * @export
- * @class Course
- */
+import { Comment } from 'src/app/core/interfaces/comment';
 export interface Course {
-
   id: number;
   title: string;
   description: string;
@@ -18,6 +10,8 @@ export interface Course {
   duration: JSON;
   certificate: boolean;
   //TODO: RECUERDA REVISAR EL ÁREA, MODELO, LEVEL: QUE SON ENUM
+
+  comments?: Comment[];
 
   //Foreign Key
   user_id: number;

@@ -14,7 +14,7 @@ import { UserService } from './user.service.service';
 })
 export class CourseService {
   private _userService: UserService = inject(UserService);
-  private apiUrl = `${environment.baseUrl}/course`;
+  private apiUrl = `${environment.baseUrl}/courses`;
   private http = inject(HttpClient);
 
 

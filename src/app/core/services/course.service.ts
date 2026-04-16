@@ -17,7 +17,6 @@ export class CourseService {
   private apiUrl = `${environment.baseUrl}/courses`;
   private http = inject(HttpClient);
 
-
   handleError(error: HttpErrorResponse) {
     console.error('Error en la petición:', error);
 
@@ -30,6 +29,9 @@ export class CourseService {
     );
   }
 
+  /**
+   * Fetches all courses with filters or pagination.
+   */
   getCourses(
     filterName: string,
     minPrice: number | null,
@@ -40,16 +42,23 @@ export class CourseService {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     const offset = (currentPage - 1) * limit;
-    const params: any = {
-      search: filterName,
-      minPrecio: minPrice !== null ? minPrice : undefined,
-      maxPrecio: maxPrice !== null ? maxPrice : undefined,
-      page: currentPage,
-      limit: limit,
-      offset: offset,
+
+    // create a clean parameter object
+    let params: any = {
+      page: currentPage.toString(),
+      limit: limit.toString(),
+      offset: offset.toString(),
       include: 'comments',
       pagination: 'true',
     };
+
+    //We add the filters IF they have a real value
+    if (filterName) params.search = filterName;
+    if (minPrice !== null && minPrice !== undefined)
+      params.minPrecio = minPrice.toString();
+    if (maxPrice !== null && maxPrice !== undefined)
+      params.maxPrecio = maxPrice.toString();
+
     return this.http.get<Course[]>(`${environment.baseUrl}/courses`, {
       params,
       headers,
@@ -73,52 +82,81 @@ export class CourseService {
     return this.http.get<Course>(`${this.apiUrl}/${id}`);
   }
 
+  // En course.service.ts
+
   /**
    * Creates or updates a course.
    *
    * @param {number | null} id - course ID (null for new course)
-   * @param {Omit<Course, 'user_id'>} [courseData] - course data (without userId)
+   * @param {any} courseData - course data (sin id para creación, con id opcional para actualización)
    * @returns {Observable<Course>} Observable of saved course
-   * @throws {Error} Authentication or ownership errors
    */
-  saveCourse(id: number | null, courseData?: Omit<Course, 'user_id'>) {
-    const role = this._userService.getCurrentUserRole();
+  saveCourse(id: number | null, courseData: any): Observable<Course> {
+    const currentUserId = this._userService.getCurrentUserId();
+    const currentUserRole = this._userService.getCurrentUserRole();
+
+    // Update existing course
     if (id) {
+      // First check if user has permission to edit
       return this.getcourseId(id).pipe(
         switchMap((course) => {
-          const currentUser = this._userService.getCurrentUserId();
-          if (currentUser === null) {
-            return throwError(() => 'Debes iniciar sesión para editar cursos');
+          if (!currentUserId) {
+            return throwError(
+              () => new Error('Debes iniciar sesión para editar cursos'),
+            );
           }
-          if (course.user_id !== currentUser) {
-            return throwError(() => 'Solo puedes editar tus propios cursos');
+
+          if (course.user_id !== currentUserId) {
+            return throwError(
+              () => new Error('Solo puedes editar tus propios cursos'),
+            );
           }
-          if (role !== "COURSE_SUPPLIER") {
-            return throwError(() => 'Solo puedes editar tus propios cursos si eres profesor');
+
+          if (currentUserRole !== 'COURSE_SUPPLIER') {
+            return throwError(
+              () => new Error('No tienes permisos para editar cursos'),
+            );
           }
+
+          // Para actualización, enviamos solo los campos que queremos actualizar
           return this.http
             .put<Course>(`${this.apiUrl}/${id}`, courseData)
-            .pipe(
-              catchError(() =>
-                throwError(() => 'Error al actualizar el curso'),
-              ),
-            );
+            .pipe(catchError(this.handleError));
         }),
         catchError((error) => throwError(() => error)),
       );
-    } else {
-      const role = this._userService.getCurrentUserRole();
-      const userId = this._userService.getCurrentUserId();
-      if (!userId) {
-        return throwError(() => new Error('Usuario no autenticado'));
+    }
+
+    // Create new course
+    else {
+      if (!currentUserId) {
+        return throwError(
+          () => new Error('Debes iniciar sesión para crear cursos'),
+        );
       }
-      if (role !== "COURSE_SUPPLIER") {
-        return throwError(() => 'Solo puede crear cursos un profesor');
+
+      if (currentUserRole !== 'COURSE_SUPPLIER') {
+        return throwError(
+          () => new Error('Solo los profesores pueden crear cursos'),
+        );
       }
-      const fullCourseData: Course = {
-        ...courseData!,
-        user_id: userId,
+
+      // Para creación, no incluimos id (el backend lo genera)
+      const fullCourseData = {
+        title: courseData.title,
+        cost: courseData.cost,
+        area: courseData.area,
+        mode: courseData.mode,
+        level: courseData.level,
+        certificate: courseData.certificate,
+        description: courseData.description,
+        study_plan: courseData.study_plan,
+        location: courseData.location,
+        duration: courseData.duration,
+        tags: courseData.tags,
+        user_id: currentUserId,
       };
+
       return this.http
         .post<Course>(this.apiUrl, fullCourseData)
         .pipe(catchError(this.handleError));

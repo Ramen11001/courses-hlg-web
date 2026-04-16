@@ -1,17 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CourseService } from 'src/app/core/services/course.service';
-/**
- * Component for creating new course.
- * Provides a form to input course details and handles submission to the API.
- *
- * @component
- * @selector app-create-course
- * @standalone true
- */
+import { AuthService } from 'src/app/core/services/auth.service';
+import { UserService } from 'src/app/core/services/user.service.service';
+
 @Component({
   selector: 'app-create-course',
   standalone: true,
@@ -19,77 +14,94 @@ import { CourseService } from 'src/app/core/services/course.service';
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
 })
 export class CreateCourseComponent {
-  /**
-   * Form group for coure creation.
-   * @type {FormGroup}
-   */
+  private _userService = inject(UserService);
+  private _courseService = inject(CourseService);
+  private _router = inject(Router);
+
   courseForm: FormGroup;
-  /**
-   * Loading state indicator.
-   * @type {boolean}
-   */
   isLoading = false;
-  /**
-   * Component constructor.
-   * Initializes the course form with validation rules.
-   *
-   * @param {FormBuilder} fb - Angular form builder service
-   * @param {Router} router - Angular router for navigation
-   * @param {CourseService} courseService - course API service
-   */
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private courseService: CourseService,
-  ) {
-    // Initialize form with validation rules
+  tags: { name: string; color: string }[] = [];
+
+  constructor(private fb: FormBuilder) {
     this.courseForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
+      title: ['', [Validators.required, Validators.minLength(3)]],
       cost: [null, [Validators.required, Validators.min(0)]],
-      description: ['', Validators.minLength(20)],
-      study_plan: ['', Validators.minLength(10)],
-      location: ['', Validators.minLength(10)],
-      //TODO: certificate, area, mode, level,
+      area: ['', Validators.required],
+      mode: ['', Validators.required],
+      level: ['', Validators.required],
+      certificate: [false, Validators.required],
+      description: ['', [Validators.minLength(10)]],
+      study_plan: ['', [Validators.minLength(10)]],
+      location: ['', [Validators.minLength(10)]],
+      // Duration fields
+      init_date: [''],
+      end_date: [''],
+      duration_time: [''],
+      // Tags fields
+      tagName: [''],
+      tagColor: ['primary'],
     });
   }
 
-  /**
-   * Navigates to the course page.
-   * Uses Angular Router to navigate to '/home' route.
-   * @returns {void}
-   */
   navigateToHome() {
-    this.router.navigate(['/home']);
+    this._router.navigate(['/home']);
   }
 
-  /**
-   * Handles form submission.
-   * - Validates form inputs
-   * - Converts cost to number
-   * - Calls course service to save new course
-   * - Navigates to course list on success
-   * - Shows error alerts on failure
-   *
-   * @returns {void}
-   */
+  addTag(): void {
+    const tagName = this.courseForm.get('tagName')?.value;
+    const tagColor = this.courseForm.get('tagColor')?.value;
+
+    if (tagName && tagName.trim()) {
+      this.tags.push({ name: tagName.trim(), color: tagColor || 'primary' });
+      this.courseForm.get('tagName')?.reset();
+      this.courseForm.patchValue({ tags: this.tags });
+    }
+  }
+
+  removeTag(index: number): void {
+    this.tags.splice(index, 1);
+    this.courseForm.patchValue({ tags: this.tags });
+  }
+
   onSubmit() {
-    // Trigger validation UI for all fields
     this.courseForm.markAllAsTouched();
 
     if (this.courseForm.valid) {
       this.isLoading = true;
 
-      // Convert cost to number type for API
+      // Construir el objeto duration
+      const duration = [];
+      if (
+        this.courseForm.value.init_date ||
+        this.courseForm.value.end_date ||
+        this.courseForm.value.duration_time
+      ) {
+        duration.push({
+          init_date: this.courseForm.value.init_date,
+          end_date: this.courseForm.value.end_date,
+          duration_time: this.courseForm.value.duration_time,
+        });
+      }
+
       const formData = {
-        ...this.courseForm.value,
+        title: this.courseForm.value.title,
         cost: Number(this.courseForm.value.cost),
+        area: this.courseForm.value.area,
+        mode: this.courseForm.value.mode,
+        level: this.courseForm.value.level,
+        certificate: this.courseForm.value.certificate,
+        description: this.courseForm.value.description,
+        study_plan: this.courseForm.value.study_plan,
+        location: this.courseForm.value.location,
+        duration: duration,
+        tags: this.tags,
+        user_id: this._userService.getCurrentUserId,
       };
-      // Call course service to create new course
-      this.courseService.saveCourse(null, formData).subscribe({
-        next: (response) => {
+
+      this._courseService.saveCourse(null, formData).subscribe({
+        next: () => {
           this.isLoading = false;
-          // Navigate to course list after successful creation
-          this.router.navigate(['/course']);
+          this._router.navigate(['/course']);
         },
         error: (error) => {
           this.isLoading = false;

@@ -1,17 +1,34 @@
 import { Comment } from 'src/app/core/interfaces/comment';
+import { Duration } from 'src/app/core/interfaces/duration';
+import { Tag } from 'src/app/core/interfaces/tag';
+
+export type CourseArea =
+  | 'Técnica'
+  | 'Humanidades'
+  | 'Salud'
+  | 'Administración'
+  | 'Deporte'
+  | 'Belleza'
+  | 'Artes'
+  | 'Ciencias';
+export type CourseMode = 'Presencial' | 'Online' | 'Híbrida';
+export type CourseLevel = 'bajo' | 'medio' | 'alto';
 export interface Course {
   id: number;
   title: string;
   description: string;
-  study_plan: Text;
+  study_plan: string;
   location: string;
   cost: number;
-  tags: JSON;
-  duration: JSON;
   certificate: boolean;
-  //TODO: RECUERDA REVISAR EL ÁREA, MODELO, LEVEL: QUE SON ENUM
-
+  tags?: Tag[];
+  duration?: Duration[];
   comments?: Comment[];
+
+  //Enums:
+  area: CourseArea;
+  mode: CourseMode;
+  level: CourseLevel;
 
   //Foreign Key
   user_id: number;

@@ -34,7 +34,7 @@
 
                         <!-- Price -->
                         <div class="mb-4">
-                            <label for="" class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                            <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
                                 <i class="bi bi-currency-dollar me-1"></i> Precio
                             </label>
                             <input type="number" class="form-control form-control-lg rounded-3 border-0 bg-light"
@@ -46,13 +46,98 @@
                             </div>
                         </div>
 
+                        <!-- Area -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                                <i class="bi bi-tag me-1"></i> Área
+                            </label>
+                            <select class="form-control form-control-lg rounded-3 border-0 bg-light"
+                                formControlName="area"
+                                [class.is-invalid]="courseForm.get('area')?.invalid && courseForm.get('area')?.touched">
+                                <option value="" disabled selected>Selecciona un área</option>
+                                <option value="Técnica">Técnica</option>
+                                <option value="Humanidades">Humanidades</option>
+                                <option value="Salud">Salud</option>
+                                <option value="Administración">Administración</option>
+                                <option value="Deporte">Deporte</option>
+                                <option value="Belleza">Belleza</option>
+                                <option value="Artes">Artes</option>
+                                <option value="Ciencias">Ciencias</option>
+                            </select>
+                            <div class="invalid-feedback small mt-1">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Selecciona un área para el curso
+                            </div>
+                        </div>
+
+                        <!-- Mode -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                                <i class="bi bi-laptop me-1"></i> Modalidad
+                            </label>
+                            <select class="form-control form-control-lg rounded-3 border-0 bg-light"
+                                formControlName="mode"
+                                [class.is-invalid]="courseForm.get('mode')?.invalid && courseForm.get('mode')?.touched">
+                                <option value="" disabled selected>Selecciona una modalidad</option>
+                                <option value="Presencial">Presencial</option>
+                                <option value="Online">Online</option>
+                                <option value="Híbrida">Híbrida</option>
+                            </select>
+                            <div class="invalid-feedback small mt-1">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Selecciona la modalidad del curso
+                            </div>
+                        </div>
+
+                        <!-- Level -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                                <i class="bi bi-bar-chart me-1"></i> Nivel
+                            </label>
+                            <select class="form-control form-control-lg rounded-3 border-0 bg-light"
+                                formControlName="level"
+                                [class.is-invalid]="courseForm.get('level')?.invalid && courseForm.get('level')?.touched">
+                                <option value="" disabled selected>Selecciona un nivel</option>
+                                <option value="bajo">Bajo</option>
+                                <option value="medio">Medio</option>
+                                <option value="alto">Alto</option>
+                            </select>
+                            <div class="invalid-feedback small mt-1">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Selecciona el nivel del curso
+                            </div>
+                        </div>
+
+                        <!-- Certificate -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                                <i class="bi bi-award me-1"></i> Certificado
+                            </label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" formControlName="certificate"
+                                        [value]="true" id="certificateYes">
+                                    <label class="form-check-label text-dark" for="certificateYes">
+                                        <i class="bi bi-check-circle-fill text-success me-1"></i> Sí
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" formControlName="certificate"
+                                        [value]="false" id="certificateNo">
+                                    <label class="form-check-label text-dark" for="certificateNo">
+                                        <i class="bi bi-x-circle-fill text-danger me-1"></i> No
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Description -->
                         <div class="mb-4">
                             <label for="description"
                                 class="form-label fw-semibold text-secondary small text-uppercase mb-2">
                                 <i class="bi bi-file-text me-1"></i> Descripción
                             </label>
-                            <textarea rows="5" class="form-control rounded-3 border-0 bg-light" id="description"
+                            <textarea rows="4" class="form-control rounded-3 border-0 bg-light" id="description"
                                 formControlName="description" placeholder="Describe el contenido del curso..."
                                 [class.is-invalid]="courseForm.get('description')?.invalid && courseForm.get('description')?.touched"></textarea>
                             <div class="invalid-feedback small mt-1">
@@ -64,6 +149,7 @@
                                 Mínimo 10 caracteres
                             </small>
                         </div>
+
                         <!-- Study Plan -->
                         <div class="mb-4">
                             <label for="study_plan"
@@ -90,9 +176,8 @@
                                 class="form-label fw-semibold text-secondary small text-uppercase mb-2">
                                 <i class="bi bi-geo-alt me-1"></i> Ubicación
                             </label>
-                            <!-- TODO: PONER LAS MODALIDADES Y COSAS QUE FALTAN:-->
                             <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light"
-                                id="location" formControlName="location" placeholder="Ej: Desoft"
+                                id="location" formControlName="location" placeholder="Ej: Desoft, Online, Mixto..."
                                 [class.is-invalid]="courseForm.get('location')?.invalid && courseForm.get('location')?.touched">
                             <div class="invalid-feedback small mt-1">
                                 <i class="bi bi-info-circle me-1"></i>
@@ -100,7 +185,82 @@
                             </div>
                             <small class="text-secondary mt-2 d-block">
                                 <i class="bi bi-info-circle me-1"></i>
-                                Especifica la modalidad o ubicación (mínimo 10 caracteres)
+                                Especifica la ubicación o modalidad (mínimo 10 caracteres)
+                            </small>
+                        </div>
+
+                        <!-- Duration -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                                <i class="bi bi-clock-history me-1"></i> Duración
+                            </label>
+                            <div class="bg-light rounded-3 p-3">
+                                <div class="row g-2">
+                                    <div class="col-12 col-md-6">
+                                        <input type="date" class="form-control rounded-3 border-0"
+                                            formControlName="init_date" placeholder="Fecha inicio">
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <input type="date" class="form-control rounded-3 border-0"
+                                            formControlName="end_date" placeholder="Fecha fin">
+                                    </div>
+                                    <div class="col-12">
+                                        <input type="text" class="form-control rounded-3 border-0"
+                                            formControlName="duration_time"
+                                            placeholder="Ej: 12 semanas, 3 meses, 40 horas">
+                                    </div>
+                                </div>
+                                <small class="text-secondary mt-2 d-block">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Fechas del curso y tiempo estimado de duración
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                                <i class="bi bi-tags me-1"></i> Etiquetas
+                            </label>
+                            <div class="bg-light rounded-3 p-3">
+                                <div class="row g-2">
+                                    <div class="col-12 col-md-8">
+                                        <input type="text" class="form-control rounded-3 border-0"
+                                            formControlName="tagName"
+                                            placeholder="Nombre de la etiqueta (Ej: JavaScript, Avanzado)">
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <select class="form-control rounded-3 border-0" formControlName="tagColor">
+                                            <option value="primary">Azul</option>
+                                            <option value="success">Verde</option>
+                                            <option value="danger">Rojo</option>
+                                            <option value="warning">Amarillo</option>
+                                            <option value="info">Celeste</option>
+                                            <option value="dark">Negro</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="button" class="btn btn-outline-primary rounded-pill w-100"
+                                            (click)="addTag()">
+                                            <i class="bi bi-plus-circle me-2"></i>
+                                            Agregar etiqueta
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tags List -->
+                            <div class="mt-2 d-flex flex-wrap gap-2">
+                                <span *ngFor="let tag of tags; let i = index" class="badge rounded-pill px-3 py-2"
+                                    [ngClass]="'bg-' + tag.color + ' bg-opacity-10 text-' + tag.color"
+                                    style="cursor: default;">
+                                    <i class="bi bi-tag me-1"></i>
+                                    {{ tag.name }}
+                                    <i class="bi bi-x-circle ms-2" style="cursor: pointer;" (click)="removeTag(i)"></i>
+                                </span>
+                            </div>
+                            <small class="text-secondary mt-2 d-block">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Agrega etiquetas para clasificar tu curso
                             </small>
                         </div>
 
@@ -134,7 +294,7 @@
                     <!-- Cancel Button -->
                     <div class="text-center">
                         <button type="button" class="btn btn-outline-secondary rounded-3 fw-semibold px-4 py-2"
-                            (click)=" navigateToHome()">
+                            (click)="navigateToHome()">
                             <i class="bi bi-arrow-left me-2"></i>
                             Cancelar y volver
                         </button>

@@ -35,6 +35,9 @@ export class CoursesDetailsComponent implements OnInit {
   error: string | null = null;
   formValue: any;
   currentUserId: number | null = null;
+  tags: { name: string; color: string }[] = [];
+  durations: { init_date: string; end_date: string; duration_time: string }[] =
+    [];
 
   constructor(
     private route: ActivatedRoute,
@@ -64,6 +67,25 @@ export class CoursesDetailsComponent implements OnInit {
   }
 
   /**
+   * Loads comment course  by ID.
+   *
+   * @param {number} id - course ID to load
+   */
+  loadComments(courseId: number): void {
+    this._commentService.getCommentsByCourse(courseId).subscribe({
+      next: (comments) => {
+        this.comments = comments;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.error = 'Error al cargar los comentarios';
+        this.isLoading = false;
+        console.error(err);
+      },
+    });
+  }
+
+  /**
    * Loads course details by ID.
    *
    * @param {number} id - course ID to load
@@ -74,6 +96,7 @@ export class CoursesDetailsComponent implements OnInit {
     this._courseService.getcourseId(id).subscribe({
       next: (course) => {
         this.course = course;
+        this.loadComments(id);
       },
       error: (err) => {
         this.error = 'Error al cargar el curso';
@@ -150,6 +173,17 @@ export class CoursesDetailsComponent implements OnInit {
         console.error('Error al eliminar comentario:', err);
       },
     });
+  }
+
+  //get use information
+  getUserInitials(firstName?: string, lastName?: string): string {
+    if (firstName && lastName) {
+      return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+    }
+    if (firstName) {
+      return firstName.charAt(0).toUpperCase();
+    }
+    return 'U';
   }
 
   /**

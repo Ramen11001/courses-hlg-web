@@ -1,4 +1,5 @@
 export interface User {
+createdAt: string|number|Date;
   id: number;
   fristName: string;
   lastName: string;

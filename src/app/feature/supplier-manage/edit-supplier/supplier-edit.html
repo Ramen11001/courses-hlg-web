@@ -1,0 +1,214 @@
+<div class="container min-vh-100 py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+
+            <!-- Loading State -->
+            <div *ngIf="isLoading" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="text-secondary mt-3">Cargando datos del usuario...</p>
+            </div>
+
+            <!-- Error Message -->
+            <div *ngIf="errorMessage && !isLoading" class="alert alert-danger rounded-4 shadow-sm" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                {{ errorMessage }}
+                <button *ngIf="errorMessage.includes('permisos')" class="btn btn-outline-danger btn-sm ms-3"
+                    (click)="navigateToBack()">
+                    Volver
+                </button>
+            </div>
+
+            <!-- Success Message -->
+            <div *ngIf="successMessage && !isLoading" class="alert alert-success rounded-4 shadow-sm" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                {{ successMessage }}
+            </div>
+
+            <div *ngIf="!isLoading && user && !errorMessage">
+
+                <!-- Back Button -->
+                <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <button (click)="navigateToBack()" class="btn btn-outline-secondary rounded-pill px-4 py-2">
+                        <i class="bi bi-arrow-left me-2"></i> Volver
+                    </button>
+                    <button (click)="navigateToUserProfile()" class="btn btn-outline-info rounded-pill px-4 py-2">
+                        <i class="bi bi-eye me-2"></i> Ver perfil público
+                    </button>
+                </div>
+
+                <!-- Main Card -->
+                <div class="card border-0 shadow-lg rounded-4">
+                    <div class="card-body p-4 p-md-5">
+
+                        <!-- Icon -->
+                        <div class="text-center mb-4">
+                            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
+                                <i class="bi bi-pencil-square fs-1 text-primary"></i>
+                            </div>
+                            <h2 class="h3 fw-semibold text-dark mb-2">Editar Usuario</h2>
+                            <p class="text-secondary small mb-0">Modifica la información del usuario</p>
+                        </div>
+
+                        <!-- User Info Preview -->
+                        <div class="bg-light rounded-4 p-4 mb-4 text-center">
+                            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
+                                <span class="h4 fw-semibold text-primary mb-0">{{ getInitials() }}</span>
+                            </div>
+                            <h4 class="fw-semibold text-dark mb-1">{{ getFullName() }}</h4>
+                            <p class="text-secondary mb-2">
+                                <i class="bi bi-envelope me-1"></i> {{ user.email }}
+                            </p>
+                            <span class="badge rounded-pill px-3 py-2"
+                                [ngClass]="'bg-' + getRoleColor(user.role) + ' bg-opacity-10 text-' + getRoleColor(user.role)">
+                                <i class="bi me-1" [ngClass]="getRoleIcon(user.role)"></i>
+                                {{ getRoleLabel(user.role) }}
+                            </span>
+                        </div>
+
+                        <!-- Edit Form -->
+                        <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+
+                            <!-- First Name -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                                    <i class="bi bi-person me-1"></i> Nombre
+                                </label>
+                                <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light"
+                                    formControlName="firstName" placeholder="Nombre del usuario"
+                                    [class.is-invalid]="userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched">
+                                <div class="invalid-feedback small">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    El nombre debe tener al menos 2 caracteres
+                                </div>
+                            </div>
+
+                            <!-- Last Name -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                                    <i class="bi bi-person-badge me-1"></i> Apellido
+                                </label>
+                                <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light"
+                                    formControlName="lastName" placeholder="Apellido del usuario"
+                                    [class.is-invalid]="userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched">
+                                <div class="invalid-feedback small">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    El apellido debe tener al menos 2 caracteres
+                                </div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                                    <i class="bi bi-envelope me-1"></i> Correo electrónico
+                                </label>
+                                <input type="email" class="form-control form-control-lg rounded-3 border-0 bg-light"
+                                    formControlName="email" placeholder="usuario@email.com"
+                                    [class.is-invalid]="userForm.get('email')?.invalid && userForm.get('email')?.touched">
+                                <div class="invalid-feedback small">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Ingresa un correo electrónico válido
+                                </div>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                                    <i class="bi bi-telephone me-1"></i> Teléfono
+                                </label>
+                                <input type="tel" class="form-control form-control-lg rounded-3 border-0 bg-light"
+                                    formControlName="phone" placeholder="+1234567890">
+                                <small class="text-secondary mt-1 d-block">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Opcional - Solo números, + y -
+                                </small>
+                            </div>
+
+                            <!-- Bio -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                                    <i class="bi bi-file-text me-1"></i> Biografía
+                                </label>
+                                <textarea rows="4" class="form-control rounded-3 border-0 bg-light"
+                                    formControlName="bio" placeholder="Biografía del usuario..."></textarea>
+                                <small class="text-secondary mt-1 d-block">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Máximo 500 caracteres
+                                </small>
+                                <div *ngIf="userForm.get('bio')?.invalid && userForm.get('bio')?.touched"
+                                    class="text-danger small mt-1">
+                                    La biografía no puede exceder los 500 caracteres
+                                </div>
+                            </div>
+
+                            <!-- Role -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                                    <i class="bi bi-shield me-1"></i> Rol
+                                </label>
+                                <select class="form-control form-control-lg rounded-3 border-0 bg-light"
+                                    formControlName="role"
+                                    [class.is-invalid]="userForm.get('role')?.invalid && userForm.get('role')?.touched">
+                                    <option value="" disabled>Selecciona un rol</option>
+                                    <option *ngFor="let role of availableRoles" [value]="role.value">
+                                        {{ role.label }}
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback small">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Selecciona un rol para el usuario
+                                </div>
+                                <small class="text-secondary mt-1 d-block">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    <strong>Usuario:</strong> Puede ver cursos y comentar<br>
+                                    <strong>Profesor:</strong> Puede crear y editar sus propios cursos<br>
+                                    <strong>Administrador:</strong> Control total del sistema
+                                </small>
+                            </div>
+
+                            <!-- Separator -->
+                            <div class="position-relative my-4">
+                                <hr class="text-secondary opacity-25">
+                                <span
+                                    class="position-absolute top-50 start-50 translate-middle bg-white px-3 small text-secondary">
+                                    Acciones
+                                </span>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="d-flex gap-3 justify-content-center">
+                                <button type="button" class="btn btn-outline-secondary rounded-3 fw-semibold px-4 py-2"
+                                    (click)="navigateToBack()">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-primary rounded-3 fw-semibold px-4 py-2"
+                                    [disabled]="isSaving || userForm.invalid">
+                                    <div *ngIf="isSaving" class="d-flex align-items-center gap-2">
+                                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                                        <span>Guardando...</span>
+                                    </div>
+                                    <div *ngIf="!isSaving">
+                                        <i class="bi bi-save me-2"></i>
+                                        Guardar cambios
+                                    </div>
+                                </button>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="text-center mt-4">
+                    <small class="text-secondary opacity-50">
+                        © 2026 - Cursos Holguín
+                    </small>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

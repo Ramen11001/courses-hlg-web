@@ -13,6 +13,9 @@ import { UserService } from './user.service.service';
   providedIn: 'root',
 })
 export class CourseService {
+  getCoursesByUser(arg0: number) {
+      throw new Error('Method not implemented.');
+  }
   private _userService: UserService = inject(UserService);
   private apiUrl = `${environment.baseUrl}/courses`;
   private http = inject(HttpClient);

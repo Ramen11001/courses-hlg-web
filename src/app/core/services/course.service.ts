@@ -13,9 +13,7 @@ import { UserService } from './user.service.service';
   providedIn: 'root',
 })
 export class CourseService {
-  getCoursesByUser(arg0: number) {
-      throw new Error('Method not implemented.');
-  }
+
   private _userService: UserService = inject(UserService);
   private apiUrl = `${environment.baseUrl}/courses`;
   private http = inject(HttpClient);
@@ -45,28 +43,22 @@ export class CourseService {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     const offset = (currentPage - 1) * limit;
-
-    // create a clean parameter object
-    let params: any = {
-      page: currentPage.toString(),
-      limit: limit.toString(),
-      offset: offset.toString(),
+    const params: any = {
+      search: filterName,
+      minPrecio: minPrice !== null ? minPrice : undefined,
+      maxPrecio: maxPrice !== null ? maxPrice : undefined,
+      page: currentPage,
+      limit: limit,
+      offset: offset,
       include: 'comments',
       pagination: 'true',
     };
-
-    //We add the filters IF they have a real value
-    if (filterName) params.search = filterName;
-    if (minPrice !== null && minPrice !== undefined)
-      params.minPrecio = minPrice.toString();
-    if (maxPrice !== null && maxPrice !== undefined)
-      params.maxPrecio = maxPrice.toString();
-
     return this.http.get<Course[]>(`${environment.baseUrl}/courses`, {
       params,
       headers,
     });
   }
+
 
   /**
    * Fetches all courses without filters or pagination.
@@ -85,7 +77,15 @@ export class CourseService {
     return this.http.get<Course>(`${this.apiUrl}/${id}`);
   }
 
-  // En course.service.ts
+  /**
+   * Gets course by user ID.
+   * @param {number} id - course ID
+   * @returns {Observable<Course>} Observable containing requested course
+   */
+  getCourseByUserId(user_id: number) {
+    return this.http.get<Course[]>(`${this.apiUrl}/${user_id}`);
+  }
+
 
   /**
    * Creates or updates a course.
@@ -96,7 +96,7 @@ export class CourseService {
    */
   saveCourse(id: number | null, courseData: any): Observable<Course> {
     const currentUserId = this._userService.getCurrentUserId();
-    const currentUserRole = this._userService.getCurrentUserRole();
+    const currentUserRole = this._userService.getUserRole();
 
     // Update existing course
     if (id) {
@@ -121,7 +121,7 @@ export class CourseService {
             );
           }
 
-          // Para actualización, enviamos solo los campos que queremos actualizar
+          //for update, only the necesary atributes
           return this.http
             .put<Course>(`${this.apiUrl}/${id}`, courseData)
             .pipe(catchError(this.handleError));
@@ -144,7 +144,7 @@ export class CourseService {
         );
       }
 
-      // Para creación, no incluimos id (el backend lo genera)
+      //reate new course
       const fullCourseData = {
         title: courseData.title,
         cost: courseData.cost,

@@ -71,22 +71,30 @@ export class UserService {
     }
     return this.http.delete<User>(`${this.apiUrl}/${id}`);
   }
+  /**
+     * get user role
+     * @returns role
+     * 
+    */
+  getUserRole() {
+    return localStorage.getItem('role')
+  }
 
-   /**
-     * Creates a user.
-     *
-     * @function
-     * @returns {Observable<User>} Observable containing saved user
-     * @throws {Error} If user is not authenticated
-     */
-    singUp(userData:User): Observable<User> {
-       const fullUserData: User = {
-              ...userData!
-            };
-            return this.http
-              .post<User>(this.apiUrl, fullUserData)
-              .pipe(catchError(this.handleError));
-    }
+  /**
+    * Creates a user.
+    *
+    * @function
+    * @returns {Observable<User>} Observable containing saved user
+    * @throws {Error} If user is not authenticated
+    */
+  singUp(userData: User): Observable<User> {
+    const fullUserData: User = {
+      ...userData!
+    };
+    return this.http
+      .post<User>(this.apiUrl, fullUserData)
+      .pipe(catchError(this.handleError));
+  }
 
   /** 
     *  updates a user.
@@ -107,15 +115,7 @@ export class UserService {
           throwError(() => 'Error al actualizar el curso'),
         ),);
   }
-  /**
-   * Retrieves the current user's role from localStorage.
-   * @function
-   * @returns {string | null} - Returns the user ID if available, otherwise null.
-   */
-  getCurrentUserRole(): string | null {
-    const user_role = localStorage.getItem('role');
-    return user_role ? user_role : null;
-  }
+
 
   /**
    * Gets single user by ID.

@@ -7,6 +7,7 @@ import { CreateCourseComponent } from './feature/course-manage/create-course/cre
 import { CoursesDetailsComponent } from './feature/course-manage/course-details/course-details.component';
 import { EditCourseComponent } from './feature/course-manage/edit-course/edit-course.component';
 import { authGuard } from './core/guards/auth-guard';
+import { ProfileComponent } from './feature/supplier-manage/profile.component';
 
 export const routes: Routes = [
   {
@@ -47,4 +48,9 @@ export const routes: Routes = [
     path: 'edit/:id',
     component: EditCourseComponent,
   },
+  {
+    path: 'user',
+    component: ProfileComponent,
+  },
+
 ];

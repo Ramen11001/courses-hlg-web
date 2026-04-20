@@ -81,7 +81,7 @@ export class ProfileComponent implements OnInit {
 
   loadUserCourses(): void {
     //TODO:
-    this._courseService.getCoursesByUser(this.currentUserId!).subscribe({
+    this._courseService.getCourseByUserId(this.currentUserId!).subscribe({
       next: (courses: any) => {
         this.userCourses = courses;
       },

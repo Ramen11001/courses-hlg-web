@@ -34,7 +34,8 @@ export class HomeComponent implements OnInit {
   private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
   course: Course[] = [];
-  firstName: string = '';
+  filterName: string = '';
+  username: string = '';
   minPrice: number | null = null;
   maxPrice: number | null = null;
   currentPage: number = 1;
@@ -42,6 +43,7 @@ export class HomeComponent implements OnInit {
   hasMore = false;
   currentUserId: number | null = null;
   isLoading: boolean = true;
+  id: any = this._userService.getCurrentUserId();
 
   //Role
   cantCreate: boolean = false;
@@ -60,16 +62,15 @@ export class HomeComponent implements OnInit {
       this._router.navigate(['/login']);
     } else {
       const storedUsername = this._authService.getCurrentUserName();
-      this.firstName = storedUsername || 'Usuario';
+      this.username = storedUsername || 'Usuario';
       this.currentUserId = this._userService.getCurrentUserId();
       this.getCourse();
+      this._courseService.allCourses()
 
       this.filterForm.valueChanges.subscribe((_values) => {
         this.currentPage = 1;
         this.getCourse();
-        this.rolePermisson();
-        console.log(this._userService.getCurrentUserRole());
-        console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
+        console.log(_values)
       });
     }
   }
@@ -79,11 +80,6 @@ export class HomeComponent implements OnInit {
   //Retrieves courses from the backend using search filters and pagination.
   getCourse(): void {
     this.isLoading = true;
-    const role = this._userService.getCurrentUserRole();
-    if (role === 'COURSE_SUPPLIER') {
-      this.cantCreate === true;
-      this._cdr.detectChanges();
-    }
     const { filterName, minPrice, maxPrice } = this.filterForm.value;
     this._courseService
       .getCourses(
@@ -102,9 +98,9 @@ export class HomeComponent implements OnInit {
             const averageRating =
               ratings.length > 0
                 ? ratings.reduce(
-                    (sum: number, rating: number) => sum + rating,
-                    0,
-                  ) / ratings.length
+                  (sum: number, rating: number) => sum + rating,
+                  0,
+                ) / ratings.length
                 : 0;
             return { ...course, averageRating };
           });
@@ -165,6 +161,9 @@ export class HomeComponent implements OnInit {
     this._router.navigate(['edit/' + id]);
   }
 
+  navigateToUser(): void {
+    this._router.navigate(['/user']);
+  }
   navigateToLogout(): void {
     this._authService.logout();
   }
@@ -192,11 +191,15 @@ export class HomeComponent implements OnInit {
   }
 
   rolePermisson() {
-    const role = this._userService.getCurrentUserRole();
+    const role = this._userService.getUserRole()
     if (role === 'COURSE_SUPPLIER') {
       this.cantCreate === true;
-      this._cdr.detectChanges();
+      this._cdr.detectChanges()
     }
+    else {
+      console.error("No tiene permitido crear cursos")
+    }
+
   }
 
   /**
@@ -211,7 +214,7 @@ export class HomeComponent implements OnInit {
   onsubmit() {
     this._authService.logout();
     this.course = [];
-    this.firstName = '';
+    this.username = '';
     this.isLoading = false;
     this._router.navigate(['/login']);
   }

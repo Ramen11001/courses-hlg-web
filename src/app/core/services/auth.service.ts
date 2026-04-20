@@ -51,10 +51,19 @@ export class AuthService {
     token: string,
     email: string,
     user_id: number,
+
   ): void {
     localStorage.setItem('token', token);
-    localStorage.setItem('email', email);
     localStorage.setItem('user_id', user_id.toString());
+    localStorage.setItem('email', email);
+  }
+
+  SaveData(
+    role: string,
+    fristName: string,
+  ): void {
+    localStorage.setItem('role', role);
+    localStorage.setItem('fristName', fristName);
   }
 
   /**
@@ -106,7 +115,7 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/auth/reset-password`, data);
   }
 
-  //et user fristName
+  //get user fristName
   getCurrentUserName(): string | null {
     return localStorage.getItem('firstName');
   }

@@ -67,12 +67,12 @@ export class HomeComponent implements OnInit {
       this.username = storedUsername || 'Usuario';
       this.currentUserId = this._userService.getCurrentUserId();
       this.getCourse();
-      this._courseService.allCourses()
+      this._courseService.allCourses();
 
       this.filterForm.valueChanges.subscribe((_values) => {
         this.currentPage = 1;
         this.getCourse();
-        console.log(_values)
+        console.log(_values);
       });
     }
   }
@@ -100,12 +100,11 @@ export class HomeComponent implements OnInit {
             const averageRating =
               ratings.length > 0
                 ? ratings.reduce(
-                  (sum: number, rating: number) => sum + rating,
-                  0,
-                ) / ratings.length
+                    (sum: number, rating: number) => sum + rating,
+                    0,
+                  ) / ratings.length
                 : 0;
             return { ...course, averageRating };
-
           });
           // If the number of courses equals the items per page, assume that more comments are available.
           this.hasMore = this.course.length === this.itemsPerPage;
@@ -154,7 +153,7 @@ export class HomeComponent implements OnInit {
       //    if (courseComments.comments?.length>=8) {
       //       this.popularCourses.push(courseComments.title)
       //    }
-    })
+    });
   }
 
   // Navigates to the course details page.
@@ -203,15 +202,11 @@ export class HomeComponent implements OnInit {
   }
 
   rolePermisson() {
-    const role = this._userService.getUserRole()
+    const role = this._userService.getUserRole();
     if (role === 'COURSE_SUPPLIER') {
-      this.cantCreate === true;
-      this._cdr.detectChanges()
+      this.cantCreate = true;
+      this._cdr.detectChanges();
     }
-    else {
-      console.error("No tiene permitido crear cursos")
-    }
-
   }
 
   /**

@@ -32,4 +32,5 @@ export interface Course {
 
   //Foreign Key
   user_id: number;
+  comment_id: number;
 }

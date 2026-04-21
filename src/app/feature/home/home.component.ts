@@ -34,6 +34,7 @@ export class HomeComponent implements OnInit {
   private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
   course: Course[] = [];
+  comments: Comment[] = [];
   filterName: string = '';
   username: string = '';
   minPrice: number | null = null;
@@ -44,6 +45,7 @@ export class HomeComponent implements OnInit {
   currentUserId: number | null = null;
   isLoading: boolean = true;
   id: any = this._userService.getCurrentUserId();
+  popularCourses: any[] = [];
 
   //Role
   cantCreate: boolean = false;
@@ -103,6 +105,7 @@ export class HomeComponent implements OnInit {
                 ) / ratings.length
                 : 0;
             return { ...course, averageRating };
+
           });
           // If the number of courses equals the items per page, assume that more comments are available.
           this.hasMore = this.course.length === this.itemsPerPage;
@@ -143,6 +146,15 @@ export class HomeComponent implements OnInit {
     if (this.currentPage > 1) {
       this.changePage(this.currentPage - 1);
     }
+  }
+
+  //TODO: Hacer una métrica para calcular cursos populares
+  popularsCoursesFilter() {
+    this.course.forEach((courseComments) => {
+      //    if (courseComments.comments?.length>=8) {
+      //       this.popularCourses.push(courseComments.title)
+      //    }
+    })
   }
 
   // Navigates to the course details page.

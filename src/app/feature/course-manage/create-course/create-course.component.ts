@@ -32,7 +32,7 @@ export class CreateCourseComponent {
       certificate: [false, Validators.required],
       description: ['', [Validators.minLength(10)]],
       study_plan: ['', [Validators.minLength(10)]],
-      location: ['', [Validators.minLength(10)]],
+      location: ['', [Validators.maxLength(200)]],
       // Duration fields
       init_date: [''],
       end_date: [''],
@@ -69,7 +69,7 @@ export class CreateCourseComponent {
     if (this.courseForm.valid) {
       this.isLoading = true;
 
-      // Construir el objeto duration
+      //TODO:
       const duration = [];
       if (
         this.courseForm.value.init_date ||

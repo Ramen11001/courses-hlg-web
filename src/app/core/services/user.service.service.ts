@@ -22,29 +22,6 @@ export class UserService {
     );
   }
 
-  getUsers(
-    filterFristName: string,
-    filterLastName: string,
-    currentPage: number,
-    limit: number,
-  ): Observable<User[]> {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    const offset = (currentPage - 1) * limit;
-    const params: any = {
-      search: filterFristName, filterLastName,
-      page: currentPage,
-      limit: limit,
-      offset: offset,
-      include: '',
-      pagination: 'true',
-    };
-    return this.http.get<User[]>(`${environment.baseUrl}/user`, {
-      params,
-      headers,
-    });
-  }
-
   getbirthdayMsg() {
     return this.http.get<User>(`${environment.baseUrl}/getCongratsMessages`);
   }
@@ -122,9 +99,9 @@ export class UserService {
    * @param {number} id - user ID
    * @returns {Observable<User>} Observable containing requested user
    */
-  getUserById(id: number): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/${id}`);
-  }
+getUserById(id: number): Observable<User> {
+  return this.http.get<User>(`${this.apiUrl}/${id}`); 
+}
 
   /**
      * Fetches all users without filters or pagination.

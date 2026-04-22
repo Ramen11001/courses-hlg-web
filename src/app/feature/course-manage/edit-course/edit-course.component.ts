@@ -59,6 +59,7 @@ export class EditCourseComponent {
       next: (course: Course) => {
         if (course.user_id !== currentUserId) {
           this.showError('No tienes permiso para editar este curso');
+         this.navigateToCourse();
           return;
         }
 

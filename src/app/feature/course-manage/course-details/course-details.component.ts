@@ -127,8 +127,8 @@ export class CoursesDetailsComponent implements OnInit {
 
     this._commentService.createComment(null, commentData).subscribe({
       next: (comment) => {
-        if (!comment.User) {
-          comment.User = {
+        if (!comment.user) {
+          comment.user = {
             id: this.currentUserId!,
             fristName:
               this._authService.getCurrentUserName() || 'Usuario actual',

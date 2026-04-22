@@ -1,5 +1,7 @@
+import { Comment } from 'src/app/core/interfaces/comment';
+import { Course } from './course';
 export interface User {
-createdAt: string|number|Date;
+  createdAt: string | number | Date;
   id: number;
   fristName: string;
   lastName: string;
@@ -10,6 +12,7 @@ createdAt: string|number|Date;
   role: string;
   biography: Text;
 
-  //TODO: entity_type es un enum
-
+  //Models
+  comments?: Comment[];
+  courses?: Course[];
 }

@@ -51,20 +51,17 @@ export class AuthService {
     token: string,
     email: string,
     user_id: number,
-
+    role: string,
+    fristName: string,
   ): void {
     localStorage.setItem('token', token);
     localStorage.setItem('user_id', user_id.toString());
     localStorage.setItem('email', email);
-  }
-
-  SaveData(
-    role: string,
-    fristName: string,
-  ): void {
     localStorage.setItem('role', role);
     localStorage.setItem('fristName', fristName);
   }
+
+  SaveData(): void {}
 
   /**
    * Logs out the user by removing the stored token and redirecting to the login page.

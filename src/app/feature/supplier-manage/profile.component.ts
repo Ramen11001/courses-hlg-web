@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import {
   FormBuilder,
   FormGroup,
@@ -20,11 +20,12 @@ import { User } from 'src/app/core/interfaces/user';
   templateUrl: './profile.component.html',
 })
 export class ProfileComponent implements OnInit {
-  private _authService: AuthService = inject(AuthService);
-  private _userService: UserService = inject(UserService);
-  private _courseService: CourseService = inject(CourseService);
-  private _router: Router = inject(Router);
-  private _fb: FormBuilder = inject(FormBuilder);
+  private _authService = inject(AuthService);
+  private _userService = inject(UserService);
+  private _courseService = inject(CourseService);
+  private _route = inject(ActivatedRoute);
+  private _router = inject(Router);
+  private _fb = inject(FormBuilder);
 
   user: User | null = null;
   userCourses: Course[] = [];
@@ -47,19 +48,19 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const userID = this._route.snapshot.paramMap.get('id');
     this.currentUserId = this._userService.getCurrentUserId();
-    if (this.currentUserId) {
-      this.loadUserProfile();
-      this.loadUserCourses();
+    if (userID) {
+      this.loadUserProfile(parseInt(userID));
     } else {
-      this.errorMessage = 'No se pudo identificar al usuario';
+      this.errorMessage = 'Curso no encontrado';
       this.isLoading = false;
     }
   }
 
-  loadUserProfile(): void {
+  loadUserProfile(userId: number): void {
     this.isLoading = true;
-    this._userService.getUserById(this.currentUserId!).subscribe({
+    this._userService.getUserById(userId).subscribe({
       next: (user) => {
         this.user = user;
         this.profileForm.patchValue({
@@ -79,14 +80,42 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  loadUserCourses(): void {
-    //TODO:
-    this._courseService.getCourseByUserId(this.currentUserId!).subscribe({
-      next: (courses: any) => {
+  loadUserCourses(userId: number): void {
+    this._courseService.getCourseByUserId(userId).subscribe({
+      next: (courses) => {
         this.userCourses = courses;
       },
-      error: (err: any) => {
+      error: (err) => {
         console.error('Error al cargar cursos del usuario:', err);
+      },
+    });
+  }
+
+  onSubmit(): void {
+    if (this.profileForm.invalid || !this.currentUserId) {
+      this.errorMessage = 'Por favor, corrige los errores en el formulario';
+      return;
+    }
+
+    this.isLoading = true;
+
+    const updatedData = {
+      ...this.profileForm.value,
+      fristName: this.profileForm.value.firstName, 
+      biography: this.profileForm.value.bio,
+    };
+
+    this._userService.updatedUser(this.currentUserId, updatedData).subscribe({
+      next: (response) => {
+        this.user = response;
+        this.successMessage = 'Perfil actualizado exitosamente';
+        this.isEditing = false;
+        this.isLoading = false;
+        setTimeout(() => (this.successMessage = null), 3000);
+      },
+      error: (err) => {
+        this.errorMessage = 'Error al actualizar el perfil';
+        this.isLoading = false;
       },
     });
   }
@@ -104,40 +133,6 @@ export class ProfileComponent implements OnInit {
         bio: this.user.biography || '',
       });
     }
-  }
-
-  onSubmit(): void {
-    if (this.profileForm.invalid) {
-      this.errorMessage = 'Por favor, corrige los errores en el formulario';
-      return;
-    }
-
-    this.isLoading = true;
-    this.errorMessage = null;
-    this.successMessage = null;
-
-    const updatedUser = {
-      ...this.profileForm.value,
-      id: this.currentUserId,
-    };
-
-    this._userService.updatedUser(this.currentUserId!, updatedUser).subscribe({
-      next: (response) => {
-        this.user = response;
-        this.successMessage = 'Perfil actualizado exitosamente';
-        this.isEditing = false;
-        this.isLoading = false;
-
-        setTimeout(() => {
-          this.successMessage = null;
-        }, 3000);
-      },
-      error: (err) => {
-        this.errorMessage = 'Error al actualizar el perfil';
-        this.isLoading = false;
-        console.error(err);
-      },
-    });
   }
 
   navigateToCourse(courseId: number): void {

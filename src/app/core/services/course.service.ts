@@ -13,7 +13,6 @@ import { UserService } from './user.service.service';
   providedIn: 'root',
 })
 export class CourseService {
-
   private _userService: UserService = inject(UserService);
   private apiUrl = `${environment.baseUrl}/courses`;
   private http = inject(HttpClient);
@@ -35,30 +34,29 @@ export class CourseService {
    */
   getCourses(
     filterName: string,
-    minPrice: number | null,
-    maxPrice: number | null,
+    minPrice: any,
+    maxPrice: any,
     currentPage: number,
     limit: number,
-  ): Observable<Course[]> {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+  ) {
     const offset = (currentPage - 1) * limit;
     const params: any = {
-      search: filterName,
-      minPrecio: minPrice !== null ? minPrice : undefined,
-      maxPrecio: maxPrice !== null ? maxPrice : undefined,
+      search: filterName || '',
       page: currentPage,
       limit: limit,
       offset: offset,
       include: 'comments',
       pagination: 'true',
     };
-    return this.http.get<Course[]>(`${environment.baseUrl}/courses`, {
-      params,
-      headers,
-    });
-  }
 
+    // Solo agregar si son números válidos
+    if (minPrice !== null && minPrice !== undefined && minPrice !== '')
+      params.minPrecio = minPrice;
+    if (maxPrice !== null && maxPrice !== undefined && maxPrice !== '')
+      params.maxPrecio = maxPrice;
+
+    return this.http.get<Course[]>(this.apiUrl, { params });
+  }
 
   /**
    * Fetches all courses without filters or pagination.
@@ -85,7 +83,6 @@ export class CourseService {
   getCourseByUserId(user_id: number) {
     return this.http.get<Course[]>(`${this.apiUrl}/${user_id}`);
   }
-
 
   /**
    * Creates or updates a course.

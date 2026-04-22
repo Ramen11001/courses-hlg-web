@@ -174,7 +174,7 @@
                   <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" 
                        style="width: 35px; height: 35px;">
                     <span class="fw-semibold text-primary small">
-                      {{ getUserInitials(comment.User?.fristName) }}
+                      {{ getUserInitials(comment.user?.fristName) }}
                     </span>
                   </div>
                   <div>
@@ -188,7 +188,7 @@
                     </div>
                     <small class="text-secondary">
                       <i class="bi bi-person-circle me-1"></i>
-                      {{ comment.User?.fristName || comment.User?.lastName || 'Usuario' }}
+                      {{ comment.user?.fristName || comment.user?.lastName || 'Usuario' }}
                       <span class="mx-1">•</span>
                       {{ comment.createdAt | date: 'dd/MM/yyyy' }}
                     </small>

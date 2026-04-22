@@ -43,30 +43,34 @@ export class LoginComponent {
       return;
     }
 
-
     const email = this.loginForm.value.email ?? '';
     const password = this.loginForm.value.password ?? '';
 
-
     const encryptedPassword = md5(password).toString();
-
 
     const loginData = {
       email: email,
       password: encryptedPassword,
     };
 
-
     this._authService.login(loginData).subscribe({
       next: (response) => {
         const token = response.token;
         const userEmail = response.user?.email;
+        const fristName = response.user?.fristName;
+        const role = response.user?.role;
         const userId = response.user?.id;
 
         if (token && userEmail && userId) {
-          this._authService.saveAuthData(token, userEmail, userId);
-          //TODO: No va a home 
-          this.navigateToHome()
+          this._authService.saveAuthData(
+            token,
+            userEmail,
+            userId,
+            fristName,
+            role,
+          );
+          //TODO: No va a home
+          this.navigateToHome();
           this.loading = true;
         }
       },

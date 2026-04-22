@@ -8,11 +8,12 @@ import {
   FormControl,
 } from '@angular/forms';
 import { Route, Router, ɵEmptyOutletComponent } from '@angular/router';
-import { finalize } from 'rxjs';
+import { finalize, first } from 'rxjs';
 import { Course } from '../../core/interfaces/course';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { UserService } from 'src/app/core/services/user.service.service';
 import { CourseService } from 'src/app/core/services/course.service';
+import { User } from 'src/app/core/interfaces/user';
 
 @Component({
   selector: 'app-home',
@@ -33,6 +34,8 @@ export class HomeComponent implements OnInit {
   private _router: Router = inject(Router);
   private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
+ newUser: User[] = [];
+  currentUserIndex: number = 0;
   course: Course[] = [];
   comments: Comment[] = [];
   filterName: string = '';
@@ -63,8 +66,8 @@ export class HomeComponent implements OnInit {
     if (!token) {
       this._router.navigate(['/login']);
     } else {
-      const storedUsername = this._authService.getCurrentUserName();
-      this.username = storedUsername || 'Usuario';
+      this.rolePermisson();
+      this.username = this.currentUser?.fristName || 'Usuario';
       this.currentUserId = this._userService.getCurrentUserId();
       this.getCourse();
       this._courseService.allCourses();
@@ -77,7 +80,12 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  //TODO: LoadUsers
+  get currentUser(): User | null {
+    return this.newUser.length > 0
+      ? this.newUser[this.currentUserIndex]
+      : null;
+  }
+
 
   //Retrieves courses from the backend using search filters and pagination.
   getCourse(): void {
@@ -172,9 +180,12 @@ export class HomeComponent implements OnInit {
     this._router.navigate(['edit/' + id]);
   }
 
-  navigateToUser(): void {
-    this._router.navigate(['/user']);
+  goToMyProfile() {
+  const id = this._userService.getCurrentUserId(); // Esto debería devolver 3
+  if (id) {
+    this._router.navigate(['/user', id]);
   }
+}
   navigateToLogout(): void {
     this._authService.logout();
   }
@@ -202,12 +213,16 @@ export class HomeComponent implements OnInit {
   }
 
   rolePermisson() {
-    const role = this._userService.getUserRole();
-    if (role === 'COURSE_SUPPLIER') {
-      this.cantCreate = true;
-      this._cdr.detectChanges();
-    }
+  const role = this._userService.getUserRole();
+  console.log("Rol detectado:", role); // Agrega este log para depurar
+
+  if (role === 'COURSE_SUPPLIER') {
+    this.cantCreate = true;
+    this._cdr.detectChanges();
   }
+  console.log(role);
+  console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+}
 
   /**
        * Handles form submission.

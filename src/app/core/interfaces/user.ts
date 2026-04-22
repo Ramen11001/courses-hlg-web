@@ -3,7 +3,7 @@ import { Course } from './course';
 export interface User {
   createdAt: string | number | Date;
   id: number;
-  fristName: string;
+  firstName: string;
   lastName: string;
   birthday: Date;
   email: string;

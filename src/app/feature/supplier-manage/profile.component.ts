@@ -28,6 +28,7 @@ export class ProfileComponent implements OnInit {
   private _fb = inject(FormBuilder);
 
   user: User | null = null;
+  course: Course[] = [];
   userCourses: Course[] = [];
   isLoading = true;
   isEditing = false;
@@ -52,6 +53,7 @@ export class ProfileComponent implements OnInit {
     this.currentUserId = this._userService.getCurrentUserId();
     if (userID) {
       this.loadUserProfile(parseInt(userID));
+      this.loadUserCourses(parseInt(userID));
     } else {
       this.errorMessage = 'Curso no encontrado';
       this.isLoading = false;
@@ -64,7 +66,7 @@ export class ProfileComponent implements OnInit {
       next: (user) => {
         this.user = user;
         this.profileForm.patchValue({
-          firstName: user.fristName,
+          firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
           phone: user.phone || '',
@@ -81,9 +83,15 @@ export class ProfileComponent implements OnInit {
   }
 
   loadUserCourses(userId: number): void {
-    this._courseService.getCourseByUserId(userId).subscribe({
+    const user_id = this._userService.getCurrentUserId();
+    this._courseService.allCourses().subscribe({
       next: (courses) => {
-        this.userCourses = courses;
+        courses.map((user_course) => {
+          let user_course_id = user_course.user_id;
+          if (user_course_id === user_id) {
+            this.userCourses.push(user_course);
+          }
+        });
       },
       error: (err) => {
         console.error('Error al cargar cursos del usuario:', err);
@@ -101,7 +109,7 @@ export class ProfileComponent implements OnInit {
 
     const updatedData = {
       ...this.profileForm.value,
-      fristName: this.profileForm.value.firstName, 
+      fristName: this.profileForm.value.firstName,
       biography: this.profileForm.value.bio,
     };
 
@@ -126,7 +134,7 @@ export class ProfileComponent implements OnInit {
     this.successMessage = null;
     if (!this.isEditing && this.user) {
       this.profileForm.patchValue({
-        firstName: this.user.fristName,
+        firstName: this.user.firstName,
         lastName: this.user.lastName,
         email: this.user.email,
         phone: this.user.phone || '',
@@ -139,17 +147,21 @@ export class ProfileComponent implements OnInit {
     this._router.navigate(['/course-details', courseId]);
   }
 
-  navigateToEditCourse(courseId: number): void {
-    this._router.navigate(['/edit-course', courseId]);
+  navigateToHome(): void {
+    this._router.navigate(['/home']);
   }
 
-  navigateToCreateCourse(): void {
-    this._router.navigate(['/create-course']);
+  navigateToEditCourse(id: number): void {
+     this._router.navigate(['edit/' + id]);
+  }
+
+   navigateToCreateCourse(): void {
+    this._router.navigate(['/createCourse']);
   }
 
   getInitials(): string {
     if (!this.user) return 'U';
-    const firstName = this.user.fristName || '';
+    const firstName = this.user.firstName || '';
     const lastName = this.user.lastName || '';
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   }
@@ -157,7 +169,7 @@ export class ProfileComponent implements OnInit {
   getFullName(): string {
     if (!this.user) return 'Usuario';
     return (
-      `${this.user.fristName || ''} ${this.user.lastName || ''}`.trim() ||
+      `${this.user.firstName || ''} ${this.user.lastName || ''}`.trim() ||
       'Usuario'
     );
   }

@@ -6,6 +6,8 @@ import {
   ReactiveFormsModule,
   FormGroup,
   FormControl,
+  FormBuilder,
+  Validators,
 } from '@angular/forms';
 import { Route, Router, ɵEmptyOutletComponent } from '@angular/router';
 import { finalize, first } from 'rxjs';
@@ -33,8 +35,10 @@ export class HomeComponent implements OnInit {
   private _courseService: CourseService = inject(CourseService);
   private _router: Router = inject(Router);
   private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private _fb = inject(FormBuilder);
 
- newUser: User[] = [];
+  users: User | null = null;
+  user: User[] = [];
   currentUserIndex: number = 0;
   course: Course[] = [];
   comments: Comment[] = [];
@@ -67,25 +71,15 @@ export class HomeComponent implements OnInit {
       this._router.navigate(['/login']);
     } else {
       this.rolePermisson();
-      this.username = this.currentUser?.fristName || 'Usuario';
       this.currentUserId = this._userService.getCurrentUserId();
       this.getCourse();
-      this._courseService.allCourses();
 
       this.filterForm.valueChanges.subscribe((_values) => {
         this.currentPage = 1;
         this.getCourse();
-        console.log(_values);
       });
     }
   }
-
-  get currentUser(): User | null {
-    return this.newUser.length > 0
-      ? this.newUser[this.currentUserIndex]
-      : null;
-  }
-
 
   //Retrieves courses from the backend using search filters and pagination.
   getCourse(): void {
@@ -121,6 +115,21 @@ export class HomeComponent implements OnInit {
           console.error('Error al obtener cursos:', error);
         },
       });
+  }
+
+  loadAllUsers(): void {
+    this.isLoading = true;
+    this._userService.allUsers().subscribe({
+      next: (users) => {
+        this.user = users;
+        this.isLoading = false;
+        this._cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error al cargar usuarios:', error);
+        this.isLoading = false;
+      },
+    });
   }
 
   /**
@@ -181,11 +190,11 @@ export class HomeComponent implements OnInit {
   }
 
   goToMyProfile() {
-  const id = this._userService.getCurrentUserId(); // Esto debería devolver 3
-  if (id) {
-    this._router.navigate(['/user', id]);
+    const id = this._userService.getCurrentUserId(); // Esto debería devolver 3
+    if (id) {
+      this._router.navigate(['/user', id]);
+    }
   }
-}
   navigateToLogout(): void {
     this._authService.logout();
   }
@@ -213,16 +222,23 @@ export class HomeComponent implements OnInit {
   }
 
   rolePermisson() {
-  const role = this._userService.getUserRole();
-  console.log("Rol detectado:", role); // Agrega este log para depurar
-
-  if (role === 'COURSE_SUPPLIER') {
-    this.cantCreate = true;
-    this._cdr.detectChanges();
+    const user_id = this._userService.getCurrentUserId()!;
+    const user = this._userService.getUserById(user_id);
+    user.forEach((is_curse_supplier) => {
+      const role = is_curse_supplier.role;
+      if (role === 'COURSE_SUPPLIER') {
+        this.cantCreate = true;
+        this._cdr.detectChanges();
+      }
+    });
   }
-  console.log(role);
-  console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-}
+
+  getInitials(): string {
+    if (!this.users) return 'U';
+    const firstName = this.users.firstName || '';
+    const lastName = this.users.lastName || '';
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  }
 
   /**
        * Handles form submission.

@@ -101,7 +101,8 @@ export class CreateCourseComponent {
       this._courseService.saveCourse(null, formData).subscribe({
         next: () => {
           this.isLoading = false;
-          this._router.navigate(['/course']);
+          console.info("Curso añadido correctamente")
+          this._router.navigate(['/home']);
         },
         error: (error) => {
           this.isLoading = false;

@@ -36,7 +36,7 @@
                 <i class="bi bi-book-half fs-1 text-primary"></i>
               </div>
               <h1 class="h2 fw-semibold text-dark mb-2">{{ course.title }}</h1>
-              
+
               <!-- Badges -->
               <div class="d-flex justify-content-center gap-2 flex-wrap mt-2">
                 <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">
@@ -48,7 +48,8 @@
                 <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
                   <i class="bi bi-bar-chart me-1"></i> {{ course.level | titlecase }}
                 </span>
-                <span *ngIf="course.certificate" class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3 py-2">
+                <span *ngIf="course.certificate"
+                  class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3 py-2">
                   <i class="bi bi-award me-1"></i> Con certificado
                 </span>
               </div>
@@ -85,6 +86,57 @@
                   <i class="bi bi-currency-dollar fs-4 text-primary"></i>
                   <p class="mb-0 fw-semibold text-dark mt-2">Precio</p>
                   <small class="text-secondary">${{ course.cost || 0 }}</small>
+                </div>
+              </div>
+              <!-- Enrollment Section -->
+              <div class="card border-0 shadow-lg rounded-4 mb-4">
+                <div class="card-body p-4 p-md-5">
+
+                  <!-- Enrollment Status -->
+                  <div *ngIf="isAuthenticated" class="text-center">
+                    <div *ngIf="!isEnrolled">
+                      <button class="btn btn-success btn-lg rounded-pill px-5 py-3 fw-semibold shadow-sm"
+                        (click)="enrollInCourse()" [disabled]="isEnrolling">
+                        <div *ngIf="isEnrolling" class="d-flex align-items-center gap-2">
+                          <span class="spinner-border spinner-border-sm" role="status"></span>
+                          <span>Inscribiendo...</span>
+                        </div>
+                        <div *ngIf="!isEnrolling">
+                          <i class="bi bi-person-plus me-2"></i>
+                          Inscribirme en este curso
+                        </div>
+                      </button>
+                      <p class="text-secondary small mt-2">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Al inscribirte tendrás acceso a todo el contenido del curso
+                      </p>
+                    </div>
+
+                    <div *ngIf="isEnrolled">
+                      <div class="alert alert-success rounded-4">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        ¡Estás inscrito en este curso!
+                      </div>
+                      <div class="d-flex justify-content-center gap-3">
+                        <button class="btn btn-outline-danger rounded-pill px-4" (click)="cancelEnrollment()">
+                          <i class="bi bi-x-circle me-2"></i>
+                          Cancelar inscripción
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div *ngIf="!isAuthenticated" class="text-center">
+                    <p class="text-secondary mb-2">
+                      <i class="bi bi-lock me-1"></i>
+                      Inicia sesión para inscribirte en este curso
+                    </p>
+                    <button class="btn btn-primary rounded-pill px-4" (click)="navigateToHome()">
+                      <i class="bi bi-box-arrow-in-right me-2"></i>
+                      Iniciar sesión
+                    </button>
+                  </div>
+
                 </div>
               </div>
               <div class="col-12 col-md-4">
@@ -137,7 +189,8 @@
                   <label for="rating" class="form-label fw-semibold text-secondary small text-uppercase">
                     <i class="bi bi-star me-1"></i> Calificación
                   </label>
-                  <select id="rating" formControlName="rating" class="form-select rounded-pill bg-white border-0 shadow-sm">
+                  <select id="rating" formControlName="rating"
+                    class="form-select rounded-pill bg-white border-0 shadow-sm">
                     <option value="5">★★★★★ (5 - Excelente)</option>
                     <option value="4">★★★★☆ (4 - Muy bueno)</option>
                     <option value="3">★★★☆☆ (3 - Bueno)</option>
@@ -149,11 +202,13 @@
                   <label for="text" class="form-label fw-semibold text-secondary small text-uppercase">
                     <i class="bi bi-chat me-1"></i> Comentario
                   </label>
-                  <textarea id="text" formControlName="text" rows="3" class="form-control rounded-3 bg-white border-0 shadow-sm"
+                  <textarea id="text" formControlName="text" rows="3"
+                    class="form-control rounded-3 bg-white border-0 shadow-sm"
                     placeholder="Escribe tu comentario aquí..."></textarea>
                 </div>
                 <div class="d-flex justify-content-end">
-                  <button type="submit" [disabled]="commentForm.invalid" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold">
+                  <button type="submit" [disabled]="commentForm.invalid"
+                    class="btn btn-primary rounded-pill px-4 py-2 fw-semibold">
                     <i class="bi bi-send me-2"></i>
                     Publicar comentario
                   </button>
@@ -171,10 +226,10 @@
               <div class="d-flex justify-content-between align-items-start mb-2">
                 <div class="d-flex align-items-center gap-2">
                   <!-- Avatar -->
-                  <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" 
-                       style="width: 35px; height: 35px;">
+                  <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
+                    style="width: 35px; height: 35px;">
                     <span class="fw-semibold text-primary small">
-                      {{ getUserInitials(comment.user?.fristName) }}
+                      {{ getUserInitials(comment.user?.firstName) }}
                     </span>
                   </div>
                   <div>
@@ -188,15 +243,15 @@
                     </div>
                     <small class="text-secondary">
                       <i class="bi bi-person-circle me-1"></i>
-                      {{ comment.user?.fristName || comment.user?.lastName || 'Usuario' }}
+                      {{ comment.user?.firstName || comment.user?.lastName || 'Usuario' }}
                       <span class="mx-1">•</span>
                       {{ comment.createdAt | date: 'dd/MM/yyyy' }}
                     </small>
                   </div>
                 </div>
-                <button *ngIf="currentUserId === comment.user_id" type="button" 
-                  class="btn btn-sm btn-outline-danger rounded-pill"
-                  data-bs-toggle="modal" [attr.data-bs-target]="'#deleteCommentModal' + comment.id">
+                <button *ngIf="currentUserId === comment.user_id" type="button"
+                  class="btn btn-sm btn-outline-danger rounded-pill" data-bs-toggle="modal"
+                  [attr.data-bs-target]="'#deleteCommentModal' + comment.id">
                   <i class="bi bi-trash me-1"></i>
                   Eliminar
                 </button>
@@ -239,7 +294,8 @@
           <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
             Cancelar
           </button>
-          <button type="button" class="btn btn-danger rounded-pill px-4" (click)="deleteComment(comment.id!)" data-bs-dismiss="modal">
+          <button type="button" class="btn btn-danger rounded-pill px-4" (click)="deleteComment(comment.id!)"
+            data-bs-dismiss="modal">
             <i class="bi bi-trash me-2"></i>
             Confirmar
           </button>

@@ -14,6 +14,8 @@ import { CommentsService } from 'src/app/core/services/comment.service';
 import { CourseService } from 'src/app/core/services/course.service';
 import { Comment } from 'src/app/core/interfaces/comment';
 import { UserService } from 'src/app/core/services/user.service.service';
+import { Enrollment } from 'src/app/core/interfaces/enrollment';
+import { EnrollmentService } from 'src/app/core/services/enrollment.service';
 
 @Component({
   selector: 'app-course-details',
@@ -26,6 +28,7 @@ export class CoursesDetailsComponent implements OnInit {
   private _commentService: CommentsService = inject(CommentsService);
   private _courseService: CourseService = inject(CourseService);
   private _userService: UserService = inject(UserService);
+  private _enrollmentService: EnrollmentService = inject(EnrollmentService);
 
   course: Course | null = null;
   comments: Comment[] = [];
@@ -38,6 +41,10 @@ export class CoursesDetailsComponent implements OnInit {
   tags: { name: string; color: string }[] = [];
   durations: { init_date: string; end_date: string; duration_time: string }[] =
     [];
+  isEnrolled: boolean = false;
+  enrollment: Enrollment | null = null;
+  isEnrolling: boolean = false;
+  successMessage: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -96,7 +103,8 @@ export class CoursesDetailsComponent implements OnInit {
     this._courseService.getcourseId(id).subscribe({
       next: (course) => {
         this.course = course;
-        this.loadComments(id);
+
+        console.log('Ayuda dios');
       },
       error: (err) => {
         this.error = 'Error al cargar el curso';
@@ -130,7 +138,7 @@ export class CoursesDetailsComponent implements OnInit {
         if (!comment.user) {
           comment.user = {
             id: this.currentUserId!,
-            fristName:
+            firstName:
               this._authService.getCurrentUserName() || 'Usuario actual',
           };
         }
@@ -143,6 +151,78 @@ export class CoursesDetailsComponent implements OnInit {
         console.error(err);
       },
     });
+  }
+
+  /**
+   * Check if current user is enrolled in this course
+   */
+  checkEnrollmentStatus(courseId: number): void {
+    if (!this._authService.isAuthenticated()) return;
+
+    this._enrollmentService.isEnrolled(courseId).subscribe({
+      next: (enrolled) => {
+        this.isEnrolled = enrolled;
+      },
+      error: (err) => {
+        console.error('Error checking enrollment:', err);
+      },
+    });
+  }
+
+  /**
+   * Enroll in current course
+   */
+  enrollInCourse(): void {
+    if (!this._authService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    if (!this.course) return;
+
+    this.isEnrolling = true;
+
+    this._enrollmentService.enrollInCourse(this.course.id).subscribe({
+      next: (enrollment) => {
+        this.enrollment = enrollment;
+        this.isEnrolled = true;
+        this.isEnrolling = false;
+        this.showSuccessMessage('¡Te has inscrito exitosamente al curso!');
+      },
+      error: (err) => {
+        this.isEnrolling = false;
+        this.error = err.message || 'Error al inscribirse en el curso';
+        console.error(err);
+      },
+    });
+  }
+
+  /**
+   * Cancel enrollment
+   */
+  cancelEnrollment(): void {
+    if (!this.enrollment) return;
+
+    if (confirm('¿Estás seguro de que deseas cancelar tu inscripción?')) {
+      this._enrollmentService.cancelEnrollment(this.enrollment.id).subscribe({
+        next: () => {
+          this.isEnrolled = false;
+          this.enrollment = null;
+          this.showSuccessMessage('Has cancelado tu inscripción');
+        },
+        error: (err) => {
+          this.error = err.message || 'Error al cancelar la inscripción';
+          console.error(err);
+        },
+      });
+    }
+  }
+
+  showSuccessMessage(message: string): void {
+    this.successMessage = message;
+    setTimeout(() => {
+      this.successMessage = null;
+    }, 3000);
   }
 
   /**

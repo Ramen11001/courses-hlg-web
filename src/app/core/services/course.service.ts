@@ -93,7 +93,7 @@ export class CourseService {
    */
   saveCourse(id: number | null, courseData: any): Observable<Course> {
     const currentUserId = this._userService.getCurrentUserId();
-    const currentUserRole = this._userService.getUserRole();
+   
 
     // Update existing course
     if (id) {
@@ -112,11 +112,17 @@ export class CourseService {
             );
           }
 
-          if (currentUserRole !== 'COURSE_SUPPLIER') {
-            return throwError(
+          const user_id = this._userService.getCurrentUserId()!;
+          const user = this._userService.getUserById(user_id);
+          user.forEach((is_curse_supplier) => {
+            const role = is_curse_supplier.role;
+            if (role !== 'COURSE_SUPPLIER') {
+               throwError(
               () => new Error('No tienes permisos para editar cursos'),
             );
-          }
+            }
+          });
+         
 
           //for update, only the necesary atributes
           return this.http
@@ -135,11 +141,16 @@ export class CourseService {
         );
       }
 
-      if (currentUserRole !== 'COURSE_SUPPLIER') {
-        return throwError(
-          () => new Error('Solo los profesores pueden crear cursos'),
-        );
-      }
+      const user_id = this._userService.getCurrentUserId()!;
+          const user = this._userService.getUserById(user_id);
+          user.forEach((is_curse_supplier) => {
+            const role = is_curse_supplier.role;
+            if (role !== 'COURSE_SUPPLIER') {
+               throwError(
+              () => new Error('Solo los profesores pueden editar cursos'),
+            );
+            }
+          });
 
       //reate new course
       const fullCourseData = {

@@ -11,6 +11,10 @@
 npm-debug.log
 yarn-error.log
 
+# Open Code
+.AGENTS.md
+/AGENTS.md
+
 # IDEs and editors
 .idea/
 .project

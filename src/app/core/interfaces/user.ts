@@ -1,4 +1,4 @@
-import { Comment } from 'src/app/core/interfaces/comment';
+import { Comment } from './comment';
 import { Course } from './course';
 export interface User {
   createdAt: string | number | Date;

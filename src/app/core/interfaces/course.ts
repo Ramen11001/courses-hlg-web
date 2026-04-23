@@ -1,6 +1,6 @@
-import { Comment } from 'src/app/core/interfaces/comment';
-import { Duration } from 'src/app/core/interfaces/duration';
-import { Tag } from 'src/app/core/interfaces/tag';
+import { Comment } from './comment';
+import { Duration } from './duration';
+import { Tag } from './tag';
 
 export type CourseArea =
   | 'Técnica'

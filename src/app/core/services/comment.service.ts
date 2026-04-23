@@ -5,8 +5,8 @@ import {
   HttpHeaders,
 } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
-import { environment } from 'src/environments/environment';
-import { Comment } from 'src/app/core/interfaces/comment';
+import { environment } from '../../../environments/environment';
+import { Comment } from '../interfaces/comment';
 import { UserService } from './user.service.service';
 
 @Injectable({
@@ -26,9 +26,9 @@ export class CommentsService {
    * @param {number} course_id - ID of the course to get comments for
    * @returns {Observable<Comment[]>} Observable containing array of comments
    */
-  getCommentsByCourse(course_id: number): Observable<Comment[]> {
+  getCommentsByCourse(course_id: number) {
     return this.http
-      .get<Comment[]>(`${this.apiUrl}/home/${course_id}`)
+      .get<Comment[]>(`${this.apiUrl}/courses/${course_id}`)
       .pipe(catchError(this.handleError));
   }
 

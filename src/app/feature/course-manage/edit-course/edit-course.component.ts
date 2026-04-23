@@ -6,10 +6,10 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CourseService } from 'src/app/core/services/course.service';
-import { Course } from 'src/app/core/interfaces/course';
+import { CourseService } from '../../../core/services/course.service';
+import { Course } from '../../../core/interfaces/course';
 import { CommonModule } from '@angular/common';
-import { UserService } from 'src/app/core/services/user.service.service';
+import { UserService } from '../../../core/services/user.service.service';
 @Component({
   selector: 'app-edit-course',
   templateUrl: './edit-course.component.html',

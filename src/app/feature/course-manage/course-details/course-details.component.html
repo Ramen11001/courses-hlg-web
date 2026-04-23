@@ -4,7 +4,7 @@
 
       <!-- Loading State -->
       <div *ngIf="isLoading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+        <div class=" loading spinner-border text-primary" role="status">
           <span class="visually-hidden">Cargando...</span>
         </div>
         <p class="text-secondary mt-3">Cargando detalles del curso...</p>
@@ -88,57 +88,7 @@
                   <small class="text-secondary">${{ course.cost || 0 }}</small>
                 </div>
               </div>
-              <!-- Enrollment Section -->
-              <div class="card border-0 shadow-lg rounded-4 mb-4">
-                <div class="card-body p-4 p-md-5">
 
-                  <!-- Enrollment Status -->
-                  <div *ngIf="isAuthenticated" class="text-center">
-                    <div *ngIf="!isEnrolled">
-                      <button class="btn btn-success btn-lg rounded-pill px-5 py-3 fw-semibold shadow-sm"
-                        (click)="enrollInCourse()" [disabled]="isEnrolling">
-                        <div *ngIf="isEnrolling" class="d-flex align-items-center gap-2">
-                          <span class="spinner-border spinner-border-sm" role="status"></span>
-                          <span>Inscribiendo...</span>
-                        </div>
-                        <div *ngIf="!isEnrolling">
-                          <i class="bi bi-person-plus me-2"></i>
-                          Inscribirme en este curso
-                        </div>
-                      </button>
-                      <p class="text-secondary small mt-2">
-                        <i class="bi bi-info-circle me-1"></i>
-                        Al inscribirte tendrás acceso a todo el contenido del curso
-                      </p>
-                    </div>
-
-                    <div *ngIf="isEnrolled">
-                      <div class="alert alert-success rounded-4">
-                        <i class="bi bi-check-circle-fill me-2"></i>
-                        ¡Estás inscrito en este curso!
-                      </div>
-                      <div class="d-flex justify-content-center gap-3">
-                        <button class="btn btn-outline-danger rounded-pill px-4" (click)="cancelEnrollment()">
-                          <i class="bi bi-x-circle me-2"></i>
-                          Cancelar inscripción
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div *ngIf="!isAuthenticated" class="text-center">
-                    <p class="text-secondary mb-2">
-                      <i class="bi bi-lock me-1"></i>
-                      Inicia sesión para inscribirte en este curso
-                    </p>
-                    <button class="btn btn-primary rounded-pill px-4" (click)="navigateToHome()">
-                      <i class="bi bi-box-arrow-in-right me-2"></i>
-                      Iniciar sesión
-                    </button>
-                  </div>
-
-                </div>
-              </div>
               <div class="col-12 col-md-4">
                 <div class="bg-light rounded-4 p-3 text-center">
                   <i class="bi bi-clock-history fs-4 text-primary"></i>
@@ -169,6 +119,56 @@
               </div>
             </div>
 
+            <!-- Enrollment Section -->
+            <div class="card border-0 shadow-lg rounded-4 mb-4">
+              <div class="card-body p-4 p-md-5">
+
+                <!-- Enrollment Status -->
+                <div *ngIf="isAuthenticated" class="text-center">
+                  <div *ngIf="!isEnrolled">
+                    <button class="btn btn-success btn-lg rounded-pill px-5 py-3 fw-semibold shadow-sm"
+                      (click)="enrollInCourse()" [disabled]="isEnrolling">
+                      <div *ngIf="isEnrolling" class="d-flex align-items-center gap-2">
+                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                        <span>Inscribiendo...</span>
+                      </div>
+                      <div *ngIf="!isEnrolling">
+                        <i class="bi bi-person-plus me-2"></i>
+                        Inscribirme en este curso
+                      </div>
+                    </button>
+                    <p class="text-secondary small mt-2">
+                      <i class="bi bi-info-circle me-1"></i>
+                      Al inscribirte tendrás acceso a todo el contenido del curso
+                    </p>
+                  </div>
+
+                  <div *ngIf="isEnrolled">
+                    <div class="alert alert-success rounded-4">
+                      <i class="bi bi-check-circle-fill me-2"></i>
+                      ¡Estás inscrito en este curso!
+                    </div>
+                    <div class="d-flex justify-content-center gap-3">
+                      <button class="btn btn-outline-danger rounded-pill px-4" (click)="cancelEnrollment()">
+                        <i class="bi bi-x-circle me-2"></i>
+                        Cancelar inscripción
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div *ngIf="!isAuthenticated" class="text-center">
+                  <p class="text-secondary mb-2">
+                    <i class="bi bi-lock me-1"></i>
+                    Inicia sesión para inscribirte en este curso
+                  </p>
+                  <button class="btn btn-primary rounded-pill px-4" (click)="navigateToHome()">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                    Iniciar sesión
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -226,8 +226,7 @@
               <div class="d-flex justify-content-between align-items-start mb-2">
                 <div class="d-flex align-items-center gap-2">
                   <!-- Avatar -->
-                  <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
-                    style="width: 35px; height: 35px;">
+                  <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center avatar justify-content-center">
                     <span class="fw-semibold text-primary small">
                       {{ getUserInitials(comment.user?.firstName) }}
                     </span>
@@ -236,8 +235,8 @@
                     <div class="star-rating mb-1">
                       <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
                         <i class="bi" [ngClass]="{
-                          'bi-star-fill text-warning': (comment.rating ?? 0) > i,
-                          'bi-star text-secondary': (comment.rating ?? 0) <= i
+                          'bi-star-fill text-warning': comment.rating > i,
+                          'bi-star text-secondary': comment.rating <= i
                         }"></i>
                       </ng-container>
                     </div>

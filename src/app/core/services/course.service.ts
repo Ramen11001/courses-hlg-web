@@ -5,7 +5,7 @@ import {
 } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { throwError, Observable, switchMap, catchError } from 'rxjs';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../environments/environment';
 import { Course } from '../interfaces/course';
 import { UserService } from './user.service.service';
 
@@ -111,19 +111,7 @@ export class CourseService {
               () => new Error('Solo puedes editar tus propios cursos'),
             );
           }
-
-          const user_id = this._userService.getCurrentUserId()!;
-          const user = this._userService.getUserById(user_id);
-          user.forEach((is_curse_supplier) => {
-            const role = is_curse_supplier.role;
-            if (role !== 'COURSE_SUPPLIER') {
-               throwError(
-              () => new Error('No tienes permisos para editar cursos'),
-            );
-            }
-          });
          
-
           //for update, only the necesary atributes
           return this.http
             .put<Course>(`${this.apiUrl}/${id}`, courseData)
@@ -140,17 +128,6 @@ export class CourseService {
           () => new Error('Debes iniciar sesión para crear cursos'),
         );
       }
-
-      const user_id = this._userService.getCurrentUserId()!;
-          const user = this._userService.getUserById(user_id);
-          user.forEach((is_curse_supplier) => {
-            const role = is_curse_supplier.role;
-            if (role !== 'COURSE_SUPPLIER') {
-               throwError(
-              () => new Error('Solo los profesores pueden editar cursos'),
-            );
-            }
-          });
 
       //reate new course
       const fullCourseData = {

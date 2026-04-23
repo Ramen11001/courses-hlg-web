@@ -16,6 +16,7 @@
                 </div>
 
                 <!-- Action Buttons -->
+                <!-- TODO: Hacer diferente -->
                 <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle bg-primary" type="button" id="dropdownMenuButton1"
                         data-bs-toggle="dropdown" aria-expanded="false">
@@ -23,11 +24,11 @@
                         Opciones
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                        <ng-component *ngIf="cantCreate">
+                        <ng-container *ngIf="cantCreate">
                             <li>
                                 <a class="dropdown-item" (click)="navigateToCreateCourse()">Crear Curso</a>
                             </li>
-                        </ng-component>
+                        </ng-container>
 
                         <li>
                             <a class="dropdown-item" (click)="goToMyProfile()">Mi perfil</a>
@@ -91,6 +92,7 @@
     </div>
 
     <!-- Loading Spinner -->
+
     <div *ngIf="isLoading" class="text-center py-5">
         <div class="spinner-border text-primary loading-spinner" role="status">
             <span class="visually-hidden">Cargando...</span>
@@ -99,23 +101,24 @@
     </div>
 
     <!-- Courses Grid -->
+
     <div *ngIf="!isLoading">
         <div class="row g-4 mb-4">
             <div class="col-12" *ngIf="course.length === 0">
                 <div class="text-center py-5">
                     <i class="bi bi-inbox fs-1 text-secondary opacity-50"></i>
                     <p class="text-secondary mt-3">No hay cursos disponibles</p>
-                    <ng-component *ngIf="cantCreate === true">
+                    <ng-container *ngIf="cantCreate === true">
                         <button class="btn btn-outline-primary rounded-3 mt-2" (click)="navigateToCreateCourse()">
                             <i class="bi bi-plus-circle me-2"></i>
                             Crear el primer curso
                         </button>
-                    </ng-component>
+                    </ng-container>
                 </div>
             </div>
 
             <!-- Course Cards -->
-             <h3>Cursos</h3>
+            <h3>Cursos</h3>
             <div class="col-12 col-sm-6 col-lg-4 col-xl-3" *ngFor="let item of course">
                 <div class="card border-0 shadow-sm rounded-4 h-100 hover-card">
                     <!-- Course Image Placeholder -->
@@ -148,100 +151,126 @@
                                 <i class="bi bi-eye me-1"></i>
                                 Ver
                             </button>
-                            <ng-component *ngIf="item.user_id === currentUserId">
+                            <ng-container *ngIf="id === item.user_id">
                                 <button class="btn btn-outline-warning rounded-3"
                                     (click)="navigateToEditCourse(item.id)">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <button class="btn btn-outline-danger rounded-3" (click)="deleteCourse(item.id)">
+
+                                <button type="button"
+                                    class="btn btn-outline-danger rounded-3"
+                                    (click)="openDeleteModal(item)"
+                                    data-bs-toggle="modal"
+                                    [attr.data-bs-target]="'#deleteModal'">
                                     <i class="bi bi-trash"></i>
                                 </button>
-                            </ng-component>
+                            </ng-container>
                         </div>
                     </div>
                 </div>
             </div>
 
-  <!-- Users Section -->
-    <div class="row g-4 mb-5">
-      <div class="col-12">
-        <h3 class="h4 fw-semibold text-dark mb-3">
-          <i class="bi bi-people me-2"></i>
-          Usuarios ({{ user.length }})
-        </h3>
-      </div>
+            <!-- Users Section -->
+            <div class="row g-4 mb-5">
+                <div class="col-12">
+                    <h3 class="h4 fw-semibold text-dark mb-3">
+                        <i class="bi bi-people me-2"></i>
+                        Usuarios ({{ user.length }})
+                    </h3>
+                </div>
 
-      <!-- Loading Users -->
-      <div *ngIf="isLoading" class="col-12 text-center py-4">
-        <div class="spinner-border text-primary spinner-border-sm" role="status">
-          <span class="visually-hidden">Cargando usuarios...</span>
-        </div>
-        <p class="text-secondary mt-2 small">Cargando usuarios...</p>
-      </div>
+                <!-- Loading Users -->
+                <div *ngIf="isLoading" class="col-12 text-center py-4">
+                    <div class="spinner-border text-primary spinner-border-sm" role="status">
+                        <span class="visually-hidden">Cargando usuarios...</span>
+                    </div>
+                    <p class="text-secondary mt-2 small">Cargando usuarios...</p>
+                </div>
 
-      <!-- Users Cards -->
-      <ng-container *ngIf="!isLoading">
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let userItem of user">
-          <div class="card border-0 shadow-sm rounded-4 h-100 hover-card text-center">
-            <!-- User Avatar -->
-            <div class="bg-primary bg-opacity-10 text-center py-4 rounded-top-4">
-              <div class="bg-primary bg-opacity-25 rounded-circle d-inline-flex p-3">
-                <span class="fs-2 fw-semibold text-primary">{{ getInitials()  }}</span>
-              </div>
-            </div>
+                <!-- Users Cards -->
+                <ng-container *ngIf="!isLoading">
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let userItem of user">
+                        <div class="card border-0 shadow-sm rounded-4 h-100 hover-card text-center">
+                            <!-- User Avatar -->
+                            <div class="bg-primary bg-opacity-10 text-center py-4 rounded-top-4">
+                                <div class="bg-primary bg-opacity-25 rounded-circle d-inline-flex p-3">
+                                    <span class="fs-2 fw-semibold text-primary">{{ getInitials() }}</span>
+                                </div>
+                            </div>
 
-            <div class="card-body p-4">
-              <!-- User Name -->
-              <h5 class="card-title fw-semibold text-dark mb-1">{{ userItem.firstName }} {{ userItem.lastName }}</h5>
-              
-              <!-- User Email -->
-              <p class="text-secondary small mb-2">
-                <i class="bi bi-envelope me-1"></i>
-                {{ userItem.email }}
-              </p>
+                            <div class="card-body p-4">
+                                <!-- User Name -->
+                                <h5 class="card-title fw-semibold text-dark mb-1">{{ userItem.firstName }} {{
+                                    userItem.lastName }}</h5>
 
-              <!-- User Role Badge -->
-              <div class="mb-3">
-                <span class="badge rounded-pill px-3 py-2" 
-                      [ngClass]="{
+                                <!-- User Email -->
+                                <p class="text-secondary small mb-2">
+                                    <i class="bi bi-envelope me-1"></i>
+                                    {{ userItem.email }}
+                                </p>
+
+                                <!-- User Role Badge -->
+                                <div class="mb-3">
+                                    <span class="badge rounded-pill px-3 py-2" [ngClass]="{
                         'bg-primary bg-opacity-10 text-primary': userItem.role === 'COURSE_SUPPLIER',
                         'bg-success bg-opacity-10 text-success': userItem.role === 'USER',
                         'bg-danger bg-opacity-10 text-danger': userItem.role === 'ADMIN'
                       }">
-                  <i class="bi bi-person-badge me-1"></i>
-                  {{ userItem.role === 'COURSE_SUPPLIER' ? 'Profesor' : userItem.role === 'ADMIN' ? 'Administrador' : 'Estudiante' }}
-                </span>
-              </div>
+                                        <i class="bi bi-person-badge me-1"></i>
+                                        {{ userItem.role === 'COURSE_SUPPLIER' ? 'Profesor' : userItem.role === 'ADMIN'
+                                        ? 'Administrador' : 'Estudiante' }}
+                                    </span>
+                                </div>
 
-              <!-- User Member Since -->
-              <p class="text-secondary small mb-3">
-                <i class="bi bi-calendar me-1"></i>
-                Miembro desde {{ userItem.createdAt | date: 'MMM yyyy' }}
-              </p>
+                                <!-- User Member Since -->
+                                <p class="text-secondary small mb-3">
+                                    <i class="bi bi-calendar me-1"></i>
+                                    Miembro desde {{ userItem.createdAt | date: 'MMM yyyy' }}
+                                </p>
 
-              <!-- Action Buttons -->
-              <div class="d-flex gap-2">
-                <button class="btn btn-outline-primary rounded-pill flex-grow-1" (click)="goToMyProfile()">
-                  <i class="bi bi-person me-1"></i>
-                  Ver perfil
-                </button>
-              </div>
+                                <!-- Action Buttons -->
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-outline-primary rounded-pill flex-grow-1"
+                                        (click)="goToMyProfile()">
+                                        <i class="bi bi-person me-1"></i>
+                                        Ver perfil
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- No Users Message -->
+                    <div *ngIf="user.length === 0 && !isLoading" class="col-12">
+                        <div class="text-center py-4">
+                            <i class="bi bi-people fs-1 text-secondary opacity-50"></i>
+                            <p class="text-secondary mt-2">No hay usuarios registrados</p>
+                        </div>
+                    </div>
+                </ng-container>
             </div>
-          </div>
         </div>
 
-        <!-- No Users Message -->
-        <div *ngIf="user.length === 0 && !isLoading" class="col-12">
-          <div class="text-center py-4">
-            <i class="bi bi-people fs-1 text-secondary opacity-50"></i>
-            <p class="text-secondary mt-2">No hay usuarios registrados</p>
-          </div>
-        </div>
-      </ng-container>
-    </div>
-
-
-
+        <!-- Modal único para eliminar curso -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmar eliminación</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Estás seguro de eliminar el curso
+                        <span class="text-primary fw-bold">{{ selectedCourse?.title }}</span>?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" (click)="deleteCourse(selectedCourse!.id)" data-bs-dismiss="modal">
+                            Confirmar
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Pagination -->

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import {
   ReactiveFormsModule,
   FormBuilder,
@@ -7,15 +7,15 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Course } from 'src/app/core/interfaces/course';
-import { User } from 'src/app/core/interfaces/user';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { CommentsService } from 'src/app/core/services/comment.service';
-import { CourseService } from 'src/app/core/services/course.service';
-import { Comment } from 'src/app/core/interfaces/comment';
-import { UserService } from 'src/app/core/services/user.service.service';
-import { Enrollment } from 'src/app/core/interfaces/enrollment';
-import { EnrollmentService } from 'src/app/core/services/enrollment.service';
+import { Course } from '../../../core/interfaces/course';
+import { User } from '../../../core/interfaces/user';
+import { AuthService } from '../../../core/services/auth.service';
+import { CommentsService } from '../../../core/services/comment.service';
+import { CourseService } from '../../../core/services/course.service';
+import { Comment } from '../../../core/interfaces/comment';
+import { UserService } from '../../../core/services/user.service.service';
+import { Enrollment } from '../../../core/interfaces/enrollment';
+import { EnrollmentService } from '../../../core/services/enrollment.service';
 
 @Component({
   selector: 'app-course-details',
@@ -29,6 +29,7 @@ export class CoursesDetailsComponent implements OnInit {
   private _courseService: CourseService = inject(CourseService);
   private _userService: UserService = inject(UserService);
   private _enrollmentService: EnrollmentService = inject(EnrollmentService);
+  private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
   course: Course | null = null;
   comments: Comment[] = [];
@@ -78,8 +79,8 @@ export class CoursesDetailsComponent implements OnInit {
    *
    * @param {number} id - course ID to load
    */
-  loadComments(courseId: number): void {
-    this._commentService.getCommentsByCourse(courseId).subscribe({
+  loadComments(id: number): void {
+    this._commentService.getCommentsByCourse(id).subscribe({
       next: (comments) => {
         this.comments = comments;
         this.isLoading = false;
@@ -99,12 +100,10 @@ export class CoursesDetailsComponent implements OnInit {
    */
   loadCourse(id: number): void {
     this.isLoading = true;
-
     this._courseService.getcourseId(id).subscribe({
       next: (course) => {
         this.course = course;
-
-        console.log('Ayuda dios');
+        this.loadComments(id);
       },
       error: (err) => {
         this.error = 'Error al cargar el curso';

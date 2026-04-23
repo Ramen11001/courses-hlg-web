@@ -9,7 +9,7 @@ import {
 import md5 from 'md5';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { UserService } from 'src/app/core/services/user.service.service';
+import { UserService } from '../../../core/services/user.service.service';
 @Component({
   selector: 'app-sign-up',
   standalone: true,

@@ -7,11 +7,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { UserService } from 'src/app/core/services/user.service.service';
-import { CourseService } from 'src/app/core/services/course.service';
-import { Course } from 'src/app/core/interfaces/course';
-import { User } from 'src/app/core/interfaces/user';
+import { AuthService } from '../../core/services/auth.service';
+import { UserService } from '../../core/services/user.service.service';
+import { CourseService } from '../../core/services/course.service';
+import { Course } from '../../core/interfaces/course';
+import { User } from '../../core/interfaces/user';
 
 @Component({
   selector: 'app-profile',

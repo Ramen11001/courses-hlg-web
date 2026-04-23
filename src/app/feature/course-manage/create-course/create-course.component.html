@@ -24,7 +24,7 @@
                                 <i class="bi bi-book me-1"></i> Nombre del curso
                             </label>
                             <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light"
-                                id="title" formControlName="title" placeholder="Ej: Angular Avanzado"
+                                id="title" formControlName="title" placeholder="Título Curso"
                                 [class.is-invalid]="courseForm.get('title')?.invalid && courseForm.get('title')?.touched">
                             <div class="invalid-feedback small mt-1">
                                 <i class="bi bi-info-circle me-1"></i>
@@ -224,7 +224,7 @@
                                     <div class="col-12 col-md-8">
                                         <input type="text" class="form-control rounded-3 border-0"
                                             formControlName="tagName"
-                                            placeholder="Nombre de la etiqueta (Ej: JavaScript, Avanzado)">
+                                            placeholder="Nombre de la etiqueta">
                                     </div>
                                     <div class="col-12 col-md-4">
                                         <select class="form-control rounded-3 border-0" formControlName="tagColor">
@@ -247,12 +247,11 @@
                             </div>
                             <!-- Tags List -->
                             <div class="mt-2 d-flex flex-wrap gap-2">
-                                <span *ngFor="let tag of tags; let i = index" class="badge rounded-pill px-3 py-2"
-                                    [ngClass]="'bg-' + tag.color + ' bg-opacity-10 text-' + tag.color"
-                                    style="cursor: default;">
+                                <span *ngFor="let tag of tags; let i = index" class="badge tag rounded-pill px-3 py-2"
+                                    [ngClass]="'bg-' + tag.color + ' bg-opacity-10 text-' + tag.color">
                                     <i class="bi bi-tag me-1"></i>
                                     {{ tag.name }}
-                                    <i class="bi bi-x-circle ms-2" style="cursor: pointer;" (click)="removeTag(i)"></i>
+                                    <i class="bi bi-x-circle ms-2 tags" (click)="removeTag(i)"></i>
                                 </span>
                             </div>
                             <small class="text-secondary mt-2 d-block">

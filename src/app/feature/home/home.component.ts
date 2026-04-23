@@ -1,5 +1,4 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import {
   FormsModule,
@@ -7,15 +6,14 @@ import {
   FormGroup,
   FormControl,
   FormBuilder,
-  Validators,
 } from '@angular/forms';
-import { Route, Router, ɵEmptyOutletComponent } from '@angular/router';
-import { finalize, first } from 'rxjs';
+import { Router } from '@angular/router';
+import { finalize } from 'rxjs';
 import { Course } from '../../core/interfaces/course';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { UserService } from 'src/app/core/services/user.service.service';
-import { CourseService } from 'src/app/core/services/course.service';
-import { User } from 'src/app/core/interfaces/user';
+import { User } from '../../core/interfaces/user';
+import { AuthService } from '../../core/services/auth.service';
+import { CourseService } from '../../core/services/course.service';
+import { UserService } from '../../core/services/user.service.service';
 
 @Component({
   selector: 'app-home',
@@ -25,9 +23,8 @@ import { User } from 'src/app/core/interfaces/user';
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
-    ɵEmptyOutletComponent,
-  ],
+    ReactiveFormsModule
+],
 })
 export class HomeComponent implements OnInit {
   private _authService: AuthService = inject(AuthService);
@@ -39,11 +36,10 @@ export class HomeComponent implements OnInit {
 
   users: User | null = null;
   user: User[] = [];
-  currentUserIndex: number = 0;
+  username = this._authService.getCurrentUserName()
   course: Course[] = [];
   comments: Comment[] = [];
   filterName: string = '';
-  username: string = '';
   minPrice: number | null = null;
   maxPrice: number | null = null;
   currentPage: number = 1;
@@ -51,11 +47,14 @@ export class HomeComponent implements OnInit {
   hasMore = false;
   currentUserId: number | null = null;
   isLoading: boolean = true;
-  id: any = this._userService.getCurrentUserId();
+  id = this._userService.getCurrentUserId();
   popularCourses: any[] = [];
 
   //Role
   cantCreate: boolean = false;
+
+  // Para el modal de eliminar
+  selectedCourse: Course | null = null;
 
   //Reactive Form
   filterForm: FormGroup = new FormGroup({
@@ -102,9 +101,9 @@ export class HomeComponent implements OnInit {
             const averageRating =
               ratings.length > 0
                 ? ratings.reduce(
-                    (sum: number, rating: number) => sum + rating,
-                    0,
-                  ) / ratings.length
+                  (sum: number, rating: number) => sum + rating,
+                  0,
+                ) / ratings.length
                 : 0;
             return { ...course, averageRating };
           });
@@ -205,20 +204,20 @@ export class HomeComponent implements OnInit {
    * @param {number} id - ID of the course to delete
    */
   deleteCourse(id: number): void {
-    if (!id) {
-      return;
-    }
-
     this._courseService.deleteCourse(id).subscribe({
       next: () => {
         // Update local course array by filtering out deleted course
-        this.course = this.course.filter((p) => p.id !== id);
+        this.course = this.course.filter((course_id) => course_id.id !== id);
       },
       error: (err: any) => {
         console.error('Error deleting course:', err);
         // TODO: Implementar un toastSevice
       },
     });
+  }
+
+  openDeleteModal(course: Course): void {
+    this.selectedCourse = course;
   }
 
   rolePermisson() {

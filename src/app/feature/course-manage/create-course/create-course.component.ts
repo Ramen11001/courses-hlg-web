@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CourseService } from 'src/app/core/services/course.service';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { UserService } from 'src/app/core/services/user.service.service';
+import { CourseService } from '../../../core/services/course.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { UserService } from '../../../core/services/user.service.service';
 
 @Component({
   selector: 'app-create-course',
@@ -95,7 +95,7 @@ export class CreateCourseComponent {
         location: this.courseForm.value.location,
         duration: duration,
         tags: this.tags,
-        user_id: this._userService.getCurrentUserId,
+        user_id: this._userService.getCurrentUserId(),
       };
 
       this._courseService.saveCourse(null, formData).subscribe({

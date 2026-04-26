@@ -6,10 +6,12 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import md5 from 'md5';
 import { Router } from '@angular/router';
+import md5 from 'md5';
+
 import { AuthService } from '../../../core/services/auth.service';
 import { UserService } from '../../../core/services/user.service.service';
+
 @Component({
   selector: 'app-sign-up',
   standalone: true,
@@ -18,77 +20,103 @@ import { UserService } from '../../../core/services/user.service.service';
   styleUrls: ['./sign-up.component.scss'],
 })
 export class SignUpComponent {
-
-  private _authService: AuthService = inject(AuthService);
-  private _userService: UserService = inject(UserService);
+  private _authService = inject(AuthService);
+  private _userService = inject(UserService);
   private _router = inject(Router);
 
   errorMessage: string = '';
   loading: boolean = false;
 
+  /**
+   * FORM
+   */
   signUpForm = new FormGroup({
-    firstName: new FormControl(null, [
+    firstName: new FormControl('', [
       Validators.required,
       Validators.minLength(2),
+      Validators.maxLength(50),
     ]),
-    lastName: new FormControl(null, [
+    lastName: new FormControl('', [
       Validators.required,
       Validators.minLength(2),
+      Validators.maxLength(50),
     ]),
-    email: new FormControl(null, [Validators.required, Validators.email]),
-    password: new FormControl(null, [
+    email: new FormControl('', [Validators.required, Validators.email]),
+    birthday: new FormControl('', [
+      Validators.required,
+      (control) => {
+        const selectedDate = new Date(control.value);
+        const limitDate = new Date('2014-01-01');
+        return selectedDate > limitDate ? { invalidAge: true } : null;
+      },
+    ]),
+    phone: new FormControl(''),
+    entity_type: new FormControl('privado'),
+    password: new FormControl('', [
       Validators.required,
       Validators.minLength(6),
+
+      Validators.pattern(/^(?=.*[A-Z])(?=.*[0-9])/),
     ]),
   });
 
-  submit() {
-    this.loading = true;
-
-    if (!this.signUpForm.valid) {
-      this.errorMessage = 'Por favor, completa todos los campos correctamente.';
-      this.loading = false;
+  submit(): void {
+    if (this.signUpForm.invalid) {
+      this.errorMessage =
+        'Por favor, completa los campos correctamente siguiendo las reglas indicadas.';
+      this.signUpForm.markAllAsTouched();
       return;
     }
 
-    const password = this.signUpForm.value.password ?? '';
-    const encryptedPassword = md5(password).toString();
+    this.loading = true;
+    this.errorMessage = '';
+
+    // Preparación de datos
+    const rawValues = this.signUpForm.value;
+    const encryptedPassword = md5(rawValues.password ?? '').toString();
 
     const signUpData = {
-      firstName: this.signUpForm.value.firstName,
-      lastName: this.signUpForm.value.lastName,
-      email: this.signUpForm.value.email,
+      firstName: rawValues.firstName,
+      lastName: rawValues.lastName,
+      email: rawValues.email,
+      birthday: rawValues.birthday,
+      phone: rawValues.phone || undefined,
+      entity_type: rawValues.entity_type,
       password: encryptedPassword,
     };
-    /**TODO:
-        this._userService.singUp(signUpData).subscribe({
-          next: (response: any) => {
-            if (response.token && response.user) {
-              this._authService.saveAuthData(
-                response.token,
-                response.user.email,
-                response.user.id,
-                response.user.firstName,
-              );
-              this._router.navigate(['/login']);
-              //TODO: ToastService
-            } else {
-              this._router.navigate(['/singUp']);
-              //TODO: ToastService
-            }
-            this.loading = false;
-          },
-          error: (error: any) => {
-            console.error('Error en registro:', error);
-            this.errorMessage =
-              error.error?.message ||
-              'Error al crear la cuenta. Intenta nuevamente.';
-            this.loading = false;
-          },
-        });
-        */
+
+    this._userService.signUp(signUpData).subscribe({
+      next: (response: any) => {
+        this.loading = false;
+
+        if (response.token && response.user) {
+          this._authService.saveAuthData(
+            response.token,
+            response.user.email,
+            response.user.id,
+            response.user.firstName,
+            response.user.role,
+          );
+          this._router.navigate(['/login']);
+        } else {
+          this._router.navigate(['/login']);
+        }
+      },
+      error: (error: any) => {
+        this.loading = false;
+        console.error('Error en registro:', error);
+
+        if (error.error?.errors && Array.isArray(error.error.errors)) {
+          this.errorMessage = error.error.errors[0].msg;
+        } else {
+          this.errorMessage =
+            error.error?.message || 'Error al conectar con el servidor.';
+        }
+      },
+    });
   }
-  goToLogin() {
+
+  goToLogin(): void {
     this._router.navigate(['/login']);
   }
 }

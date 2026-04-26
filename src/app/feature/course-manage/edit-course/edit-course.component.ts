@@ -10,6 +10,7 @@ import { CourseService } from '../../../core/services/course.service';
 import { Course } from '../../../core/interfaces/course';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../../core/services/user.service.service';
+
 @Component({
   selector: 'app-edit-course',
   templateUrl: './edit-course.component.html',
@@ -17,7 +18,7 @@ import { UserService } from '../../../core/services/user.service.service';
   imports: [ReactiveFormsModule, CommonModule],
 })
 export class EditCourseComponent {
-  private _userService: UserService = inject(UserService);
+  private _userService: UserService =inject(UserService)
 
   courseForm: FormGroup;
   isLoading = false;
@@ -59,7 +60,7 @@ export class EditCourseComponent {
       next: (course: Course) => {
         if (course.user_id !== currentUserId) {
           this.showError('No tienes permiso para editar este curso');
-         this.navigateToCourse();
+          this.navigateToCourse();
           return;
         }
 
@@ -85,7 +86,7 @@ export class EditCourseComponent {
   showError(message: string): void {
     this.errorMessage = message;
     this.isLoading = false;
-    setTimeout(() => this.router.navigate(['/course']), 2000);
+    setTimeout(() => this.router.navigate(['/home']), 2000);
   }
 
   /**
@@ -94,7 +95,7 @@ export class EditCourseComponent {
    * @returns {void}
    */
   navigateToCourse() {
-    this.router.navigate(['/course']);
+    this.router.navigate(['/home']);
   }
 
   /**
@@ -116,7 +117,7 @@ export class EditCourseComponent {
       this.courseService.saveCourse(this.courseId, formData).subscribe({
         next: () => {
           this.isLoading = false;
-          this.router.navigate(['/course'], {
+          this.router.navigate(['/home'], {
             state: { message: 'Curso actualizado exitosamente' },
           });
         },

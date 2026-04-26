@@ -267,10 +267,14 @@ export class CoursesDetailsComponent implements OnInit {
 
   /**
    * Navigates to the home page.
-   * Uses Angular Router to navigate to '/home' route.
+   * Uses Angular Router to navigate to '/porfile' route.
    * @returns {void}
    */
   navigateToHome() {
-    this.router.navigate(['/home']);
+     const id = this._userService.getCurrentUserId();
+    if (id) {
+      this.router.navigate(['/home']);
+    }
+    
   }
 }

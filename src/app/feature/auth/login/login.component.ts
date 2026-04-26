@@ -66,8 +66,8 @@ export class LoginComponent {
             token,
             userEmail,
             userId,
-            fristName,
             role,
+            fristName,
           );
           //TODO: No va a home
           this.navigateToHome();

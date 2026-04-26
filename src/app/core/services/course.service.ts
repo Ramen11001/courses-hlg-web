@@ -49,11 +49,11 @@ export class CourseService {
       pagination: 'true',
     };
 
-    // Solo agregar si son números válidos
+    // ONly add if thei are valid numbers
     if (minPrice !== null && minPrice !== undefined && minPrice !== '')
-      params.minPrecio = minPrice;
+      params.minPrice = minPrice;
     if (maxPrice !== null && maxPrice !== undefined && maxPrice !== '')
-      params.maxPrecio = maxPrice;
+      params.maxPrice = maxPrice;
 
     return this.http.get<Course[]>(this.apiUrl, { params });
   }
@@ -93,7 +93,6 @@ export class CourseService {
    */
   saveCourse(id: number | null, courseData: any): Observable<Course> {
     const currentUserId = this._userService.getCurrentUserId();
-   
 
     // Update existing course
     if (id) {
@@ -111,7 +110,7 @@ export class CourseService {
               () => new Error('Solo puedes editar tus propios cursos'),
             );
           }
-         
+
           //for update, only the necesary atributes
           return this.http
             .put<Course>(`${this.apiUrl}/${id}`, courseData)

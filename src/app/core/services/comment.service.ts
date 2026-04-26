@@ -1,9 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpHeaders,
-} from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Comment } from '../interfaces/comment';
@@ -29,6 +25,21 @@ export class CommentsService {
   getCommentsByCourse(course_id: number) {
     return this.http
       .get<Comment[]>(`${this.apiUrl}/courses/${course_id}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Fetches comments for a specific user.
+   * - Sends HTTP GET request to `/comments` endpoint with courseId filter
+   * - Includes error handling for failed requests
+   *
+   * @function
+   * @param {number} user_id - ID of the user to get comments for
+   * @returns {Observable<Comment[]>} Observable containing array of comments
+   */
+  getCommentsByUser(user_id: number) {
+    return this.http
+      .get<Comment[]>(`${this.apiUrl}/user/${user_id}`)
       .pipe(catchError(this.handleError));
   }
 

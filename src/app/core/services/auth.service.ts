@@ -13,24 +13,10 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
-  /**
-   * Base URL for the authentication API, sourced from environment configuration.
-   * @type {string}
-   * @private
-   */
   private baseUrl = environment.baseUrl;
-  /**
-   * Instance of HttpClient used for making HTTP requests.
-   * @type {HttpClient}
-   * @private
-   */
   private http = inject(HttpClient);
-  /**
-   * Instance of Router used for navigation between routes.
-   * @type {Router}
-   * @private
-   */
   private router = inject(Router);
+
   /**
    * Sends login request to the authentication API.
    *
@@ -61,17 +47,18 @@ export class AuthService {
     localStorage.setItem('fristName', fristName);
   }
 
-  SaveData(): void {}
-
   /**
    * Logs out the user by removing the stored token and redirecting to the login page.
    *
    * @function
    */
-  logout() {
-    localStorage.removeItem('token'); // Delete token
-    localStorage.removeItem('email'); // Delete email
-    this.router.navigate(['/login']); // Redirige al usuario a /login
+logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('email');
+    localStorage.removeItem('role');
+    localStorage.removeItem('fristName');
+    this.router.navigate(['/login']);
   }
   /**
    * Retrieves the stored authentication token from local storage.
@@ -112,8 +99,8 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/auth/reset-password`, data);
   }
 
-  //get user fristName
+  //get user firstName
   getCurrentUserName(): string | null {
-    return localStorage.getItem('firstName');
+    return localStorage.getItem('fristName');
   }
 }

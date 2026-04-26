@@ -20,11 +20,7 @@ import { UserService } from '../../core/services/user.service.service';
   standalone: true,
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule
-],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
 })
 export class HomeComponent implements OnInit {
   private _authService: AuthService = inject(AuthService);
@@ -32,11 +28,10 @@ export class HomeComponent implements OnInit {
   private _courseService: CourseService = inject(CourseService);
   private _router: Router = inject(Router);
   private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private _fb = inject(FormBuilder);
 
   users: User | null = null;
   user: User[] = [];
-  username = this._authService.getCurrentUserName()
+  username = this._authService.getCurrentUserName();
   course: Course[] = [];
   comments: Comment[] = [];
   filterName: string = '';
@@ -48,12 +43,10 @@ export class HomeComponent implements OnInit {
   currentUserId: number | null = null;
   isLoading: boolean = true;
   id = this._userService.getCurrentUserId();
-  popularCourses: any[] = [];
+  popularCourses: Course[] = [];
 
   //Role
   cantCreate: boolean = false;
-
-  // Para el modal de eliminar
   selectedCourse: Course | null = null;
 
   //Reactive Form
@@ -70,8 +63,10 @@ export class HomeComponent implements OnInit {
       this._router.navigate(['/login']);
     } else {
       this.rolePermisson();
-      this.currentUserId = this._userService.getCurrentUserId();
+      this.id;
       this.getCourse();
+      //TODO: Está bien horrendo el loadUSer()
+      // this.loadAllUsers();
 
       this.filterForm.valueChanges.subscribe((_values) => {
         this.currentPage = 1;
@@ -80,6 +75,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  //region GET AND LOAD
   //Retrieves courses from the backend using search filters and pagination.
   getCourse(): void {
     this.isLoading = true;
@@ -95,17 +91,26 @@ export class HomeComponent implements OnInit {
       .pipe(finalize(() => (this.isLoading = false)))
       .subscribe({
         next: (response: Course[]) => {
+          this.popularCourses = [];
           this.course = response.map((course: Course) => {
             const ratings =
               course.comments?.map((comment) => comment.rating) || [];
+
             const averageRating =
               ratings.length > 0
                 ? ratings.reduce(
-                  (sum: number, rating: number) => sum + rating,
-                  0,
-                ) / ratings.length
+                    (sum: number, rating: number) => sum + rating,
+                    0,
+                  ) / ratings.length
                 : 0;
-            return { ...course, averageRating };
+
+            const courseWithRating = { ...course, averageRating };
+
+            if (averageRating > 3) {
+              this.popularCourses.push(courseWithRating);
+            }
+
+            return courseWithRating;
           });
           // If the number of courses equals the items per page, assume that more comments are available.
           this.hasMore = this.course.length === this.itemsPerPage;
@@ -121,6 +126,12 @@ export class HomeComponent implements OnInit {
     this._userService.allUsers().subscribe({
       next: (users) => {
         this.user = users;
+        this.user = users.filter((user) => user.id !== this.id);
+        this.user = users.filter(
+          (user) =>
+            user.firstName !== 'Administrador' ||
+            user.lastName !== 'Administrador',
+        );
         this.isLoading = false;
         this._cdr.detectChanges();
       },
@@ -130,6 +141,8 @@ export class HomeComponent implements OnInit {
       },
     });
   }
+
+  //region changePage
 
   /**
    * Handles pagination by updating the current page and fetching course for the new page.
@@ -172,6 +185,54 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  //region DELETE
+  /**
+   * Deletes a courses by ID and updates local course list.
+   *
+   * @param {number} id - ID of the course to delete
+   */
+  deleteCourse(id: number): void {
+    if (!id) return;
+
+    this._courseService.deleteCourse(id).subscribe({
+      next: () => {
+        // Update local course array by filtering out deleted course
+        this.course = this.course.filter((course_id) => course_id.id !== id);
+        this.getCourse();
+      },
+      error: (err: any) => {
+        console.error('Error deleting course:', err);
+        // TODO: Implementar un toastSevice
+      },
+    });
+  }
+
+  openDeleteModal(course: Course): void {
+    this.selectedCourse = course;
+  }
+
+  //region ROLE PERMISSION:
+  rolePermisson() {
+    const user_id = this._userService.getCurrentUserId()!;
+    const user = this._userService.getUserById(user_id);
+    user.forEach((is_curse_supplier) => {
+      const role = is_curse_supplier.role;
+      if (role === 'COURSE_SUPPLIER') {
+        this.cantCreate = true;
+        this._cdr.detectChanges();
+      }
+    });
+  }
+
+  //region ICON:
+  getInitials(): string {
+    if (!this.users) return 'U';
+    const firstName = this.users.firstName || '';
+    const lastName = this.users.lastName || '';
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  }
+
+  // region NAVIGATE:
   // Navigates to the course details page.
   navigateToDetailsCourse(id: number): void {
     this._router.navigate(['/courseDetails/' + id]);
@@ -189,7 +250,7 @@ export class HomeComponent implements OnInit {
   }
 
   goToMyProfile() {
-    const id = this._userService.getCurrentUserId(); // Esto debería devolver 3
+    const id = this._userService.getCurrentUserId();
     if (id) {
       this._router.navigate(['/user', id]);
     }
@@ -198,47 +259,7 @@ export class HomeComponent implements OnInit {
     this._authService.logout();
   }
 
-  /**
-   * Deletes a courses by ID and updates local course list.
-   *
-   * @param {number} id - ID of the course to delete
-   */
-  deleteCourse(id: number): void {
-    this._courseService.deleteCourse(id).subscribe({
-      next: () => {
-        // Update local course array by filtering out deleted course
-        this.course = this.course.filter((course_id) => course_id.id !== id);
-      },
-      error: (err: any) => {
-        console.error('Error deleting course:', err);
-        // TODO: Implementar un toastSevice
-      },
-    });
-  }
-
-  openDeleteModal(course: Course): void {
-    this.selectedCourse = course;
-  }
-
-  rolePermisson() {
-    const user_id = this._userService.getCurrentUserId()!;
-    const user = this._userService.getUserById(user_id);
-    user.forEach((is_curse_supplier) => {
-      const role = is_curse_supplier.role;
-      if (role === 'COURSE_SUPPLIER') {
-        this.cantCreate = true;
-        this._cdr.detectChanges();
-      }
-    });
-  }
-
-  getInitials(): string {
-    if (!this.users) return 'U';
-    const firstName = this.users.firstName || '';
-    const lastName = this.users.lastName || '';
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-  }
-
+  //region ONSUBMIT
   /**
        * Handles form submission.
        * - Call logout function for  logs out the user by removing the stored token

@@ -58,6 +58,13 @@
                 <i class="bi bi-arrow-left me-2"></i>
                 Volver
               </button>
+              <!--TODO:-->
+              <button *ngIf="!isEditing" class="btn btn-outline-danger rounded-pill px-4" data-bs-toggle="modal"
+                data-bs-target="#deleteAccountModal">
+                <i class="bi bi-trash me-2"></i>
+                Eliminar cuenta
+              </button>
+
               <button *ngIf="isEditing" class="btn btn-outline-secondary rounded-pill px-4" (click)="toggleEdit()">
                 <i class="bi bi-x-circle me-2"></i>
                 Cancelar
@@ -198,70 +205,175 @@
         </div>
 
         <!-- My Courses Section -->
-        <div class="card border-0 shadow-lg rounded-4">
-          <div class="card-body p-4 p-md-5">
+        <ng-container *ngIf="cantCreate">
+          <div class="card border-0 shadow-lg rounded-4">
+            <div class="card-body p-4 p-md-5">
 
-            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-              <h3 class="h4 fw-semibold text-dark mb-0">
-                <i class="bi bi-book me-2"></i>
-                Mis cursos ({{ userCourses.length }})
-              </h3>
-              <button class="btn btn-primary rounded-pill px-4" (click)="navigateToCreateCourse()">
-                <i class="bi bi-plus-circle me-2"></i>
-                Crear nuevo curso
-              </button>
-            </div>
+              <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <h3 class="h4 fw-semibold text-dark mb-0">
+                  <i class="bi bi-book me-2"></i>
+                  Mis cursos ({{ userCourses.length }})
+                </h3>
+                <button class="btn btn-primary rounded-pill px-4" (click)="navigateToCreateCourse()">
+                  <i class="bi bi-plus-circle me-2"></i>
+                  Crear nuevo curso
+                </button>
+              </div>
 
-            <!-- Courses Grid -->
-            <div *ngIf="userCourses.length === 0" class="text-center py-5">
-              <i class="bi bi-book-x display-1 text-secondary opacity-50"></i>
-              <p class="text-secondary mt-3 mb-0">Aún no tienes cursos creados</p>
-              <button class="btn btn-outline-primary rounded-pill mt-3" (click)="navigateToCreateCourse()">
-                <i class="bi bi-plus-circle me-2"></i>
-                Crear mi primer curso
-              </button>
-            </div>
+              <!-- Courses Grid -->
+              <div *ngIf="userCourses.length === 0" class="text-center py-5">
+                <i class="bi bi-book-x display-1 text-secondary opacity-50"></i>
+                <p class="text-secondary mt-3 mb-0">Aún no tienes cursos creados</p>
+                <button class="btn btn-outline-primary rounded-pill mt-3" (click)="navigateToCreateCourse()">
+                  <i class="bi bi-plus-circle me-2"></i>
+                  Crear mi primer curso
+                </button>
+              </div>
 
-            <div class="row g-4">
-              <div class="col-12 col-md-6 col-lg-4" *ngFor="let course of userCourses">
-                <div class="card border-0 shadow-sm rounded-4 h-100 hover-card">
-                  <div class="bg-primary bg-opacity-10 text-center py-4 rounded-top-4">
-                    <i class="bi bi-book-half fs-1 text-primary"></i>
-                  </div>
-                  <div class="card-body p-4">
-                    <h5 class="card-title fw-semibold text-dark mb-2">{{ course.title }}</h5>
-                    <p class="card-text text-secondary small mb-3">
-                      {{ course.description!.substring(0, 80) || 'Sin descripción' }}
-                      {{ course.description!.length > 80 ? '...' : '' }}
-                    </p>
-                    <div class="mb-3">
-                      <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
-                        <i class="bi bi-currency-dollar me-1"></i>
-                        ${{ course.cost || 0 }}
-                      </span>
-                      <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3 py-2 ms-2">
-                        <i class="bi bi-tag me-1"></i>
-                        {{ course.area || 'General' }}
-                      </span>
+              <div class="row g-4">
+                <div class="col-12 col-md-6 col-lg-4" *ngFor="let course of userCourses">
+                  <div class="card border-0 shadow-sm rounded-4 h-100 hover-card">
+                    <div class="bg-primary bg-opacity-10 text-center py-4 rounded-top-4">
+                      <i class="bi bi-book-half fs-1 text-primary"></i>
                     </div>
-                    <div class="d-flex gap-2">
-                      <button class="btn btn-outline-primary rounded-pill flex-grow-1"
-                        (click)="navigateToCourse(course.id)">
-                        <i class="bi bi-eye me-1"></i>
-                        Ver
-                      </button>
-                      <button class="btn btn-outline-warning rounded-pill" (click)="navigateToEditCourse(course.id)">
-                        <i class="bi bi-pencil"></i>
-                      </button>
+                    <div class="card-body p-4">
+                      <h5 class="card-title fw-semibold text-dark mb-2">{{ course.title }}</h5>
+                      <p class="card-text text-secondary small mb-3">
+                        {{ course.description!.substring(0, 80) || 'Sin descripción' }}
+                        {{ course.description!.length > 80 ? '...' : '' }}
+                      </p>
+                      <div class="mb-3">
+                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
+                          <i class="bi bi-currency-dollar me-1"></i>
+                          ${{ course.cost || 0 }}
+                        </span>
+                        <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3 py-2 ms-2">
+                          <i class="bi bi-tag me-1"></i>
+                          {{ course.area || 'General' }}
+                        </span>
+                      </div>
+                      <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary rounded-pill flex-grow-1"
+                          (click)="navigateToCourse(course.id)">
+                          <i class="bi bi-eye me-1"></i>
+                          Ver
+                        </button>
+                        <button class="btn btn-outline-warning rounded-pill" (click)="navigateToEditCourse(course.id)">
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-danger rounded-3" (click)="openDeleteModal(course)"
+                          data-bs-toggle="modal" [attr.data-bs-target]="'#deleteModal'">
+                          <i class="bi bi-trash"></i>
+                        </button>
+
+                        <!-- Modal ford delete course -->
+                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+                          <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content rounded-4 border-0 shadow-lg">
+                              <div class="modal-header border-0 pt-4 px-4">
+                                <div class="d-flex align-items-center gap-2">
+                                  <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex p-2">
+                                    <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+                                  </div>
+                                  <h5 class="modal-title fw-semibold text-dark">Confirmar eliminación</h5>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                  aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body px-4">
+                                <p class="text-secondary mb-0">
+                                  ¿Estás seguro de eliminar el curso
+                                  <span class="text-primary fw-semibold">{{ selectedCourse?.title }}</span>?
+                                </p>
+                                <p class="text-secondary small mt-2 mb-0">
+                                  <i class="bi bi-info-circle me-1"></i>
+                                  Esta acción no se puede deshacer.
+                                </p>
+                              </div>
+                              <div class="modal-footer border-0 pb-4 px-4">
+                                <button type="button" class="btn btn-outline-secondary rounded-pill px-4"
+                                  data-bs-dismiss="modal">
+                                  <i class="bi bi-x-circle me-2"></i>
+                                  Cancelar
+                                </button>
+                                <button type="button" class="btn btn-danger rounded-pill px-4"
+                                  (click)="deleteCourse(selectedCourse!.id)" data-bs-dismiss="modal">
+                                  <i class="bi bi-trash me-2"></i>
+                                  Confirmar
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Comments Section -->
+          <div class="card border-0 shadow-lg rounded-4 mt-4">
+            <div class="card-body p-4 p-md-5">
+
+              <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-2">
+                  <i class="bi bi-chat-dots fs-4 text-primary"></i>
+                </div>
+                <div>
+                  <h3 class="h4 fw-semibold text-dark mb-0">Mis comentarios</h3>
+                  <p class="text-secondary small mb-0">Comentarios que has realizado en cursos</p>
+                </div>
+              </div>
+              <!-- TODO: Para hacer comentarios en perfiles -->
+              <!-- Comments Grid -->
+              <div *ngIf="userComments.length === 0" class="text-center py-5">
+                <i class="bi bi-chat-square-text display-1 text-secondary opacity-50"></i>
+                <p class="text-secondary mt-3 mb-0">No se ha realizado ningún comentario aún</p>
+              </div>
+
+              <div class="row g-4">
+                <div class="col-12" *ngFor="let comment of userComments">
+                  <div class="card border-0 shadow-sm rounded-4 hover-card">
+                    <div class="card-body p-4">
+                      <!-- Comment Header -->
+                      <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-3">
+                          <!-- Course Info -->
+                          <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-2">
+                            <i class="bi bi-book-half text-primary"></i>
+                          </div>
+                          <div>
+                            <p class="text-secondary small mb-0">
+                              <i class="bi bi-calendar me-1"></i>
+                              {{ comment.createdAt | date: 'dd/MM/yyyy - hh:mm a' }}
+                            </p>
+                          </div>
+                        </div>
+                        <!-- Rating Stars -->
+                        <div class="d-flex align-items-center gap-1">
+                          <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
+                            <i class="bi fs-5" [ngClass]="{
+                    'bi-star-fill text-warning': comment.rating > i,
+                    'bi-star text-secondary': comment.rating  <= i
+                  }"></i>
+                          </ng-container>
+                          <span class="ms-2 small text-secondary fw-semibold">{{ comment.rating }}/5</span>
+                        </div>
+                      </div>
+                      <!-- Comment Content -->
+                      <div class="bg-light rounded-4 p-4 mb-3">
+                        <p class="text-dark mb-0">{{ comment.text }}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
-        </div>
-
+        </ng-container>
       </div>
     </div>
   </div>

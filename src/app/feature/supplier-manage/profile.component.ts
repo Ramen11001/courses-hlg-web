@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import {
@@ -12,6 +12,8 @@ import { UserService } from '../../core/services/user.service.service';
 import { CourseService } from '../../core/services/course.service';
 import { Course } from '../../core/interfaces/course';
 import { User } from '../../core/interfaces/user';
+import { CommentsService } from '../../core/services/comment.service';
+import { Comment } from '../../core/interfaces/comment';
 
 @Component({
   selector: 'app-profile',
@@ -22,21 +24,28 @@ import { User } from '../../core/interfaces/user';
 export class ProfileComponent implements OnInit {
   private _authService = inject(AuthService);
   private _userService = inject(UserService);
+  private _commentService = inject(CommentsService);
   private _courseService = inject(CourseService);
   private _route = inject(ActivatedRoute);
   private _router = inject(Router);
   private _fb = inject(FormBuilder);
+  private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
   user: User | null = null;
   course: Course[] = [];
   userCourses: Course[] = [];
+  userComments: Comment[] = [];
   isLoading = true;
   isEditing = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
   currentUserId: number | null = null;
-
+  profileUserId: number | null = null;
+  selectedCourse: Course | null = null;
   profileForm: FormGroup;
+  comments: Comment | null = null;
+  //Role
+  cantCreate: boolean = false;
 
   constructor() {
     this.profileForm = this._fb.group({
@@ -52,13 +61,18 @@ export class ProfileComponent implements OnInit {
     const userID = this._route.snapshot.paramMap.get('id');
     this.currentUserId = this._userService.getCurrentUserId();
     if (userID) {
-      this.loadUserProfile(parseInt(userID));
-      this.loadUserCourses(parseInt(userID));
+      this.profileUserId = parseInt(userID);
+      this.rolePermisson();
+      this.loadUserProfile(this.profileUserId);
+      this.loadUserCourses(this.profileUserId);
+      this, this.loadUserComments(this.profileUserId);
     } else {
-      this.errorMessage = 'Curso no encontrado';
+      this.errorMessage = 'Usuario no encontrado';
       this.isLoading = false;
     }
   }
+
+  //region LOAD INFORMATION:
 
   loadUserProfile(userId: number): void {
     this.isLoading = true;
@@ -99,35 +113,24 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  onSubmit(): void {
-    if (this.profileForm.invalid || !this.currentUserId) {
-      this.errorMessage = 'Por favor, corrige los errores en el formulario';
-      return;
-    }
-
-    this.isLoading = true;
-
-    const updatedData = {
-      ...this.profileForm.value,
-      fristName: this.profileForm.value.firstName,
-      biography: this.profileForm.value.bio,
-    };
-
-    this._userService.updatedUser(this.currentUserId, updatedData).subscribe({
-      next: (response) => {
-        this.user = response;
-        this.successMessage = 'Perfil actualizado exitosamente';
-        this.isEditing = false;
-        this.isLoading = false;
-        setTimeout(() => (this.successMessage = null), 3000);
+  loadUserComments(userId: number): void {
+    const user_id = this._userService.getCurrentUserId()!;
+    this._commentService.getCommentsByUser(user_id).subscribe({
+      next: (comments) => {
+        comments.map((comment) => {
+          let comment_current = comment.user_id;
+          if (comment_current === user_id) {
+            this.userComments.push(comment);
+          }
+        });
       },
       error: (err) => {
-        this.errorMessage = 'Error al actualizar el perfil';
-        this.isLoading = false;
+        console.error('Error al cargar cursos del usuario:', err);
       },
     });
   }
 
+  // region EDIT:
   toggleEdit(): void {
     this.isEditing = !this.isEditing;
     this.errorMessage = null;
@@ -143,8 +146,40 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  navigateToCourse(courseId: number): void {
-    this._router.navigate(['/course-details', courseId]);
+  onSubmit(): void {
+    if (this.profileForm.invalid || !this.profileUserId) {
+      this.errorMessage = 'Por favor, corrige los errores en el formulario';
+      return;
+    }
+
+    this.isLoading = true;
+
+    const updatedData = {
+      firstName: this.profileForm.value.firstName,
+      lastName: this.profileForm.value.lastName,
+      email: this.profileForm.value.email,
+      phone: this.profileForm.value.phone,
+      biography: this.profileForm.value.bio,
+    };
+
+    this._userService.updatedUser(this.profileUserId, updatedData).subscribe({
+      next: (response) => {
+        this.user = response;
+        this.successMessage = 'Perfil actualizado exitosamente';
+        this.isEditing = false;
+        this.isLoading = false;
+        setTimeout(() => (this.successMessage = null), 3000);
+      },
+      error: (err) => {
+        this.errorMessage = 'Error al actualizar el perfil';
+        this.isLoading = false;
+      },
+    });
+  }
+
+  // region NAVIGATE
+  navigateToCourse(id: number): void {
+    this._router.navigate(['/courseDetails/' + id]);
   }
 
   navigateToHome(): void {
@@ -152,12 +187,14 @@ export class ProfileComponent implements OnInit {
   }
 
   navigateToEditCourse(id: number): void {
-     this._router.navigate(['edit/' + id]);
+    this._router.navigate(['edit/' + id]);
   }
 
-   navigateToCreateCourse(): void {
+  navigateToCreateCourse(): void {
     this._router.navigate(['/createCourse']);
   }
+
+  //region GET:
 
   getInitials(): string {
     if (!this.user) return 'U';
@@ -172,5 +209,43 @@ export class ProfileComponent implements OnInit {
       `${this.user.firstName || ''} ${this.user.lastName || ''}`.trim() ||
       'Usuario'
     );
+  }
+
+  //region DELETE
+  /**
+   * Deletes a courses by ID and updates local course list.
+   *
+   * @param {number} id - ID of the course to delete
+   */
+  deleteCourse(id: number): void {
+    if (!id) return;
+
+    this._courseService.deleteCourse(id).subscribe({
+      next: () => {
+        // Update local course array by filtering out deleted course
+        this.course = this.course.filter((course_id) => course_id.id !== id);
+        //TODO: REfrescar pantalla
+      },
+      error: (err: any) => {
+        console.error('Error deleting course:', err);
+        // TODO: Implementar un toastSevice
+      },
+    });
+  }
+  openDeleteModal(course: Course): void {
+    this.selectedCourse = course;
+  }
+
+  //region ROLE PERMISSION:
+  rolePermisson() {
+    const user_id = this._userService.getCurrentUserId()!;
+    const user = this._userService.getUserById(user_id);
+    user.forEach((is_curse_supplier) => {
+      const role = is_curse_supplier.role;
+      if (role === 'COURSE_SUPPLIER') {
+        this.cantCreate = true;
+        this._cdr.detectChanges();
+      }
+    });
   }
 }

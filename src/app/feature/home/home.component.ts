@@ -66,7 +66,7 @@ export class HomeComponent implements OnInit {
       this.id;
       this.getCourse();
       //TODO: Está bien horrendo el loadUSer()
-      // this.loadAllUsers();
+      this.loadAllUsers();
 
       this.filterForm.valueChanges.subscribe((_values) => {
         this.currentPage = 1;
@@ -99,9 +99,9 @@ export class HomeComponent implements OnInit {
             const averageRating =
               ratings.length > 0
                 ? ratings.reduce(
-                    (sum: number, rating: number) => sum + rating,
-                    0,
-                  ) / ratings.length
+                  (sum: number, rating: number) => sum + rating,
+                  0,
+                ) / ratings.length
                 : 0;
 
             const courseWithRating = { ...course, averageRating };

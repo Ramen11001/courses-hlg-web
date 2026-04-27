@@ -1,0 +1,57 @@
+<div class="col-12 col-sm-6 col-lg-4 col-xl-3" *ngFor="let item of items">
+    <div class="card border-0 shadow-sm rounded-4 h-100 hover-card">
+        <!-- Course Image Placeholder -->
+        <div class="bg-primary bg-opacity-10 text-center py-4 rounded-top-4">
+            <i class="bi bi-book fs-1 text-primary"></i>
+        </div>
+
+        <div class="card-body p-4">
+            <!-- Course Title -->
+            <h5 class="card-title fw-semibold text-dark mb-2">title</h5>
+            <!-- Rating Stars en cursos regulares -->
+            <div class="d-flex align-items-center gap-1 mb-2">
+                <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
+                    <i class="bi fs-6" [ngClass]="{
+      'bi-star-fill text-warning': $any(item).averageRating > i,
+      'bi-star text-secondary': $any(item).averageRating <= i
+    }"></i>
+                </ng-container>
+                <span class="ms-1 small text-secondary" *ngIf="$any(item).averageRating > 0">
+                    ({{ $any(item).averageRating || 0 | number:'1.1-1' }})
+                </span>
+            </div>
+            <!-- Course Description -->
+            <p class="card-text text-secondary small mb-3">
+                {{ description.substring(0, 80) || 'Sin descripción' }}{{ description.length > 80
+                ? '...' : '' }}
+            </p>
+
+            <!-- Course Price -->
+            <div class="mb-3">
+                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
+                    <i class="bi bi-tag me-1"></i>
+                    ${{ cost || 0 }}
+                </span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary rounded-3 flex-grow-1">
+                    <i class="bi bi-eye me-1"></i>
+                    Ver
+                </button>
+                <ng-container>
+                    <button class="btn btn-outline-warning rounded-3">
+
+                        <i class="bi bi-pencil"></i>
+                    </button>
+
+                    <button type="button" class="btn btn-outline-danger rounded-3"
+                        [attr.data-bs-target]="'#deleteModal'">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>

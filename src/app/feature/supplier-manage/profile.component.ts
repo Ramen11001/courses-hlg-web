@@ -14,6 +14,7 @@ import { Course } from '../../core/interfaces/course';
 import { User } from '../../core/interfaces/user';
 import { CommentsService } from '../../core/services/comment.service';
 import { Comment } from '../../core/interfaces/comment';
+import Chart from 'chart.js/auto';
 
 @Component({
   selector: 'app-profile',
@@ -32,6 +33,7 @@ export class ProfileComponent implements OnInit {
   private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
   user: User | null = null;
+  users: User[] = [];
   course: Course[] = [];
   userCourses: Course[] = [];
   userComments: Comment[] = [];
@@ -42,10 +44,14 @@ export class ProfileComponent implements OnInit {
   currentUserId: number | null = null;
   profileUserId: number | null = null;
   selectedCourse: Course | null = null;
+  selectedUser: User | null = null;
   profileForm: FormGroup;
   comments: Comment | null = null;
+  delete: boolean = false
+  title: any = "";
   //Role
   cantCreate: boolean = false;
+
 
   constructor() {
     this.profileForm = this._fb.group({
@@ -219,11 +225,13 @@ export class ProfileComponent implements OnInit {
    */
   deleteCourse(id: number): void {
     if (!id) return;
-
+    this.delete = true
+    this._cdr.detectChanges()
     this._courseService.deleteCourse(id).subscribe({
       next: () => {
         // Update local course array by filtering out deleted course
         this.course = this.course.filter((course_id) => course_id.id !== id);
+
         //TODO: REfrescar pantalla
       },
       error: (err: any) => {
@@ -232,6 +240,20 @@ export class ProfileComponent implements OnInit {
       },
     });
   }
+
+  deleteUser(id: number) {
+    if (id!) {
+      console.error("No existe el usuario")
+    }
+    this.delete
+    this._userService.deleteUser(id).subscribe({
+      next: () => {
+        this.users = this.users.filter((user_id) => { user_id.id != id })
+        //TODO: el que es parecido al toast service
+      }
+    })
+  }
+
   openDeleteModal(course: Course): void {
     this.selectedCourse = course;
   }
@@ -248,4 +270,17 @@ export class ProfileComponent implements OnInit {
       }
     });
   }
+
+  //region TITLE:
+  getTitle() {
+    if (this.delete) {
+      this.title = this.course.map((course) => {
+        course.title
+        this._cdr.detectChanges();
+      })
+    }
+    this.title = this.user?.firstName
+    this._cdr.detectChanges();
+  }
+
 }

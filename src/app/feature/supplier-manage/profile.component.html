@@ -4,6 +4,7 @@
 
       <!-- Loading State -->
       <div *ngIf="isLoading" class="text-center py-5">
+
         <div class="spinner-border text-primary loading-spinner" role="status">
           <span class="visually-hidden">Cargando...</span>
         </div>
@@ -49,6 +50,7 @@
             </div>
 
             <!-- Edit/View Toggle -->
+
             <div class="d-flex justify-content-center gap-3 mb-4">
               <button *ngIf="!isEditing" class="btn btn-outline-primary rounded-pill px-4" (click)="toggleEdit()">
                 <i class="bi bi-pencil me-2"></i>
@@ -59,11 +61,13 @@
                 Volver
               </button>
               <!--TODO:-->
-              <button *ngIf="!isEditing" class="btn btn-outline-danger rounded-pill px-4" data-bs-toggle="modal"
-                data-bs-target="#deleteAccountModal">
+
+              <button *ngIf="!isEditing" class="btn btn-outline-danger rounded-pill px-4" (click)="deleteUser(user.id)"
+                data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
                 <i class="bi bi-trash me-2"></i>
                 Eliminar cuenta
               </button>
+
 
               <button *ngIf="isEditing" class="btn btn-outline-secondary rounded-pill px-4" (click)="toggleEdit()">
                 <i class="bi bi-x-circle me-2"></i>
@@ -281,10 +285,18 @@
                                   aria-label="Close"></button>
                               </div>
                               <div class="modal-body px-4">
-                                <p class="text-secondary mb-0">
-                                  ¿Estás seguro de eliminar el curso
-                                  <span class="text-primary fw-semibold">{{ selectedCourse?.title }}</span>?
-                                </p>
+                                <ng-container *ngIf="delete">
+                                  <p class="text-secondary mb-0">
+                                    ¿Estás seguro de eliminar el curso
+                                    <span class="text-primary fw-semibold">{{ title }}</span>?
+                                  </p>
+                                </ng-container>
+                                <ng-container *ngIf="!delete">
+                                  <p class="text-secondary mb-0">
+                                    ¿Estás seguro de eliminar el usuario
+                                    <span class="text-primary fw-semibold">{{ title }}</span>?
+                                  </p>
+                                </ng-container>
                                 <p class="text-secondary small mt-2 mb-0">
                                   <i class="bi bi-info-circle me-1"></i>
                                   Esta acción no se puede deshacer.
@@ -296,11 +308,20 @@
                                   <i class="bi bi-x-circle me-2"></i>
                                   Cancelar
                                 </button>
-                                <button type="button" class="btn btn-danger rounded-pill px-4"
-                                  (click)="deleteCourse(selectedCourse!.id)" data-bs-dismiss="modal">
-                                  <i class="bi bi-trash me-2"></i>
-                                  Confirmar
-                                </button>
+                                <ng-container *ngIf="delete">
+                                  <button type="button" class="btn btn-danger rounded-pill px-4"
+                                    (click)="deleteCourse(selectedCourse!.id)" data-bs-dismiss="modal">
+                                    <i class="bi bi-trash me-2"></i>
+                                    Confirmar
+                                  </button>
+                                </ng-container>
+                                <ng-container *ngIf="!delete">
+                                  <button type="button" class="btn btn-danger rounded-pill px-4"
+                                    (click)="deleteCourse(selectedUser!.id)" data-bs-dismiss="modal">
+                                    <i class="bi bi-trash me-2"></i>
+                                    Confirmar
+                                  </button>
+                                </ng-container>
                               </div>
                             </div>
                           </div>
@@ -327,7 +348,7 @@
                   <p class="text-secondary small mb-0">Comentarios que has realizado en cursos</p>
                 </div>
               </div>
-              <!-- TODO: Para hacer comentarios en perfiles -->
+              <!-- TODO: Para hacer comentarios en perfiles, agregarlo -->
               <!-- Comments Grid -->
               <div *ngIf="userComments.length === 0" class="text-center py-5">
                 <i class="bi bi-chat-square-text display-1 text-secondary opacity-50"></i>

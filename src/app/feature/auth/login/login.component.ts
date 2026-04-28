@@ -7,7 +7,6 @@ import {
   Validators,
 } from '@angular/forms';
 
-import md5 from 'md5';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -46,18 +45,19 @@ export class LoginComponent {
     const email = this.loginForm.value.email ?? '';
     const password = this.loginForm.value.password ?? '';
 
-    const encryptedPassword = md5(password).toString();
-
     const loginData = {
       email: email,
-      password: encryptedPassword,
+      password: password,
     };
 
     this._authService.login(loginData).subscribe({
       next: (response) => {
         const token = response.token;
         const userEmail = response.user?.email;
-        const fristName = response.user?.fristName;
+        const firstName =
+          response.user?.name ||
+          response.user?.firstName ||
+          response.user?.fristName;
         const role = response.user?.role;
         const userId = response.user?.id;
 
@@ -67,9 +67,8 @@ export class LoginComponent {
             userEmail,
             userId,
             role,
-            fristName,
+            firstName,
           );
-          //TODO: No va a home
           this.navigateToHome();
           this.loading = true;
         }

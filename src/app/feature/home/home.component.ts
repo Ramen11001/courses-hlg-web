@@ -14,13 +14,15 @@ import { User } from '../../core/interfaces/user';
 import { AuthService } from '../../core/services/auth.service';
 import { CourseService } from '../../core/services/course.service';
 import { UserService } from '../../core/services/user.service.service';
+import { CourseCardComponent } from '../../shared/cards/course-card/course-card.component';
+import { UserCardComponent } from '../../shared/cards/user-card/user-card.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, CourseCardComponent, UserCardComponent],
 })
 export class HomeComponent implements OnInit {
   private _authService: AuthService = inject(AuthService);
@@ -236,6 +238,10 @@ export class HomeComponent implements OnInit {
   // Navigates to the course details page.
   navigateToDetailsCourse(id: number): void {
     this._router.navigate(['/courseDetails/' + id]);
+  }
+
+  navigateToDetailsUser(id: number): void {
+    this._router.navigate(['/userDetails/' + id]);
   }
 
   // Navigates to the course creation page.

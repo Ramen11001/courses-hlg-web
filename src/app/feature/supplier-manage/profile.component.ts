@@ -14,12 +14,13 @@ import { Course } from '../../core/interfaces/course';
 import { User } from '../../core/interfaces/user';
 import { CommentsService } from '../../core/services/comment.service';
 import { Comment } from '../../core/interfaces/comment';
-import Chart from 'chart.js/auto';
+import { CourseCardComponent } from '../../shared/cards/course-card/course-card.component';
+
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, CourseCardComponent],
   templateUrl: './profile.component.html',
 })
 export class ProfileComponent implements OnInit {
@@ -47,11 +48,9 @@ export class ProfileComponent implements OnInit {
   selectedUser: User | null = null;
   profileForm: FormGroup;
   comments: Comment | null = null;
-  delete: boolean = false
-  title: any = "";
-  //Role
+  delete: boolean = false;
+  title: any = '';
   cantCreate: boolean = false;
-
 
   constructor() {
     this.profileForm = this._fb.group({
@@ -64,8 +63,8 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const userID = this._route.snapshot.paramMap.get('id');
     this.currentUserId = this._userService.getCurrentUserId();
+    const userID = this._route.snapshot.paramMap.get('id');
     if (userID) {
       this.profileUserId = parseInt(userID);
       this.rolePermisson();
@@ -200,6 +199,15 @@ export class ProfileComponent implements OnInit {
     this._router.navigate(['/createCourse']);
   }
 
+  navigateToProfile(): void {
+    const id = this._userService.getCurrentUserId();
+    if (id) {
+      this._router.navigate(['/user/' + id]);
+    } else {
+      this._router.navigate(['/home']);
+    }
+  }
+
   //region GET:
 
   getInitials(): string {
@@ -225,8 +233,8 @@ export class ProfileComponent implements OnInit {
    */
   deleteCourse(id: number): void {
     if (!id) return;
-    this.delete = true
-    this._cdr.detectChanges()
+    this.delete = true;
+    this._cdr.detectChanges();
     this._courseService.deleteCourse(id).subscribe({
       next: () => {
         // Update local course array by filtering out deleted course
@@ -241,17 +249,20 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  deleteUser(id: number) {
-    if (id!) {
-      console.error("No existe el usuario")
+  deleteUser(id: number): void {
+    if (!id) {
+      console.error('No existe el usuario');
+      return;
     }
-    this.delete
     this._userService.deleteUser(id).subscribe({
       next: () => {
-        this.users = this.users.filter((user_id) => { user_id.id != id })
-        //TODO: el que es parecido al toast service
-      }
-    })
+        this.users = this.users.filter((u) => u.id !== id);
+        this._router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.error('Error deleting user:', err);
+      },
+    });
   }
 
   openDeleteModal(course: Course): void {
@@ -275,12 +286,11 @@ export class ProfileComponent implements OnInit {
   getTitle() {
     if (this.delete) {
       this.title = this.course.map((course) => {
-        course.title
+        course.title;
         this._cdr.detectChanges();
-      })
+      });
     }
-    this.title = this.user?.firstName
+    this.title = this.user?.firstName;
     this._cdr.detectChanges();
   }
-
 }

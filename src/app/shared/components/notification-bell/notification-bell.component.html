@@ -1,0 +1,43 @@
+<div class="position-relative d-inline-block">
+  <button class="btn btn-outline-secondary rounded-circle p-2 position-relative" (click)="toggleNotifications()">
+    <i class="bi bi-bell fs-5"></i>
+    <span *ngIf="unviewedCount > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+      {{ unviewedCount }}
+    </span>
+  </button>
+
+  <div *ngIf="isOpen" class="shadow-lg rounded-3 border-0" 
+       style="min-width: 350px; max-height: 400px; overflow-y: auto; position: absolute; right: 0; top: 100%; z-index: 1050; background: white;">
+    
+    <div class="p-3 border-bottom">
+      <h6 class="mb-0 fw-semibold">Notificaciones</h6>
+    </div>
+
+    <ng-container *ngIf="notifications.length === 0; else notificationsList">
+      <div class="p-4 text-center text-secondary">
+        <i class="bi bi-bell-slash fs-4"></i>
+        <p class="small mb-0 mt-2">Sin notificaciones</p>
+      </div>
+    </ng-container>
+
+    <ng-template #notificationsList>
+      <div *ngFor="let notification of notifications" 
+           class="p-3 border-bottom" 
+           [class.bg-light]="notification.viewed"
+           [class.bg-white]="!notification.viewed"
+           (click)="markAsViewed(notification)"
+           style="cursor: pointer;">
+        <div class="d-flex justify-content-between align-items-start">
+          <div class="flex-grow-1">
+            <h6 class="mb-1 small fw-semibold">{{ notification.title }}</h6>
+            <p class="mb-1 small text-secondary">{{ notification.message }}</p>
+            <small class="text-muted">{{ notification.createdAt | date:'short' }}</small>
+          </div>
+          <button class="btn btn-sm btn-link text-danger p-0" (click)="deleteNotification($event, notification.id)">
+            <i class="bi bi-x-circle"></i>
+          </button>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>

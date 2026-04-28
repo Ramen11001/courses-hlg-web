@@ -16,11 +16,15 @@ import { CommentsService } from '../../core/services/comment.service';
 import { Comment } from '../../core/interfaces/comment';
 import { CourseCardComponent } from '../../shared/cards/course-card/course-card.component';
 
-
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, CourseCardComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    CourseCardComponent,
+  ],
   templateUrl: './profile.component.html',
 })
 export class ProfileComponent implements OnInit {
@@ -70,7 +74,7 @@ export class ProfileComponent implements OnInit {
       this.rolePermisson();
       this.loadUserProfile(this.profileUserId);
       this.loadUserCourses(this.profileUserId);
-      this, this.loadUserComments(this.profileUserId);
+      (this, this.loadUserComments(this.profileUserId));
     } else {
       this.errorMessage = 'Usuario no encontrado';
       this.isLoading = false;
@@ -237,14 +241,11 @@ export class ProfileComponent implements OnInit {
     this._cdr.detectChanges();
     this._courseService.deleteCourse(id).subscribe({
       next: () => {
-        // Update local course array by filtering out deleted course
-        this.course = this.course.filter((course_id) => course_id.id !== id);
-
-        //TODO: REfrescar pantalla
+        this.userCourses = this.userCourses.filter((course_id) => course_id.id !== id);
+        this._cdr.detectChanges();
       },
       error: (err: any) => {
         console.error('Error deleting course:', err);
-        // TODO: Implementar un toastSevice
       },
     });
   }

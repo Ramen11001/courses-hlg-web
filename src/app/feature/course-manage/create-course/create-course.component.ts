@@ -68,8 +68,6 @@ export class CreateCourseComponent {
 
     if (this.courseForm.valid) {
       this.isLoading = true;
-
-      //TODO:
       const duration = [];
       if (
         this.courseForm.value.init_date ||
@@ -101,7 +99,7 @@ export class CreateCourseComponent {
       this._courseService.saveCourse(null, formData).subscribe({
         next: () => {
           this.isLoading = false;
-          console.info("Curso añadido correctamente")
+          console.info('Curso añadido correctamente');
           this._router.navigate(['/home']);
         },
         error: (error) => {

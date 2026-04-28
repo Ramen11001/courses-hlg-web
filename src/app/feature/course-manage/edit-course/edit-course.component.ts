@@ -18,7 +18,7 @@ import { UserService } from '../../../core/services/user.service.service';
   imports: [ReactiveFormsModule, CommonModule],
 })
 export class EditCourseComponent {
-  private _userService: UserService =inject(UserService)
+  private _userService: UserService = inject(UserService);
 
   courseForm: FormGroup;
   isLoading = false;
@@ -37,7 +37,6 @@ export class EditCourseComponent {
       description: ['', Validators.minLength(10)],
       study_plan: ['', Validators.minLength(10)],
       location: ['', Validators.minLength(10)],
-      //TODO: certificate, area, mode, level,
     });
     this.courseId = Number(this.route.snapshot.paramMap.get('id'));
   }

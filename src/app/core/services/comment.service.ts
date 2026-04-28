@@ -79,6 +79,27 @@ export class CommentsService {
       .pipe(catchError(this.handleError));
   }
 
+  createCommentForUser(
+    targetUserId: number,
+    commentData: { text: string; rating: number },
+  ): Observable<Comment> {
+    const userId = this._userService.getCurrentUserId();
+    if (!userId) {
+      return throwError(() => new Error('Usuario no autenticado'));
+    }
+
+    const fullCommentData = {
+      ...commentData,
+      user_id: targetUserId,
+    };
+
+    return this.http
+      .post<Comment>(`${this.apiUrl}/user/${targetUserId}`, fullCommentData, {
+        params: { expand: 'user' },
+      })
+      .pipe(catchError(this.handleError));
+  }
+
   /**
    * Centralized error handling for HTTP requests.
    * - Intercepts HTTP error responses from all service methods

@@ -38,13 +38,14 @@ export class AuthService {
     email: string,
     user_id: number,
     role: string,
-    fristName: string,
+    firstName: string,
   ): void {
     localStorage.setItem('token', token);
     localStorage.setItem('user_id', user_id.toString());
     localStorage.setItem('email', email);
     localStorage.setItem('role', role);
-    localStorage.setItem('fristName', fristName);
+    localStorage.setItem('firstName', firstName);
+    localStorage.removeItem('fristName');
   }
 
   /**
@@ -52,11 +53,12 @@ export class AuthService {
    *
    * @function
    */
-logout() {
+ logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user_id');
     localStorage.removeItem('email');
     localStorage.removeItem('role');
+    localStorage.removeItem('firstName');
     localStorage.removeItem('fristName');
     this.router.navigate(['/login']);
   }
@@ -101,6 +103,6 @@ logout() {
 
   //get user firstName
   getCurrentUserName(): string | null {
-    return localStorage.getItem('fristName');
+    return localStorage.getItem('firstName') || localStorage.getItem('fristName');
   }
 }

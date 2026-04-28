@@ -2,12 +2,18 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": [],
+    "baseUrl": "./",
+    "paths": {
+      "@app/*": ["src/app/*"]
+    }
   },
-  "files": [
-    "src/main.ts"
-  ],
   "include": [
-    "src/**/*.d.ts"
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "src/**/*.spec.ts",
+    "src/app/feature/course-manage/course-verification/**/*.ts",
+    "src/app/feature/supplier-manage/supplier-details/**/*.ts"
   ]
 }

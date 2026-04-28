@@ -10,13 +10,15 @@
                     </div>
                     <div>
 
-                        <h1 class="h3 fw-semibold text-dark mb-0">Bienvenido, {{ username }}</h1>
+                        <h1 class="h3 fw-semibold text-dark mb-0">Bienvenido</h1>
                         <p class="text-secondary small mb-0">Explora y gestiona tus cursos</p>
                     </div>
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="dropdown">
+                <div class="d-flex align-items-center gap-2">
+                    <app-notification-bell></app-notification-bell>
+                    <div class="dropdown">
                     <button class="btn btn-outline-secondary rounded-pill px-3 py-2 d-flex align-items-center gap-2"
                         type="button" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-1">
@@ -182,11 +184,52 @@
                     </div>
                 </div>
             </div>
+    </div>
+  </div>
+
+  <!-- Suggested Courses Section -->
+  <div *ngIf="suggestedCourses.length > 0" class="row mb-5">
+    <div class="col-12">
+      <div class="text-center mb-4">
+        <div class="d-inline-flex align-items-center gap-2">
+          <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex p-2">
+            <i class="bi bi-lightbulb fs-4 text-info"></i>
+          </div>
+          <div>
+            <h2 class="h4 fw-semibold text-dark mb-0">Sugeridos para ti</h2>
+            <p class="text-secondary small mb-0">Basado en tus cursos inscritos</p>
+          </div>
         </div>
+      </div>
     </div>
 
+    <div class="col-12">
+      <div class="d-flex justify-content-center gap-4 flex-wrap">
+        <div class="card border-0 shadow-sm rounded-4 hover-card" style="min-width: 280px; max-width: 280px;"
+             *ngFor="let suggested of suggestedCourses">
+          <div class="bg-gradient-info text-center py-4 rounded-top-4">
+            <i class="bi bi-stars fs-1 text-info"></i>
+          </div>
 
-    <!-- Loading Spinner -->
+          <div class="card-body p-3">
+            <h6 class="card-title fw-semibold text-dark mb-2">{{ suggested.title | slice:0:25 }}{{
+              suggested.title.length > 25 ? '...' : '' }}</h6>
+            
+            <p class="text-secondary small mb-2">
+              <i class="bi bi-currency-dollar me-1"></i>${{ suggested.cost || 0 }}
+            </p>
+
+            <button class="btn btn-sm btn-outline-info rounded-3 flex-grow-1 w-100"
+                    (click)="navigateToDetailsCourse(suggested.id)">
+              <i class="bi bi-play-circle me-1"></i>Ver curso
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
 
     <div *ngIf="isLoading" class="text-center py-5">
         <div class="spinner-border text-primary loading-spinner" role="status">
@@ -212,7 +255,7 @@
                 </div>
             </div>
 
-            <h6 class="h4 fw-semibold text-dark mb-0">Cursos Disponibles</h6>
+            <h6 class="h4 fw-semibold text-dark mb-0 text-center">Cursos Disponibles</h6>
             <div class="col-12 col-sm-6 col-lg-4 col-xl-3" *ngFor="let c of course">
                 <app-course-card [item]="c" [currentUserId]="id" (onView)="navigateToDetailsCourse($event)"
                     (onEdit)="navigateToEditCourse($event)" (onDelete)="openDeleteModal($event)">
@@ -223,7 +266,7 @@
             <!-- Users Section -->
             <div class="row g-4 mb-5">
                 <div class="col-12">
-                    <h3 class="h4 fw-semibold text-dark mb-3">
+                    <h3 class="h4 fw-semibold text-dark mb-3 text-center">
                         <i class="bi bi-people me-2"></i>
                         Usuarios ({{ user.length }})
                     </h3>

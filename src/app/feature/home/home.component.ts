@@ -14,15 +14,23 @@ import { User } from '../../core/interfaces/user';
 import { AuthService } from '../../core/services/auth.service';
 import { CourseService } from '../../core/services/course.service';
 import { UserService } from '../../core/services/user.service.service';
+import { RecommendationService } from '../../core/services/recommendation.service';
 import { CourseCardComponent } from '../../shared/cards/course-card/course-card.component';
 import { UserCardComponent } from '../../shared/cards/user-card/user-card.component';
+import { NotificationBellComponent } from '../../shared/components/notification-bell/notification-bell.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, CourseCardComponent, UserCardComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    CourseCardComponent,
+    UserCardComponent,
+    NotificationBellComponent,
+  ],
 })
 export class HomeComponent implements OnInit {
   private _authService: AuthService = inject(AuthService);
@@ -30,6 +38,9 @@ export class HomeComponent implements OnInit {
   private _courseService: CourseService = inject(CourseService);
   private _router: Router = inject(Router);
   private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private _recommendationService: RecommendationService = inject(
+    RecommendationService,
+  );
 
   users: User | null = null;
   user: User[] = [];
@@ -46,6 +57,7 @@ export class HomeComponent implements OnInit {
   isLoading: boolean = true;
   id = this._userService.getCurrentUserId();
   popularCourses: Course[] = [];
+  suggestedCourses: Course[] = [];
 
   //Role
   cantCreate: boolean = false;
@@ -58,7 +70,6 @@ export class HomeComponent implements OnInit {
     maxPrice: new FormControl(null),
   });
 
-  //TODO: Merge Develo
   ngOnInit() {
     const token = this._authService.getToken();
     if (!token) {
@@ -67,7 +78,7 @@ export class HomeComponent implements OnInit {
       this.rolePermisson();
       this.id;
       this.getCourse();
-      //TODO: Está bien horrendo el loadUSer()
+      this.loadSuggestions();
       this.loadAllUsers();
 
       this.filterForm.valueChanges.subscribe((_values) => {
@@ -78,6 +89,17 @@ export class HomeComponent implements OnInit {
   }
 
   //region GET AND LOAD
+  loadSuggestions(): void {
+    this._recommendationService.getSuggestions().subscribe({
+      next: (courses) => {
+        this.suggestedCourses = courses;
+      },
+      error: (err) => {
+        console.error('Error loading suggestions:', err);
+      },
+    });
+  }
+
   //Retrieves courses from the backend using search filters and pagination.
   getCourse(): void {
     this.isLoading = true;
@@ -101,9 +123,9 @@ export class HomeComponent implements OnInit {
             const averageRating =
               ratings.length > 0
                 ? ratings.reduce(
-                  (sum: number, rating: number) => sum + rating,
-                  0,
-                ) / ratings.length
+                    (sum: number, rating: number) => sum + rating,
+                    0,
+                  ) / ratings.length
                 : 0;
 
             const courseWithRating = { ...course, averageRating };
@@ -127,13 +149,8 @@ export class HomeComponent implements OnInit {
     this.isLoading = true;
     this._userService.allUsers().subscribe({
       next: (users) => {
-        this.user = users;
+        // Trae todos menos el usuario logueado
         this.user = users.filter((user) => user.id !== this.id);
-        this.user = users.filter(
-          (user) =>
-            user.firstName !== 'Administrador' ||
-            user.lastName !== 'Administrador',
-        );
         this.isLoading = false;
         this._cdr.detectChanges();
       },
@@ -178,15 +195,6 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  //TODO: Hacer una métrica para calcular cursos populares
-  popularsCoursesFilter() {
-    this.course.forEach((courseComments) => {
-      //    if (courseComments.comments?.length>=8) {
-      //       this.popularCourses.push(courseComments.title)
-      //    }
-    });
-  }
-
   //region DELETE
   /**
    * Deletes a courses by ID and updates local course list.
@@ -204,7 +212,6 @@ export class HomeComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Error deleting course:', err);
-        // TODO: Implementar un toastSevice
       },
     });
   }

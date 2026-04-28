@@ -1,314 +1,317 @@
-<div class="container min-vh-100 d-flex align-items-center justify-content-center py-5">
-    <div class="row justify-content-center w-100">
-        <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+<div class="container min-vh-100 py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10 col-xl-8">
 
-            <!-- Main Card -->
-            <div class="card border-0 shadow-lg rounded-4">
-                <div class="card-body p-4 p-md-5">
+      <!-- Main Card -->
+      <div class="card border-0 shadow-lg rounded-4">
+        <div class="card-body p-4 p-md-5">
 
-                    <!-- Icon -->
-                    <div class="text-center mb-4">
-                        <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
-                            <i class="bi bi-plus-circle-fill fs-1 text-primary"></i>
-                        </div>
-                        <h2 class="h3 fw-semibold text-dark mb-2">Crear Nuevo Curso</h2>
-                        <p class="text-secondary small mb-0">Completa los datos para agregar un curso</p>
-                    </div>
+          <!-- Icon -->
+          <div class="text-center mb-4">
+            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
+              <i class="bi bi-plus-circle-fill fs-1 text-primary"></i>
+            </div>
+            <h2 class="h3 fw-semibold text-dark mb-2">Crear Nuevo Curso</h2>
+            <p class="text-secondary small mb-0">Completa los datos para agregar un curso</p>
+          </div>
 
-                    <!-- Course Form -->
-                    <form [formGroup]="courseForm" (ngSubmit)="onSubmit()">
+          <!-- Course Form -->
+          <form [formGroup]="courseForm" (ngSubmit)="onSubmit()">
 
-                        <!-- Course Title -->
-                        <div class="mb-4">
-                            <label for="title" class="form-label fw-semibold text-secondary small text-uppercase mb-2">
-                                <i class="bi bi-book me-1"></i> Nombre del curso
-                            </label>
-                            <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light"
-                                id="title" formControlName="title" placeholder="Título Curso"
-                                [class.is-invalid]="courseForm.get('title')?.invalid && courseForm.get('title')?.touched">
-                            <div class="invalid-feedback small mt-1">
-                                <i class="bi bi-info-circle me-1"></i>
-                                El nombre debe tener al menos 3 caracteres
-                            </div>
-                        </div>
-
-                        <!-- Price -->
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
-                                <i class="bi bi-currency-dollar me-1"></i> Precio
-                            </label>
-                            <input type="number" class="form-control form-control-lg rounded-3 border-0 bg-light"
-                                id="cost" formControlName="cost" placeholder="0.00" step="0.01"
-                                [class.is-invalid]="courseForm.get('cost')?.invalid && courseForm.get('cost')?.touched">
-                            <div class="invalid-feedback small mt-1">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Ingresa un precio válido (mayor o igual a 0)
-                            </div>
-                        </div>
-
-                        <!-- Area -->
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
-                                <i class="bi bi-tag me-1"></i> Área
-                            </label>
-                            <select class="form-control form-control-lg rounded-3 border-0 bg-light"
-                                formControlName="area"
-                                [class.is-invalid]="courseForm.get('area')?.invalid && courseForm.get('area')?.touched">
-                                <option value="" disabled selected>Selecciona un área</option>
-                                <option value="Técnica">Técnica</option>
-                                <option value="Humanidades">Humanidades</option>
-                                <option value="Salud">Salud</option>
-                                <option value="Administración">Administración</option>
-                                <option value="Deporte">Deporte</option>
-                                <option value="Belleza">Belleza</option>
-                                <option value="Artes">Artes</option>
-                                <option value="Ciencias">Ciencias</option>
-                            </select>
-                            <div class="invalid-feedback small mt-1">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Selecciona un área para el curso
-                            </div>
-                        </div>
-
-                        <!-- Mode -->
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
-                                <i class="bi bi-laptop me-1"></i> Modalidad
-                            </label>
-                            <select class="form-control form-control-lg rounded-3 border-0 bg-light"
-                                formControlName="mode"
-                                [class.is-invalid]="courseForm.get('mode')?.invalid && courseForm.get('mode')?.touched">
-                                <option value="" disabled selected>Selecciona una modalidad</option>
-                                <option value="Presencial">Presencial</option>
-                                <option value="Online">Online</option>
-                                <option value="Híbrida">Híbrida</option>
-                            </select>
-                            <div class="invalid-feedback small mt-1">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Selecciona la modalidad del curso
-                            </div>
-                        </div>
-
-                        <!-- Level -->
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
-                                <i class="bi bi-bar-chart me-1"></i> Nivel
-                            </label>
-                            <select class="form-control form-control-lg rounded-3 border-0 bg-light"
-                                formControlName="level"
-                                [class.is-invalid]="courseForm.get('level')?.invalid && courseForm.get('level')?.touched">
-                                <option value="" disabled selected>Selecciona un nivel</option>
-                                <option value="bajo">Bajo</option>
-                                <option value="medio">Medio</option>
-                                <option value="alto">Alto</option>
-                            </select>
-                            <div class="invalid-feedback small mt-1">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Selecciona el nivel del curso
-                            </div>
-                        </div>
-
-                        <!-- Certificate -->
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
-                                <i class="bi bi-award me-1"></i> Certificado
-                            </label>
-                            <div class="d-flex gap-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" formControlName="certificate"
-                                        [value]="true" id="certificateYes">
-                                    <label class="form-check-label text-dark" for="certificateYes">
-                                        <i class="bi bi-check-circle-fill text-success me-1"></i> Sí
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" formControlName="certificate"
-                                        [value]="false" id="certificateNo">
-                                    <label class="form-check-label text-dark" for="certificateNo">
-                                        <i class="bi bi-x-circle-fill text-danger me-1"></i> No
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Description -->
-                        <div class="mb-4">
-                            <label for="description"
-                                class="form-label fw-semibold text-secondary small text-uppercase mb-2">
-                                <i class="bi bi-file-text me-1"></i> Descripción
-                            </label>
-                            <textarea rows="4" class="form-control rounded-3 border-0 bg-light" id="description"
-                                formControlName="description" placeholder="Describe el contenido del curso..."
-                                [class.is-invalid]="courseForm.get('description')?.invalid && courseForm.get('description')?.touched"></textarea>
-                            <div class="invalid-feedback small mt-1">
-                                <i class="bi bi-info-circle me-1"></i>
-                                La descripción debe tener al menos 10 caracteres
-                            </div>
-                            <small class="text-secondary mt-2 d-block">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Mínimo 10 caracteres
-                            </small>
-                        </div>
-
-                        <!-- Study Plan -->
-                        <div class="mb-4">
-                            <label for="study_plan"
-                                class="form-label fw-semibold text-secondary small text-uppercase mb-2">
-                                <i class="bi bi-calendar-check me-1"></i> Plan de estudio
-                            </label>
-                            <textarea rows="3" class="form-control rounded-3 border-0 bg-light" id="study_plan"
-                                formControlName="study_plan"
-                                placeholder="Ej: Módulo 1: Introducción, Módulo 2: Conceptos avanzados..."
-                                [class.is-invalid]="courseForm.get('study_plan')?.invalid && courseForm.get('study_plan')?.touched"></textarea>
-                            <div class="invalid-feedback small mt-1">
-                                <i class="bi bi-info-circle me-1"></i>
-                                El plan de estudio debe tener al menos 10 caracteres
-                            </div>
-                            <small class="text-secondary mt-2 d-block">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Describe la estructura del curso (mínimo 10 caracteres)
-                            </small>
-                        </div>
-
-                        <!-- Location -->
-                        <div class="mb-4">
-                            <label for="location"
-                                class="form-label fw-semibold text-secondary small text-uppercase mb-2">
-                                <i class="bi bi-geo-alt me-1"></i> Ubicación
-                            </label>
-                            <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light"
-                                id="location" formControlName="location" placeholder="Ej: Desoft, Online, Mixto..."
-                                [class.is-invalid]="courseForm.get('location')?.invalid && courseForm.get('location')?.touched">
-
-                            <small class="text-secondary mt-2 d-block">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Especifica la ubicación o modalidad (mínimo 10 caracteres)
-                            </small>
-                        </div>
-
-                        <!-- Duration -->
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
-                                <i class="bi bi-clock-history me-1"></i> Duración
-                            </label>
-                            <div class="bg-light rounded-3 p-3">
-                                <div class="row g-2">
-                                    <div class="col-12 col-md-6">
-                                        <input type="date" class="form-control rounded-3 border-0"
-                                            formControlName="init_date" placeholder="Fecha inicio">
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <input type="date" class="form-control rounded-3 border-0"
-                                            formControlName="end_date" placeholder="Fecha fin">
-                                    </div>
-                                    <div class="col-12">
-                                        <input type="text" class="form-control rounded-3 border-0"
-                                            formControlName="duration_time"
-                                            placeholder="Ej: 12 semanas, 3 meses, 40 horas">
-                                    </div>
-                                </div>
-                                <small class="text-secondary mt-2 d-block">
-                                    <i class="bi bi-info-circle me-1"></i>
-                                    Fechas del curso y tiempo estimado de duración
-                                </small>
-                            </div>
-                        </div>
-
-                        <!-- Tags -->
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
-                                <i class="bi bi-tags me-1"></i> Etiquetas
-                            </label>
-                            <div class="bg-light rounded-3 p-3">
-                                <div class="row g-2">
-                                    <div class="col-12 col-md-8">
-                                        <input type="text" class="form-control rounded-3 border-0"
-                                            formControlName="tagName"
-                                            placeholder="Nombre de la etiqueta">
-                                    </div>
-                                    <div class="col-12 col-md-4">
-                                        <select class="form-control rounded-3 border-0" formControlName="tagColor">
-                                            <option value="primary">Azul</option>
-                                            <option value="success">Verde</option>
-                                            <option value="danger">Rojo</option>
-                                            <option value="warning">Amarillo</option>
-                                            <option value="info">Celeste</option>
-                                            <option value="dark">Negro</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-12">
-                                        <button type="button" class="btn btn-outline-primary rounded-pill w-100"
-                                            (click)="addTag()">
-                                            <i class="bi bi-plus-circle me-2"></i>
-                                            Agregar etiqueta
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Tags List -->
-                            <div class="mt-2 d-flex flex-wrap gap-2">
-                                <span *ngFor="let tag of tags; let i = index" class="badge tag rounded-pill px-3 py-2"
-                                    [ngClass]="'bg-' + tag.color + ' bg-opacity-10 text-' + tag.color">
-                                    <i class="bi bi-tag me-1"></i>
-                                    {{ tag.name }}
-                                    <i class="bi bi-x-circle ms-2 tags" (click)="removeTag(i)"></i>
-                                </span>
-                            </div>
-                            <small class="text-secondary mt-2 d-block">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Agrega etiquetas para clasificar tu curso
-                            </small>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div class="d-grid gap-2 mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-semibold py-3 shadow-sm"
-                                [disabled]="isLoading || courseForm.invalid">
-                                <div *ngIf="isLoading" class="d-flex align-items-center justify-content-center gap-2">
-                                    <span class="spinner-border spinner-border-sm" role="status"
-                                        aria-hidden="true"></span>
-                                    <span>Creando curso...</span>
-                                </div>
-                                <div *ngIf="!isLoading">
-                                    <i class="bi bi-check-circle me-2"></i>
-                                    Crear Curso
-                                </div>
-                            </button>
-                        </div>
-
-                    </form>
-
-                    <!-- Separator -->
-                    <div class="position-relative my-4">
-                        <hr class="text-secondary opacity-25">
-                        <span
-                            class="position-absolute top-50 start-50 translate-middle bg-white px-3 small text-secondary">
-                            ¿Cambiaste de opinión?
-                        </span>
-                    </div>
-
-                    <!-- Cancel Button -->
-                    <div class="text-center">
-                        <button type="button" class="btn btn-outline-secondary rounded-3 fw-semibold px-4 py-2"
-                            (click)="navigateToHome()">
-                            <i class="bi bi-arrow-left me-2"></i>
-                            Cancelar y volver
-                        </button>
-                        <p class="small text-secondary mt-3 mb-0">
-                            Los cambios no serán guardados
-                        </p>
-                    </div>
-
+            <!-- Row 1: Title and Price -->
+            <div class="row g-4 mb-4">
+              <div class="col-12 col-md-8">
+                <label for="title" class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                  <i class="bi bi-book me-1"></i> Nombre del curso
+                </label>
+                <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light"
+                  id="title" formControlName="title" placeholder="Título del curso"
+                  [class.is-invalid]="courseForm.get('title')?.invalid && courseForm.get('title')?.touched">
+                <div class="invalid-feedback small mt-1">
+                  <i class="bi bi-info-circle me-1"></i>
+                  El nombre debe tener al menos 3 caracteres
                 </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                  <i class="bi bi-currency-dollar me-1"></i> Precio
+                </label>
+                <input type="number" class="form-control form-control-lg rounded-3 border-0 bg-light"
+                  id="cost" formControlName="cost" placeholder="0.00" step="0.01"
+                  [class.is-invalid]="courseForm.get('cost')?.invalid && courseForm.get('cost')?.touched">
+                <div class="invalid-feedback small mt-1">
+                  <i class="bi bi-info-circle me-1"></i>
+                  Ingresa un precio válido (mayor o igual a 0)
+                </div>
+              </div>
             </div>
 
-            <!-- Footer -->
-            <div class="text-center mt-4">
-                <small class="text-secondary opacity-50">
-                    © 2026 - Cursos Holguín
-                </small>
+            <!-- Row 2: Area, Mode, Level -->
+            <div class="row g-4 mb-4">
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                  <i class="bi bi-tag me-1"></i> Área
+                </label>
+                <select class="form-control form-control-lg rounded-3 border-0 bg-light"
+                  formControlName="area"
+                  [class.is-invalid]="courseForm.get('area')?.invalid && courseForm.get('area')?.touched">
+                  <option value="" disabled selected>Selecciona un área</option>
+                  <option value="Técnica">Técnica</option>
+                  <option value="Humanidades">Humanidades</option>
+                  <option value="Salud">🏥 Salud</option>
+                  <option value="Administración">Administración</option>
+                  <option value="Deporte">Deporte</option>
+                  <option value="Belleza">Belleza</option>
+                  <option value="Artes">Artes</option>
+                  <option value="Ciencias">Ciencias</option>
+                </select>
+                <div class="invalid-feedback small mt-1">
+                  <i class="bi bi-info-circle me-1"></i>
+                  Selecciona un área para el curso
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                  <i class="bi bi-laptop me-1"></i> Modalidad
+                </label>
+                <select class="form-control form-control-lg rounded-3 border-0 bg-light"
+                  formControlName="mode"
+                  [class.is-invalid]="courseForm.get('mode')?.invalid && courseForm.get('mode')?.touched">
+                  <option value="" disabled selected>Selecciona una modalidad</option>
+                  <option value="Presencial">Presencial</option>
+                  <option value="Online">Online</option>
+                  <option value="Híbrida">Híbrida</option>
+                </select>
+                <div class="invalid-feedback small mt-1">
+                  <i class="bi bi-info-circle me-1"></i>
+                  Selecciona la modalidad del curso
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                  <i class="bi bi-bar-chart me-1"></i> Nivel
+                </label>
+                <select class="form-control form-control-lg rounded-3 border-0 bg-light"
+                  formControlName="level"
+                  [class.is-invalid]="courseForm.get('level')?.invalid && courseForm.get('level')?.touched">
+                  <option value="" disabled selected>Selecciona un nivel</option>
+                  <option value="bajo">Bajo</option>
+                  <option value="medio">Medio</option>
+                  <option value="alto">Alto</option>
+                </select>
+                <div class="invalid-feedback small mt-1">
+                  <i class="bi bi-info-circle me-1"></i>
+                  Selecciona el nivel del curso
+                </div>
+              </div>
             </div>
+
+            <!-- Row 3: Certificate -->
+            <div class="row g-4 mb-4">
+              <div class="col-12">
+                <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                  <i class="bi bi-award me-1"></i> Certificado
+                </label>
+                <div class="d-flex gap-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" formControlName="certificate" [value]="true" id="certificateYes">
+                    <label class="form-check-label text-dark" for="certificateYes">
+                      <i class="bi bi-check-circle-fill text-success me-1"></i> Sí
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" formControlName="certificate" [value]="false" id="certificateNo">
+                    <label class="form-check-label text-dark" for="certificateNo">
+                      <i class="bi bi-x-circle-fill text-danger me-1"></i> No
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Row 4: Description -->
+            <div class="row g-4 mb-4">
+              <div class="col-12">
+                <label for="description" class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                  <i class="bi bi-file-text me-1"></i> Descripción
+                </label>
+                <textarea rows="5" class="form-control rounded-3 border-0 bg-light" id="description"
+                  formControlName="description" placeholder="Describe el contenido del curso..."
+                  [class.is-invalid]="courseForm.get('description')?.invalid && courseForm.get('description')?.touched"></textarea>
+                <div class="invalid-feedback small mt-1">
+                  <i class="bi bi-info-circle me-1"></i>
+                  La descripción debe tener al menos 10 caracteres
+                </div>
+                <small class="text-secondary mt-2 d-block">
+                  <i class="bi bi-info-circle me-1"></i>
+                  Mínimo 10 caracteres
+                </small>
+              </div>
+            </div>
+
+            <!-- Row 5: Study Plan and Location -->
+            <div class="row g-4 mb-4">
+              <div class="col-12 col-md-6">
+                <label for="study_plan" class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                  <i class="bi bi-calendar-check me-1"></i> Plan de estudio
+                </label>
+                <textarea rows="4" class="form-control rounded-3 border-0 bg-light" id="study_plan"
+                  formControlName="study_plan" placeholder="Ej: Módulo 1: Introducción, Módulo 2: Conceptos avanzados..."
+                  [class.is-invalid]="courseForm.get('study_plan')?.invalid && courseForm.get('study_plan')?.touched"></textarea>
+                <div class="invalid-feedback small mt-1">
+                  <i class="bi bi-info-circle me-1"></i>
+                  El plan de estudio debe tener al menos 10 caracteres
+                </div>
+                <small class="text-secondary mt-2 d-block">
+                  <i class="bi bi-info-circle me-1"></i>
+                  Describe la estructura del curso (mínimo 10 caracteres)
+                </small>
+              </div>
+              <div class="col-12 col-md-6">
+                <label for="location" class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                  <i class="bi bi-geo-alt me-1"></i> Ubicación
+                </label>
+                <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light"
+                  id="location" formControlName="location" placeholder="Ej: Desoft"
+                  [class.is-invalid]="courseForm.get('location')?.invalid && courseForm.get('location')?.touched">
+                <div class="invalid-feedback small mt-1">
+                  <i class="bi bi-info-circle me-1"></i>
+                  La ubicación debe tener al menos 10 caracteres
+                </div>
+                <small class="text-secondary mt-2 d-block">
+                  <i class="bi bi-info-circle me-1"></i>
+                  Especifica la ubicación (mínimo 10 caracteres)
+                </small>
+              </div>
+            </div>
+
+            <!-- Row 6: Duration -->
+            <div class="row g-4 mb-4">
+              <div class="col-12">
+                <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                  <i class="bi bi-clock-history me-1"></i> Duración
+                </label>
+                <div class="bg-light rounded-3 p-4">
+                  <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                      <input type="date" class="form-control rounded-3 border-0" formControlName="init_date"
+                        placeholder="Fecha inicio">
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <input type="date" class="form-control rounded-3 border-0" formControlName="end_date"
+                        placeholder="Fecha fin">
+                    </div>
+                    <div class="col-12">
+                      <input type="text" class="form-control rounded-3 border-0" formControlName="duration_time"
+                        placeholder="Ej: 12 semanas, 3 meses, 40 horas">
+                    </div>
+                  </div>
+                  <small class="text-secondary mt-3 d-block">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Fechas del curso y tiempo estimado de duración
+                  </small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Row 7: Tags -->
+            <div class="row g-4 mb-4">
+              <div class="col-12">
+                <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                  <i class="bi bi-tags me-1"></i> Etiquetas
+                </label>
+                <div class="bg-light rounded-3 p-4">
+                  <div class="row g-3">
+                    <div class="col-12 col-md-8">
+                      <input type="text" class="form-control rounded-3 border-0" formControlName="tagName"
+                        placeholder="Nombre de la etiqueta (Ej: JavaScript, Avanzado)">
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <select class="form-control rounded-3 border-0" formControlName="tagColor">
+                        <option value="primary">Azul</option>
+                        <option value="success"> Verde</option>
+                        <option value="danger"> Rojo</option>
+                        <option value="warning">Amarillo</option>
+                        <option value="info">Celeste</option>
+                        <option value="dark">Negro</option>
+                      </select>
+                    </div>
+                    <div class="col-12 text-center">
+                      <button type="button" class="btn btn-outline-primary rounded-pill px-3 py-1" (click)="addTag()">
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Agregar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <!-- Tags List -->
+                <div class="mt-3 d-flex flex-wrap gap-2 justify-content-center">
+                  <span *ngFor="let tag of tags; let i = index" 
+                    class="badge rounded-pill px-2 py-1" 
+                    [ngClass]="'bg-' + tag.color + ' bg-opacity-10 text-' + tag.color">
+                    <i class="bi bi-tag me-1"></i>
+                    {{ tag.name }}
+                    <i class="bi bi-x-circle ms-1" style="cursor: pointer;" (click)="removeTag(i)"></i>
+                  </span>
+                </div>
+                <small class="text-secondary mt-2 d-block">
+                  <i class="bi bi-info-circle me-1"></i>
+                  Agrega etiquetas para clasificar tu curso
+                </small>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="row g-4 mt-2">
+              <div class="col-12">
+                <div class="d-grid gap-2">
+                  <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-semibold py-3 shadow-sm"
+                    [disabled]="isLoading || courseForm.invalid">
+                    <div *ngIf="isLoading" class="d-flex align-items-center justify-content-center gap-2">
+                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                      <span>Creando curso...</span>
+                    </div>
+                    <div *ngIf="!isLoading">
+                      <i class="bi bi-check-circle me-2"></i>
+                      Crear Curso
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </form>
+
+          <!-- Separator -->
+          <div class="position-relative my-5">
+            <hr class="text-secondary opacity-25">
+            <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 small text-secondary">
+              ¿Cambiaste de opinión?
+            </span>
+          </div>
+
+          <!-- Cancel Button -->
+          <div class="text-center">
+            <button type="button" class="btn btn-outline-secondary rounded-3 fw-semibold px-4 py-2"
+              (click)="navigateToHome()">
+              <i class="bi bi-arrow-left me-2"></i>
+              Cancelar y volver
+            </button>
+            <p class="small text-secondary mt-3 mb-0">
+              Los cambios no serán guardados
+            </p>
+          </div>
 
         </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="text-center mt-4">
+        <small class="text-secondary opacity-50">
+          © 2026 - Cursos Holguín
+        </small>
+      </div>
+
     </div>
+  </div>
 </div>

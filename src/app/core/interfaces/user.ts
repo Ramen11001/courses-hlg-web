@@ -11,6 +11,7 @@ export interface User {
   password: string;
   role: string;
   biography: Text;
+  verified?: boolean;
 
   //Models
   comments?: Comment[];

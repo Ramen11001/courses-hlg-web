@@ -57,6 +57,16 @@ export class UserService {
     return this.http.get<User>(`${environment.baseUrl}/getCongratsMessages`);
   }
 
+  getCurrentUser(): User | null {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return null;
+    try {
+      return JSON.parse(userStr);
+    } catch {
+      return null;
+    }
+  }
+
   /**
    * Retrieves the current user's ID from localStorage.
    * @function
@@ -77,11 +87,11 @@ export class UserService {
    */
   updatedUser(id: number, userData?: Partial<Omit<User, 'password' | 'id' | 'createdAt' | 'birthday' | 'role'>>) {
     const currentUser = this.getCurrentUserId();
-    console.log('Current user ID:', currentUser, 'Profile ID:', id);
     if (!currentUser) {
       return throwError(() => new Error('No se encontró usuario logueado. Recarga la página e inicia sesión.'));
     }
-    if (id !== currentUser) {
+    const currentUserRole = this.getCurrentUser()?.role;
+    if (id !== currentUser && currentUserRole !== 'ADMIN') {
       return throwError(() => 'Solo puedes editar tu usuario');
     }
     return this.http

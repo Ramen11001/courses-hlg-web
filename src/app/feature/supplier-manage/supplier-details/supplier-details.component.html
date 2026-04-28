@@ -4,10 +4,10 @@
 
       <!-- Loading State -->
       <div *ngIf="isLoading" class="text-center py-5">
-        <div class=" loading spinner-border text-primary" role="status">
+        <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">Cargando...</span>
         </div>
-        <p class="text-secondary mt-3">Cargando detalles del curso...</p>
+        <p class="text-secondary mt-3">Cargando perfil...</p>
       </div>
 
       <!-- Error Message -->
@@ -16,116 +16,102 @@
         {{ error }}
       </div>
 
-      <!-- Course Details -->
+      <!-- User Details -->
       <div *ngIf="!isLoading && users">
 
         <!-- Return Button -->
         <div class="mb-4">
           <button (click)="navigateToHome()" class="btn btn-outline-secondary rounded-pill px-4 py-2">
-            <i class="bi bi-arrow-left me-2"></i> Volver a cursos
+            <i class="bi bi-arrow-left me-2"></i> Volver
           </button>
         </div>
 
-        <!-- Main Course Card -->
+        <!-- Main User Card -->
         <div class="card border-0 shadow-lg rounded-4 mb-4">
           <div class="card-body p-4 p-md-5">
 
-            <!-- Course Header -->
+            <!-- User Header -->
             <div class="text-center mb-4">
-              <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
-                <i class="bi bi-book-half fs-1 text-primary"></i>
+              <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-4 mb-3">
+                <span class="display-4 fw-semibold text-primary">{{ getInitials() }}</span>
               </div>
-              <h1 class="h2 fw-semibold text-dark mb-2">{{ users.firstName }}{{ users.lastName }} </h1>
+              <h1 class="h2 fw-semibold text-dark mb-1">
+                {{ users.firstName }} {{ users.lastName }}
+                <span *ngIf="users.verified" class="badge bg-success ms-2">
+                  <i class="bi bi-patch-check-fill"></i> Verificado
+                </span>
+              </h1>
+              <p class="text-secondary mb-2">
+                <i class="bi bi-envelope me-1"></i> {{ users.email }}
+              </p>
+              <p class="text-secondary mb-0" *ngIf="users.phone">
+                <i class="bi bi-telephone me-1"></i> {{ users.phone }}
+              </p>
+              <div class="mt-3">
+                <span class="badge rounded-pill text-light px-3 py-2" [ngClass]="{
+                  'bg-primary bg-opacity-10 text-primary': users.role === 'COURSE_SUPPLIER',
+                  'bg-success bg-opacity-10 text-success': users.role === 'USER',
+                  'bg-danger bg-opacity-10 text-danger': users.role === 'ADMIN'
+                }">
+                  <i class="bi bi-person-badge text-light me-1"></i>
+                  {{ users.role === 'COURSE_SUPPLIER' ? 'Profesor' :
+                  users.role === 'ADMIN' ? 'Administrador' : 'Estudiante' }}
+                </span>
+                <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-3 py-2 ms-2">
+                  <i class="bi bi-calendar me-1"></i>
+                  Miembro desde {{ users.createdAt | date: 'MMMM yyyy' }}
+                </span>
+              </div>
 
+              <!-- Verify Button (only for Admin) -->
+              <div *ngIf="isAdmin && !isCurrentUser && users.role === 'COURSE_SUPPLIER' && !users.verified"
+                class="mt-3">
+                <button class="btn btn-success rounded-pill px-4" (click)="verifyUser()">
+                  <i class="bi bi-patch-check me-2"></i>
+                  Verificar profesor
+                </button>
+              </div>
             </div>
 
-            <!-- Course Description -->
-            <div class="mb-4">
+            <!-- Biography -->
+            <div class="mb-4" *ngIf="users.biography">
               <h5 class="fw-semibold text-secondary small text-uppercase mb-3">
-                <i class="bi bi-info-circle me-1"></i> Biografía
+                <i class="bi bi-file-text me-1"></i> Biografía
               </h5>
               <p class="text-dark mb-0">{{ users.biography }}</p>
             </div>
-            <!--TODO: Haer cards-->
-            <div class="mb-4">
-              <h5 class="fw-semibold text-secondary small text-uppercase mb-3">
-                <i class="bi bi-info-circle me-1"></i> Cursos
-              </h5>
-              <p class="text-dark mb-0">{{ users.courses }}</p>
+
+          </div>
+        </div>
+
+        <!-- Courses Section (only for COURSE_SUPPLIER) -->
+        <div *ngIf="users.role === 'COURSE_SUPPLIER'" class="card border-0 shadow-lg rounded-4 mb-4">
+          <div class="card-body p-4 p-md-5">
+            <h3 class="h4 fw-semibold text-dark mb-4">
+              <i class="bi bi-book me-2"></i>
+              Cursos ({{ userCourses.length }})
+            </h3>
+
+            <!-- No Courses Message -->
+            <div *ngIf="userCourses.length === 0" class="text-center py-4">
+              <i class="bi bi-book-x display-1 text-secondary opacity-50"></i>
+              <p class="text-secondary mt-3">Este profesor no tiene cursos aún</p>
             </div>
 
-            
-
-              <div class="col-12 col-md-4">
-               
-              </div>
-              <div class="col-12 col-md-4">
-                <div class="bg-light rounded-4 p-3 text-center">
-                  <i class="bi bi-tags fs-4 text-primary"></i>
-                  <p class="mb-0 fw-semibold text-dark mt-2">Etiquetas</p>
-                  <small class="text-secondary">
-                    
-                    <ng-template #noTags>Sin etiquetas</ng-template>
-                  </small>
-                </div>
-              </div>
-            </div>
-
-            <!-- Enrollment Section -->
-            <div class="card border-0 shadow-lg rounded-4 mb-4">
-              <div class="card-body p-4 p-md-5">
-
-                <!-- Enrollment Status -->
-                <div *ngIf="isAuthenticated" class="text-center">
-                  <div *ngIf="!isEnrolled">
-                    <button class="btn btn-success btn-lg rounded-pill px-5 py-3 fw-semibold shadow-sm"
-                      (click)="enrollInCourse()" [disabled]="isEnrolling">
-                      <div *ngIf="isEnrolling" class="d-flex align-items-center gap-2">
-                        <span class="spinner-border spinner-border-sm" role="status"></span>
-                        <span>Inscribiendo...</span>
-                      </div>
-                      <div *ngIf="!isEnrolling">
-                        <i class="bi bi-person-plus me-2"></i>
-                        Inscribirme en este curso
-                      </div>
-                    </button>
-                    <p class="text-secondary small mt-2">
-                      <i class="bi bi-info-circle me-1"></i>
-                      Al inscribirte tendrás acceso a todo el contenido del curso
-                    </p>
-                  </div>
-
-                  <div *ngIf="isEnrolled">
-                    <div class="alert alert-success rounded-4">
-                      <i class="bi bi-check-circle-fill me-2"></i>
-                      ¡Estás inscrito en este curso!
-                    </div>
-                    <div class="d-flex justify-content-center gap-3">
-                      <button class="btn btn-outline-danger rounded-pill px-4" (click)="cancelEnrollment()">
-                        <i class="bi bi-x-circle me-2"></i>
-                        Cancelar inscripción
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div *ngIf="!isAuthenticated" class="text-center">
-                  <p class="text-secondary mb-2">
-                    <i class="bi bi-lock me-1"></i>
-                    Inicia sesión para inscribirte en este curso
-                  </p>
-                  <button class="btn btn-primary rounded-pill px-4" (click)="navigateToHome()">
-                    <i class="bi bi-box-arrow-in-right me-2"></i>
-                    Iniciar sesión
-                  </button>
-                </div>
+            <!-- Courses Grid -->
+            <div class="row g-4">
+              <div class="col-12 col-md-6 col-lg-4" *ngFor="let course of userCourses">
+                <app-course-card [item]="course" [currentUserId]="currentUserId"
+                  (onView)="navigateToCourseDetails($event)" (onEdit)="navigateToEditCourse($event)"
+                  (onDelete)="openDeleteModal($event)">
+                </app-course-card>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Comments Section -->
-        <div class="card border-0 shadow-lg rounded-4">
+        <!-- Comments Section (only for others, not own user, not students) -->
+        <div *ngIf="showComments && users.role === 'COURSE_SUPPLIER'" class="card border-0 shadow-lg rounded-4">
           <div class="card-body p-4 p-md-5">
 
             <h3 class="h4 fw-semibold text-dark mb-4">
@@ -134,9 +120,9 @@
             </h3>
 
             <!-- Comment Form -->
-            <div *ngIf="isAuthenticated" class="bg-light rounded-4 p-4 mb-4">
+            <div *ngIf="!isCurrentUser && currentUserId" class="bg-light rounded-4 p-4 mb-4">
               <h5 class="fw-semibold text-dark mb-3">Deja tu comentario</h5>
-              <form [formGroup]="commentForm" (ngSubmit)="onSubmit()">
+              <form [formGroup]="commentForm" (ngSubmit)="submitComment()">
                 <div class="mb-3">
                   <label for="rating" class="form-label fw-semibold text-secondary small text-uppercase">
                     <i class="bi bi-star me-1"></i> Calificación
@@ -159,28 +145,29 @@
                     placeholder="Escribe tu comentario aquí..."></textarea>
                 </div>
                 <div class="d-flex justify-content-end">
-                  <button type="submit" [disabled]="commentForm.invalid"
+                  <button type="submit" [disabled]="commentForm.invalid || isSubmitting"
                     class="btn btn-primary rounded-pill px-4 py-2 fw-semibold">
                     <i class="bi bi-send me-2"></i>
-                    Publicar comentario
+                    Publicar
                   </button>
                 </div>
               </form>
             </div>
 
-            <!-- Comments List -->
+            <!-- No Comments -->
             <div *ngIf="comments.length === 0" class="text-center py-4">
-              <i class="bi bi-chat-square-text display-6 text-secondary opacity-50"></i>
-              <p class="text-secondary mt-2 mb-0">No hay comentarios aún. Sé el primero en comentar.</p>
+              <i class="bi bi-chat-square-text display-1 text-secondary opacity-50"></i>
+              <p class="text-secondary mt-3">No hay comentarios aún.</p>
             </div>
 
+            <!-- Comments List -->
             <div *ngFor="let comment of comments" class="border-bottom pb-3 mb-3">
               <div class="d-flex justify-content-between align-items-start mb-2">
                 <div class="d-flex align-items-center gap-2">
-                  <!-- Avatar -->
-                  <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center avatar justify-content-center">
+                  <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
+                    style="width: 40px; height: 40px;">
                     <span class="fw-semibold text-primary small">
-                      {{ getUserInitials(comment.user?.firstName) }}
+                      {{ getCommentUserInitials(comment.User || comment.user) }}
                     </span>
                   </div>
                   <div>
@@ -194,20 +181,14 @@
                     </div>
                     <small class="text-secondary">
                       <i class="bi bi-person-circle me-1"></i>
-                      {{ comment.user?.firstName || comment.user?.lastName || 'Usuario' }}
+                      {{ comment.User?.firstName || comment.user?.firstName || 'Usuario' }}
                       <span class="mx-1">•</span>
                       {{ comment.createdAt | date: 'dd/MM/yyyy' }}
                     </small>
                   </div>
                 </div>
-                <button *ngIf="currentUserId === comment.user_id" type="button"
-                  class="btn btn-sm btn-outline-danger rounded-pill" data-bs-toggle="modal"
-                  [attr.data-bs-target]="'#deleteCommentModal' + comment.id">
-                  <i class="bi bi-trash me-1"></i>
-                  Eliminar
-                </button>
               </div>
-              <p class="text-dark mb-0 ps-4">{{ comment.text }}</p>
+              <p class="text-dark mb-0 ps-5">{{ comment.text }}</p>
             </div>
 
           </div>
@@ -215,43 +196,16 @@
 
       </div>
 
-      <!-- No Course Found -->
-      <div *ngIf="!isLoading && !course && !error" class="text-center py-5">
-        <i class="bi bi-book-x display-1 text-secondary opacity-50"></i>
-        <p class="text-secondary mt-3">Curso no encontrado</p>
+      <!-- No User Found -->
+      <div *ngIf="!isLoading && !users && !error" class="text-center py-5">
+        <i class="bi bi-person-x display-1 text-secondary opacity-50"></i>
+        <p class="text-secondary mt-3">Usuario no encontrado</p>
         <button (click)="navigateToHome()" class="btn btn-primary rounded-pill px-4 py-2 mt-2">
           <i class="bi bi-arrow-left me-2"></i>
-          Volver a cursos
+          Volver
         </button>
       </div>
 
     </div>
   </div>
-
-
-<!-- Delete Comment Modals -->
-<ng-container *ngFor="let comment of comments">
-  <div class="modal fade" [id]="'deleteCommentModal' + comment.id" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content rounded-4">
-        <div class="modal-header border-0">
-          <h5 class="modal-title fw-semibold">Confirmar eliminación</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <p class="text-secondary mb-0">¿Estás seguro de que deseas eliminar este comentario?</p>
-        </div>
-        <div class="modal-footer border-0">
-          <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
-            Cancelar
-          </button>
-          <button type="button" class="btn btn-danger rounded-pill px-4" (click)="deleteComment(comment.id!)"
-            data-bs-dismiss="modal">
-            <i class="bi bi-trash me-2"></i>
-            Confirmar
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</ng-container>
+</div>

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
-import {
+import { 
   ReactiveFormsModule,
   FormBuilder,
   FormGroup,
@@ -14,50 +14,38 @@ import { CommentsService } from '../../../core/services/comment.service';
 import { CourseService } from '../../../core/services/course.service';
 import { Comment } from '../../../core/interfaces/comment';
 import { UserService } from '../../../core/services/user.service.service';
-import { Enrollment } from '../../../core/interfaces/enrollment';
-import { EnrollmentService } from '../../../core/services/enrollment.service';
+import { CourseCardComponent } from '../../../shared/cards/course-card/course-card.component';
 
 @Component({
   selector: 'app-supplier-course-details',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, CourseCardComponent],
   templateUrl: './supplier-details.component.html',
 })
-export class CoursesDetailsComponent implements OnInit {
+export class UserDetailsComponent implements OnInit {
   private _authService: AuthService = inject(AuthService);
   private _commentService: CommentsService = inject(CommentsService);
   private _courseService: CourseService = inject(CourseService);
   private _userService: UserService = inject(UserService);
-  private _enrollmentService: EnrollmentService = inject(EnrollmentService);
   private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
-  course: Course | null = null;
+  users: User | null = null;
+  userCourses: Course[] = [];
   comments: Comment[] = [];
-  commentForm: FormGroup;
-  user: User[] = [];
-  users: User | null = null;;
   isLoading = true;
   error: string | null = null;
-  formValue: any;
   currentUserId: number | null = null;
-  tags: { name: string; color: string }[] = [];
-  durations: { init_date: string; end_date: string; duration_time: string }[] =
-    [];
-  isEnrolled: boolean = false;
-  enrollment: Enrollment | null = null;
-  isEnrolling: boolean = false;
-  successMessage: string | null = null;
+  currentUserRole: string | null = null;
+  commentForm: FormGroup;
+  isSubmitting = false;
 
   constructor(
     private route: ActivatedRoute,
-    private fb: FormBuilder,
     private router: Router,
+    private fb: FormBuilder,
   ) {
-    /**
-     * Initializes the comment form with validation rules:
-     * - Text: Required, minimum 3 characters
-     * - Rating: Required, between 1-5 stars
-     */
+    this.currentUserId = this._userService.getCurrentUserId();
+    this.currentUserRole = this._userService.getCurrentUser()?.role || null;
     this.commentForm = this.fb.group({
       text: ['', [Validators.required, Validators.minLength(3)]],
       rating: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
@@ -65,26 +53,65 @@ export class CoursesDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const user_id = this.route.snapshot.paramMap.get('id');
-    this.currentUserId = this._userService.getCurrentUserId();
-    if (user_id) {
-      this.loadUser(parseInt(user_id));
+    const userIdStr = this.route.snapshot.paramMap.get('id');
+    if (userIdStr) {
+      const userId = parseInt(userIdStr, 10);
+      this.loadUser(userId);
     } else {
       this.error = 'Usuario no encontrado';
       this.isLoading = false;
     }
   }
 
-  /**
-   * Loads comment course  by ID.
-   *
-   * @param {number} id - course ID to load
-   */
-  loadComments(id: number): void {
-    this._commentService.getCommentsByUser(id).subscribe({
+  loadUser(userId: number): void {
+    this.isLoading = true;
+    this._userService.getUserById(userId).subscribe({
+      next: (user) => {
+        this.users = user;
+        if (user.role === 'COURSE_SUPPLIER') {
+          this.loadUserCourses(userId);
+        }
+        if (this.shouldShowComments(user)) {
+          this.loadUserComments(userId);
+        } else {
+          this.isLoading = false;
+        }
+        this._cdr.detectChanges();
+      },
+      error: (err) => {
+        this.error = 'Error al cargar el usuario';
+        this.isLoading = false;
+        console.error(err);
+      },
+    });
+  }
+
+  private shouldShowComments(user: User): boolean {
+    if (!this.currentUserId) return false;
+    if (user.id === this.currentUserId) return false;
+    if (this.currentUserRole === 'USER') return false;
+    if (user.role === 'USER') return false;
+    return true;
+  }
+
+  loadUserCourses(userId: number): void {
+    this._courseService.allCourses().subscribe({
+      next: (courses) => {
+        this.userCourses = courses.filter(c => c.user_id === userId);
+        this._cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al cargar cursos:', err);
+      },
+    });
+  }
+
+  loadUserComments(userId: number): void {
+    this._commentService.getCommentsByUser(userId).subscribe({
       next: (comments) => {
         this.comments = comments;
         this.isLoading = false;
+        this._cdr.detectChanges();
       },
       error: (err) => {
         this.error = 'Error al cargar los comentarios';
@@ -94,188 +121,94 @@ export class CoursesDetailsComponent implements OnInit {
     });
   }
 
-  /**
-   * Loads course details by ID.
-   *
-   * @param {number} id - course ID to load
-   */
-  loadUser(id: number): void {
-    this.isLoading = true;
-    this._userService.getUserById(id).subscribe({
-      next: (user) => {
-        this.users = user;
-        this.loadComments(id);
-      },
-      error: (err) => {
-        this.error = 'Error al cargar el Usuario';
-        this.isLoading = false;
-        console.error(err);
-      },
-    });
+  get isCurrentUser(): boolean {
+    return this.currentUserId === this.users?.id;
   }
-  /**
-   * Handles comment form submission.
-   * - Validates form and authentication
-   * - Creates new comment via service
-   * - Resets form on success
-   */
-  onSubmit(): void {
-    if (this.commentForm.invalid || !this.course) return;
 
-    if (!this._authService.isAuthenticated()) {
-      this.router.navigate(['/home']);
-      return;
-    }
+  get isAdmin(): boolean {
+    return this.currentUserRole === 'ADMIN';
+  }
 
-    const commentData = {
-      text: this.commentForm.value.text,
-      rating: Number(this.commentForm.value.rating),
-      course_id: this.course.id,
-    };
+  get showComments(): boolean {
+    return !this.isCurrentUser;
+  }
 
-    this._commentService.createComment(null, commentData).subscribe({
-      next: (comment) => {
-        if (!comment.user) {
-          comment.user = {
-            id: this.currentUserId!,
-            firstName:
-              this._authService.getCurrentUserName() || 'Usuario actual',
-          };
-        }
+  get isStudent(): boolean {
+    return this.currentUserRole === 'USER';
+  }
 
-        this.comments.unshift(comment);
-        this.commentForm.reset({ text: '', rating: 5 });
+  verifyUser(): void {
+    if (!this.users || !this.isAdmin) return;
+    this.users = { ...this.users };
+
+    this._userService.updatedUser(this.users.id, { verified: true }).subscribe({
+      next: (updatedUser) => {
+        this.users = updatedUser;
+        this._cdr.detectChanges();
       },
       error: (err) => {
-        this.error = 'Error al enviar el comentario';
-        console.error(err);
+        console.error('Error al verificar usuario:', err);
       },
     });
   }
 
-  /**
-   * Check if current user is enrolled in this course
-   */
-  checkEnrollmentStatus(courseId: number): void {
-    if (!this._authService.isAuthenticated()) return;
-
-    this._enrollmentService.isEnrolled(courseId).subscribe({
-      next: (enrolled) => {
-        this.isEnrolled = enrolled;
-      },
-      error: (err) => {
-        console.error('Error checking enrollment:', err);
-      },
-    });
+  getInitials(): string {
+    if (!this.users?.firstName || !this.users?.lastName) return 'U';
+    return (this.users.firstName[0] + this.users.lastName[0]).toUpperCase();
   }
 
-  /**
-   * Enroll in current course
-   */
-  enrollInCourse(): void {
+  getCommentUserInitials(user?: User): string {
+    if (!user?.firstName || !user?.lastName) return 'U';
+    return (user.firstName[0] + user.lastName[0]).toUpperCase();
+  }
+
+  navigateToHome(): void {
+    this.router.navigate(['/home']);
+  }
+
+  navigateToCourseDetails(courseId: number): void {
+    this.router.navigate(['/courseDetails/' + courseId]);
+  }
+
+  navigateToEditCourse(courseId: number): void {
+    this.router.navigate(['/edit/' + courseId]);
+  }
+
+  openDeleteModal(course: Course): void {}
+
+  submitComment(): void {
+    if (this.commentForm.invalid || !this.users?.id || this.isSubmitting) return;
     if (!this._authService.isAuthenticated()) {
       this.router.navigate(['/login']);
       return;
     }
 
-    if (!this.course) return;
+    this.isSubmitting = true;
+    const commentData = {
+      text: this.commentForm.value.text,
+      rating: Number(this.commentForm.value.rating),
+    };
 
-    this.isEnrolling = true;
-
-    this._enrollmentService.enrollInCourse(this.course.id).subscribe({
-      next: (enrollment) => {
-        this.enrollment = enrollment;
-        this.isEnrolled = true;
-        this.isEnrolling = false;
-        this.showSuccessMessage('¡Te has inscrito exitosamente al curso!');
+    this._commentService.createCommentForUser(this.users.id, commentData).subscribe({
+      next: (comment) => {
+        const currentUser = this._userService.getCurrentUser();
+        if (comment) {
+          comment.user = currentUser ? {
+            id: currentUser.id,
+            firstName: currentUser.firstName,
+            lastName: currentUser.lastName,
+          } : undefined;
+        }
+        this.comments.unshift(comment);
+        this.commentForm.reset({ text: '', rating: 5 });
+        this.isSubmitting = false;
+        this._cdr.detectChanges();
       },
       error: (err) => {
-        this.isEnrolling = false;
-        this.error = err.message || 'Error al inscribirse en el curso';
+        this.error = 'Error al enviar el comentario';
+        this.isSubmitting = false;
         console.error(err);
       },
     });
-  }
-
-  /**
-   * Cancel enrollment
-   */
-  cancelEnrollment(): void {
-    if (!this.enrollment) return;
-
-    if (confirm('¿Estás seguro de que deseas cancelar tu inscripción?')) {
-      this._enrollmentService.cancelEnrollment(this.enrollment.id).subscribe({
-        next: () => {
-          this.isEnrolled = false;
-          this.enrollment = null;
-          this.showSuccessMessage('Has cancelado tu inscripción');
-        },
-        error: (err) => {
-          this.error = err.message || 'Error al cancelar la inscripción';
-          console.error(err);
-        },
-      });
-    }
-  }
-
-  showSuccessMessage(message: string): void {
-    this.successMessage = message;
-    setTimeout(() => {
-      this.successMessage = null;
-    }, 3000);
-  }
-
-  /**
-   * Checks if user is authenticated.
-   * @returns {boolean} Authentication status
-   */
-  get isAuthenticated(): boolean {
-    return this._authService.isAuthenticated();
-  }
-  /**
-   * Deletes a comment by ID.
-   * - Validates comment ID
-   * - Updates comments list after successful deletion
-   *
-   * @param {number} commentId - ID of the comment to delete
-   */
-  deleteComment(commentId: number): void {
-    if (!commentId) {
-      console.error('ID de comentario no válido');
-      return;
-    }
-
-    this._commentService.deleteComment(commentId).subscribe({
-      next: () => {
-        this.comments = this.comments.filter((c) => c.id !== commentId);
-      },
-      error: (err) => {
-        console.error('Error al eliminar comentario:', err);
-      },
-    });
-  }
-
-  //get use information
-  getUserInitials(firstName?: string, lastName?: string): string {
-    if (firstName && lastName) {
-      return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-    }
-    if (firstName) {
-      return firstName.charAt(0).toUpperCase();
-    }
-    return 'U';
-  }
-
-  /**
-   * Navigates to the home page.
-   * Uses Angular Router to navigate to '/porfile' route.
-   * @returns {void}
-   */
-  navigateToHome() {
-     const id = this._userService.getCurrentUserId();
-    if (id) {
-      this.router.navigate(['/home']);
-    }
-    
   }
 }

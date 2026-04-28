@@ -1,19 +1,22 @@
-import { CommonModule } from "@angular/common";
-import { Component, inject } from "@angular/core";
-import { ReactiveFormsModule, FormsModule, FormGroup, FormBuilder, Validators } from "@angular/forms";
-import { Router } from "@angular/router";
-import { UserService } from "src/app/core/services/user.service.service";
-
+import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import {
+  ReactiveFormsModule,
+  FormsModule,
+  FormGroup,
+  FormBuilder,
+  Validators,
+} from '@angular/forms';
+import { Router } from '@angular/router';
+import { UserService } from 'src/app/core/services/user.service.service';
 
 @Component({
   selector: 'app-create-course',
   standalone: true,
-  templateUrl: './create-course.course-verification.html',
+  templateUrl: './create-course-verification.component.html',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
 })
-
 export class CreateCourseComponent {
-
   private _router = inject(Router);
   private _userService = inject(UserService);
 
@@ -40,7 +43,6 @@ export class CreateCourseComponent {
     if (this.courseVerifiationForm.valid) {
       this.isLoading = true;
 
-      //TODO:
       const formData = {
         user: this.courseVerifiationForm.value.user,
         finishedourses: this.courseVerifiationForm.value.finishedourses,
@@ -51,15 +53,15 @@ export class CreateCourseComponent {
 
       if (formData) {
         if (formData.certificate === false) {
-          //TODO: TOASTSERVICE
-          console.error("Debe ofrecer certificaciones en su curso para ser una entidad verificada");
+          console.error(
+            'Debe ofrecer certificaciones en su curso para ser una entidad verificada',
+          );
         } else if (formData.certificate === false) {
-          console.error("Debe tener cursos terminados para ser una entidad verificada")
+          console.error(
+            'Debe tener cursos terminados para ser una entidad verificada',
+          );
         }
       }
-
-      //TODO: Revisar
-
     }
   }
 }

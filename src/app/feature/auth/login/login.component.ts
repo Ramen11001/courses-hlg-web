@@ -53,13 +53,14 @@ export class LoginComponent {
     this._authService.login(loginData).subscribe({
       next: (response) => {
         const token = response.token;
-        const userEmail = response.user?.email;
+        const user = response.user;
+        const userEmail = user?.email;
         const firstName =
-          response.user?.name ||
-          response.user?.firstName ||
-          response.user?.fristName;
-        const role = response.user?.role;
-        const userId = response.user?.id;
+          user?.name ||
+          user?.firstName ||
+          user?.fristName;
+        const role = user?.role;
+        const userId = user?.id;
 
         if (token && userEmail && userId) {
           this._authService.saveAuthData(
@@ -69,6 +70,7 @@ export class LoginComponent {
             role,
             firstName,
           );
+          localStorage.setItem('user', JSON.stringify(user));
           this.navigateToHome();
           this.loading = true;
         }

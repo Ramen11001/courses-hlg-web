@@ -24,20 +24,18 @@ export class CreateCourseComponent {
 
   constructor(private fb: FormBuilder) {
     this.courseForm = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(3)]],
+      title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(200)]],
       cost: [null, [Validators.required, Validators.min(0)]],
       area: ['', Validators.required],
       mode: ['', Validators.required],
       level: ['', Validators.required],
       certificate: [false, Validators.required],
-      description: ['', [Validators.minLength(10)]],
-      study_plan: ['', [Validators.minLength(10)]],
-      location: ['', [Validators.maxLength(200)]],
-      // Duration fields
+      description: ['', [Validators.required, Validators.minLength(20), Validators.maxLength(1000)]],
+      study_plan: ['', [Validators.maxLength(5000)]],
+      location: ['', [Validators.required, Validators.maxLength(200)]],
       init_date: [''],
       end_date: [''],
       duration_time: [''],
-      // Tags fields
       tagName: [''],
       tagColor: ['primary'],
     });

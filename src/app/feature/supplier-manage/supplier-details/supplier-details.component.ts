@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
-import { 
+import {
   ReactiveFormsModule,
   FormBuilder,
   FormGroup,
@@ -97,7 +97,7 @@ export class UserDetailsComponent implements OnInit {
   loadUserCourses(userId: number): void {
     this._courseService.allCourses().subscribe({
       next: (courses) => {
-        this.userCourses = courses.filter(c => c.user_id === userId);
+        this.userCourses = courses.filter((c) => c.user_id === userId);
         this._cdr.detectChanges();
       },
       error: (err) => {
@@ -177,7 +177,8 @@ export class UserDetailsComponent implements OnInit {
   openDeleteModal(course: Course): void {}
 
   submitComment(): void {
-    if (this.commentForm.invalid || !this.users?.id || this.isSubmitting) return;
+    if (this.commentForm.invalid || !this.users?.id || this.isSubmitting)
+      return;
     if (!this._authService.isAuthenticated()) {
       this.router.navigate(['/login']);
       return;
@@ -189,26 +190,30 @@ export class UserDetailsComponent implements OnInit {
       rating: Number(this.commentForm.value.rating),
     };
 
-    this._commentService.createCommentForUser(this.users.id, commentData).subscribe({
-      next: (comment) => {
-        const currentUser = this._userService.getCurrentUser();
-        if (comment) {
-          comment.user = currentUser ? {
-            id: currentUser.id,
-            firstName: currentUser.firstName,
-            lastName: currentUser.lastName,
-          } : undefined;
-        }
-        this.comments.unshift(comment);
-        this.commentForm.reset({ text: '', rating: 5 });
-        this.isSubmitting = false;
-        this._cdr.detectChanges();
-      },
-      error: (err) => {
-        this.error = 'Error al enviar el comentario';
-        this.isSubmitting = false;
-        console.error(err);
-      },
-    });
+    this._commentService
+      .createCommentForUser(this.users.id, commentData)
+      .subscribe({
+        next: (comment) => {
+          const currentUser = this._userService.getCurrentUser();
+          if (comment) {
+            comment.user = currentUser
+              ? {
+                  id: currentUser.id,
+                  firstName: currentUser.firstName,
+                  lastName: currentUser.lastName,
+                }
+              : undefined;
+          }
+          this.comments.unshift(comment);
+          this.commentForm.reset({ text: '', rating: 5 });
+          this.isSubmitting = false;
+          this._cdr.detectChanges();
+        },
+        error: (err) => {
+          this.error = 'Error al enviar el comentario';
+          this.isSubmitting = false;
+          console.error(err);
+        },
+      });
   }
 }

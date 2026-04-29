@@ -81,6 +81,7 @@ export class LoginComponent {
     });
   }
 
+  //region NAVIGATE
   navigateToSingUp() {
     this._router.navigate(['/singUp']);
   }

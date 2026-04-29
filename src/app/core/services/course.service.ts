@@ -29,6 +29,7 @@ export class CourseService {
     );
   }
 
+  //region GET
   /**
    * Fetches all courses with filters or pagination.
    */
@@ -84,6 +85,7 @@ export class CourseService {
     return this.http.get<Course[]>(`${this.apiUrl}/${user_id}`);
   }
 
+  //region POST/PUT
   /**
    * Creates or updates a course.
    *
@@ -149,6 +151,8 @@ export class CourseService {
         .pipe(catchError(this.handleError));
     }
   }
+
+  //region DELETE
   /**
    * Deletes course by ID.
    * @param {number} id - course ID to delete

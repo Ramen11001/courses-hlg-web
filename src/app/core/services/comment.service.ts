@@ -97,7 +97,7 @@ export class CommentsService {
 
     return this.http
       .post<Comment>(`${this.apiUrl}/user/${targetUserId}`, fullCommentData, {
-      
+        params: { expand: 'user' },
       })
       .pipe(catchError(this.handleError));
   }

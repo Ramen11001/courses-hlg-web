@@ -1,0 +1,113 @@
+<div class="container min-vh-100 d-flex align-items-center justify-content-center py-5">
+  <div class="row justify-content-center w-100">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+
+      <!-- Main Card -->
+      <div class="card border-0 shadow-lg rounded-4">
+        <div class="card-body p-4 p-md-5">
+
+          <!-- Icon -->
+          <div class="text-center mb-4">
+            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
+              <i class="bi bi-envelope-heart fs-1 text-primary"></i>
+            </div>
+            <h2 class="h3 fw-semibold text-dark mb-2">Bienvenido</h2>
+            <p class="text-secondary small mb-0">Ingresa tus credenciales para continuar</p>
+          </div>
+
+          <!-- Error Message -->
+          <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {{ errorMessage }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+
+          <!-- Login Form -->
+          <form [formGroup]="loginForm" (ngSubmit)="submit()">
+
+            <!-- Email -->
+            <div class="mb-4">
+              <label for="email" class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                <i class="bi bi-envelope me-1"></i> Correo electrónico
+              </label>
+              <input type="email" class="form-control form-control-lg rounded-3 border-0 bg-light" id="email"
+                formControlName="email" placeholder="tu@email.com"
+                [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+              <div class="invalid-feedback small mt-1">
+                <i class="bi bi-info-circle me-1"></i>
+                Ingresa un correo electrónico válido
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-4">
+              <label for="password" class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                <i class="bi bi-lock me-1"></i> Contraseña
+              </label>
+              <input type="password" class="form-control form-control-lg rounded-3 border-0 bg-light" id="password"
+                formControlName="password" placeholder="Tu contraseña"
+                [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+              <div class="invalid-feedback small mt-1">
+                <i class="bi bi-info-circle me-1"></i>
+                La contraseña debe tener al menos 6 caracteres
+              </div>
+            </div>
+
+            <!-- Forgot Password Link -->
+            <div class="text-center mb-4">
+              <button type="button" class="text-decoration-none small btn fw-semibold text-primary p-0 login"
+                (click)="navigateToForgotPassword()">
+                <i class="bi bi-question-circle me-1"></i>
+                ¿Olvidaste tu contraseña?
+              </button>
+            </div>
+
+            <!-- Submit -->
+            <div class="d-grid gap-2 mt-4">
+              <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-semibold py-3 shadow-sm"
+                [disabled]="loading || loginForm.invalid">
+                <div *ngIf="loading" class="d-flex align-items-center justify-content-center gap-2">
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  <span>Validando...</span>
+                </div>
+                <div *ngIf="!loading">
+                  <i class="bi bi-box-arrow-in-right me-2" (click)="navigateToHome()">
+                    Iniciar sesión
+                  </i>
+                </div>
+              </button>
+            </div>
+          </form>
+
+          <div class="position-relative my-4">
+            <hr class="text-secondary opacity-25">
+            <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 small text-secondary">
+              ¿Nuevo aquí?
+            </span>
+          </div>
+
+          <!-- Sign Up -->
+          <div class="text-center">
+            <button type="button" class="btn btn-outline-secondary rounded-3 fw-semibold px-4 py-2"
+              (click)="navigateToSingUp()">
+              <i class="bi bi-person-plus me-2"></i>
+              Crear una cuenta nueva
+            </button>
+            <p class="small text-secondary mt-3 mb-0">
+              Regístrate gratis y comienza a usar nuestra plataforma
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="text-center mt-4">
+        <small class="text-secondary opacity-50">
+          © 2026 - Cursos Holguín
+        </small>
+      </div>
+
+    </div>
+  </div>
+</div>

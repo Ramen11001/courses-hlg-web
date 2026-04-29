@@ -1,0 +1,10 @@
+.notification-item {
+  transition: background-color 0.2s;
+  &:hover {
+    background-color: #f8f9fa !important;
+  }
+}
+
+.dropdown-menu {
+  z-index: 1050;
+}

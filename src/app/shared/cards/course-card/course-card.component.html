@@ -1,0 +1,48 @@
+<div class="card border-0 shadow-sm rounded-4 h-100 hover-card">
+    <div class="bg-primary bg-opacity-10 text-center py-4 rounded-top-4">
+        <i class="bi bi-book fs-1 text-primary"></i>
+    </div>
+
+    <div class="card-body p-4 d-flex flex-column">
+        <h5 class="card-title fw-semibold text-dark mb-2">{{ item.title }}</h5>
+
+        <div class="d-flex align-items-center gap-1 mb-2">
+            <ng-container *ngFor="let star of stars; let starIndex = index">
+                <i class="bi fs-6" [ngClass]="{
+                    'bi-star-fill text-warning': item.averageRating > starIndex,
+                    'bi-star text-secondary opacity-50': item.averageRating <= starIndex
+                }"></i>
+            </ng-container>
+            <span class="ms-1 small text-secondary" *ngIf="item.averageRating > 0">
+                ({{ item.averageRating | number:'1.1-1' }})
+            </span>
+        </div>
+
+        <p class="card-text text-secondary small mb-3 flex-grow-1">
+            {{ item.description?.substring(0, 80) || 'Sin descripción' }}...
+        </p>
+
+        <div class="mb-3">
+            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
+                <i class="bi bi-tag me-1"></i> ${{ item.cost || 0 }}
+            </span>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary rounded-3 flex-grow-1" (click)="onView.emit(item.id)">
+                <i class="bi bi-eye me-1"></i> Ver
+            </button>
+
+            <ng-container *ngIf="currentUserId === item.user_id">
+                <button class="btn btn-outline-primary rounded-3" (click)="onEdit.emit(item.id)">
+                    <i class="bi bi-pencil"></i>
+                </button>
+
+                <button type="button" class="btn btn-outline-danger rounded-3" data-bs-toggle="modal"
+                    data-bs-target="#deleteModal" (click)="onDelete.emit(item)">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </ng-container>
+        </div>
+    </div>
+</div>

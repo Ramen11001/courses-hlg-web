@@ -43,7 +43,7 @@ export class AuthService {
     localStorage.setItem('token', token);
     localStorage.setItem('user_id', user_id.toString());
     localStorage.setItem('email', email);
-    localStorage.setItem('role', role);
+     localStorage.setItem('role', role);
     localStorage.setItem('firstName', firstName);
     localStorage.removeItem('fristName');
   }
@@ -84,17 +84,8 @@ export class AuthService {
   }
 
   /**
-   * Sends forgot password request to the API
-   * @param {object} data - Contains email
-   * @returns {Observable<any>}
-   */
-  forgotPassword(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/auth/forgot-password`, data);
-  }
-
-  /**
-   * Sends reset password request to the API
-   * @param {object} data - Contains token and new password
+   * Resets user password directly by email
+   * @param {object} data - Contains email and newPassword
    * @returns {Observable<any>}
    */
   resetPassword(data: any): Observable<any> {

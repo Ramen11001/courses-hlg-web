@@ -32,11 +32,11 @@ export class EditCourseComponent {
     private courseService: CourseService,
   ) {
     this.courseForm = this.fb.group({
-      title: ['', [Validators.minLength(3)]],
-      cost: [0],
-      description: ['', Validators.minLength(10)],
-      study_plan: ['', Validators.minLength(10)],
-      location: ['', Validators.minLength(10)],
+      title: ['', [Validators.required, Validators.minLength(3)]],
+      cost: [0, [Validators.min(0)]],
+      description: ['', [Validators.required]],
+      study_plan: ['', [Validators.required]],
+      location: ['', [Validators.required]],
     });
     this.courseId = Number(this.route.snapshot.paramMap.get('id'));
   }

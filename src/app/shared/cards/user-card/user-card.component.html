@@ -1,13 +1,17 @@
 <div class="card border-0 shadow-sm rounded-4 h-100 hover-card text-center">
-    <div class="bg-primary bg-opacity-10 text-center py-4 rounded-top-4">
-
+    <div class="bg-primary bg-opacity-10 text-center py-4 rounded-top-4 position-relative">
         <span class="fs-2 fw-semibold text-primary">{{ getInitials() }}</span>
-
+        <i *ngIf="userItem.verified" class="bi bi-patch-check-fill text-primary fs-4 position-absolute top-0 end-0 m-2" 
+           title="Usuario verificado" style="filter: drop-shadow(0 0 2px rgba(0,0,0,0.3));"></i>
+        <i *ngIf="!userItem.verified" class="bi bi-patch-question text-muted fs-4 position-absolute top-0 end-0 m-2 opacity-50" 
+           title="Usuario no verificado"></i>
     </div>
 
     <div class="card-body p-4 d-flex flex-column">
         <h5 class="card-title fw-semibold text-dark mb-1">
             {{ userItem.firstName }} {{ userItem.lastName }}
+            <i *ngIf="userItem.verified" class="bi bi-patch-check-fill text-primary ms-1" 
+               title="Usuario verificado"></i>
         </h5>
 
         <p class="text-secondary small mb-2">
@@ -17,13 +21,17 @@
 
         <div class="mb-3">
             <span class="badge rounded-pill text-light px-3 py-2" [ngClass]="{
-                'bg-primary bg-opacity-10 text-primary': userItem.role === 'COURSE_SUPPLIER',
-                'bg-success bg-opacity-10 text-success': userItem.role === 'USER',
-                'bg-danger bg-opacity-10 text-danger': userItem.role === 'ADMIN'
+                'bg-primary bg-opacity-10 text-primary': userItem.role?.toUpperCase() === 'COURSE_SUPPLIER'.toUpperCase(),
+                'bg-success bg-opacity-10 text-success': userItem.role?.toUpperCase() === 'USER',
+                'bg-danger bg-opacity-10 text-danger': userItem.role?.toUpperCase() === 'ADMINISTRADOR'
             }">
-                <i class="bi bi-person-badge text-light me-1"></i>
-                {{ userItem.role === 'COURSE_SUPPLIER' ? 'Profesor' :
-                userItem.role === 'ADMIN' ? 'Administrador' : 'Estudiante' }}
+                <i class="bi bi-person-badge me-1"></i>
+                {{ userItem.role?.toUpperCase() === 'COURSE_SUPPLIER'.toUpperCase() ? 'Profesor' :
+                userItem.role?.toUpperCase() === 'ADMINISTRADOR' ? 'Administrador' : 'Estudiante' }}
+            </span>
+            <span *ngIf="userItem.verified" class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2 ms-1">
+                <i class="bi bi-patch-check-fill me-1"></i>
+                Verificado
             </span>
         </div>
 

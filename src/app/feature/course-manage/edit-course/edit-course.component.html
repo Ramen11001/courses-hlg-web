@@ -48,7 +48,7 @@
                                     [class.is-invalid]="courseForm.get('title')?.invalid && courseForm.get('title')?.touched">
                                 <div class="invalid-feedback small mt-1">
                                     <i class="bi bi-info-circle me-1"></i>
-                                    El título debe tener al menos 3 caracteres
+                                    El título es obligatorio
                                 </div>
                             </div>
 
@@ -63,7 +63,7 @@
                                     [class.is-invalid]="courseForm.get('cost')?.invalid && courseForm.get('cost')?.touched">
                                 <div class="invalid-feedback small mt-1">
                                     <i class="bi bi-info-circle me-1"></i>
-                                    Ingresa un precio válido (mayor o igual a 0)
+                                    Ingresa un precio válido (0 o mayor)
                                 </div>
                             </div>
 
@@ -78,11 +78,11 @@
                                     [class.is-invalid]="courseForm.get('description')?.invalid && courseForm.get('description')?.touched"></textarea>
                                 <div class="invalid-feedback small mt-1">
                                     <i class="bi bi-info-circle me-1"></i>
-                                    La descripción debe tener al menos 10 caracteres
+                                    La descripción es obligatoria
                                 </div>
                                 <small class="text-secondary mt-2 d-block">
                                     <i class="bi bi-info-circle me-1"></i>
-                                    Mínimo 10 caracteres
+                                    Describe el contenido del curso
                                 </small>
                             </div>
 
@@ -98,11 +98,11 @@
                                     [class.is-invalid]="courseForm.get('study_plan')?.invalid && courseForm.get('study_plan')?.touched"></textarea>
                                 <div class="invalid-feedback small mt-1">
                                     <i class="bi bi-info-circle me-1"></i>
-                                    El plan de estudio debe tener al menos 10 caracteres
+                                    El plan de estudio es obligatorio
                                 </div>
                                 <small class="text-secondary mt-2 d-block">
                                     <i class="bi bi-info-circle me-1"></i>
-                                    Describe la estructura del curso (mínimo 10 caracteres)
+                                    Describe la estructura del curso
                                 </small>
                             </div>
 
@@ -118,11 +118,11 @@
                                     [class.is-invalid]="courseForm.get('location')?.invalid && courseForm.get('location')?.touched">
                                 <div class="invalid-feedback small mt-1">
                                     <i class="bi bi-info-circle me-1"></i>
-                                    La ubicación debe tener al menos 10 caracteres
+                                    La ubicación es obligatoria
                                 </div>
                                 <small class="text-secondary mt-2 d-block">
                                     <i class="bi bi-info-circle me-1"></i>
-                                    Especifica la modalidad o ubicación (mínimo 10 caracteres)
+                                    Especifica la modalidad o ubicación
                                 </small>
                             </div>
 

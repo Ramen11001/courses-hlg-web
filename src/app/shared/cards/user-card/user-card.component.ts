@@ -5,6 +5,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   selector: 'app-user-card',
   standalone: true,
   templateUrl: './user-card.component.html',
+  styleUrls: ['./user-card.component.scss'],
   imports: [CommonModule, NgClass],
 })
 export class UserCardComponent {

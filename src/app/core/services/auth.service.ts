@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 /**
  * Authentication service responsible for handling login, logout, and session management.
@@ -13,24 +13,10 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
-  /**
-   * Base URL for the authentication API, sourced from environment configuration.
-   * @type {string}
-   * @private
-   */
   private baseUrl = environment.baseUrl;
-  /**
-   * Instance of HttpClient used for making HTTP requests.
-   * @type {HttpClient}
-   * @private
-   */
   private http = inject(HttpClient);
-  /**
-   * Instance of Router used for navigation between routes.
-   * @type {Router}
-   * @private
-   */
   private router = inject(Router);
+
   /**
    * Sends login request to the authentication API.
    *
@@ -42,17 +28,24 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/auth/login`, user);
   }
 
-  singUp() {}
-
   /**
    * In charge of storing elements of the user model.
    *
    * @function
    */
-  saveAuthData(token: string, email: string, user_id: number): void {
+  saveAuthData(
+    token: string,
+    email: string,
+    user_id: number,
+    role: string,
+    firstName: string,
+  ): void {
     localStorage.setItem('token', token);
-    localStorage.setItem('email', email);
     localStorage.setItem('user_id', user_id.toString());
+    localStorage.setItem('email', email);
+    localStorage.setItem('role', role);
+    localStorage.setItem('firstName', firstName);
+    localStorage.removeItem('fristName');
   }
 
   /**
@@ -60,10 +53,14 @@ export class AuthService {
    *
    * @function
    */
-  logout() {
-    localStorage.removeItem('token'); // Delete token
-    localStorage.removeItem('email'); // Delete email
-    this.router.navigate(['/login']); // Redirige al usuario a /login
+ logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('email');
+    localStorage.removeItem('role');
+    localStorage.removeItem('firstName');
+    localStorage.removeItem('fristName');
+    this.router.navigate(['/login']);
   }
   /**
    * Retrieves the stored authentication token from local storage.
@@ -87,21 +84,6 @@ export class AuthService {
   }
 
   /**
-   * Retrieves the current user's ID from localStorage.
-   * This is more secure than decoding the JWT token on the client side.
-   *
-   * @function
-   * @returns {number | null} - Returns the user ID if available, otherwise null.
-   */
-  getCurrentUserId(): number | null {
-    const user_id = localStorage.getItem('user_id');
-    return user_id ? parseInt(user_id, 10) : null;
-  }
-
-  signUp(user: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/auth/register`, user);
-  }
-  /**
    * Sends forgot password request to the API
    * @param {object} data - Contains email
    * @returns {Observable<any>}
@@ -117,5 +99,10 @@ export class AuthService {
    */
   resetPassword(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/auth/reset-password`, data);
+  }
+
+  //get user firstName
+  getCurrentUserName(): string | null {
+    return localStorage.getItem('firstName') || localStorage.getItem('fristName');
   }
 }

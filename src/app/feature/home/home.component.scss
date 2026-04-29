@@ -1,0 +1,41 @@
+ .hover-card {
+     transition: transform 0.2s ease, box-shadow 0.2s ease;
+ }
+
+ .hover-card:hover {
+     transform: translateY(-4px);
+     box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.1) !important;
+ }
+
+ .loading-spinner {
+     width: 3rem;
+     height: 3rem;
+ }
+
+ .overflow-auto {
+     overflow-x: auto;
+     scrollbar-width: thin;
+     scrollbar-color: var(--bs-primary) var(--bs-light);
+ }
+
+ .overflow-auto::-webkit-scrollbar {
+     height: 6px;
+ }
+
+ .overflow-auto::-webkit-scrollbar-track {
+     background: #f1f1f1;
+     border-radius: 10px;
+ }
+
+ .overflow-auto::-webkit-scrollbar-thumb {
+     background: var(--bs-primary);
+     border-radius: 10px;
+ }
+
+ .overflow-auto::-webkit-scrollbar-thumb:hover {
+     background: var(--bs-primary-dark);
+ }
+
+ .bg-gradient-warning {
+     background: linear-gradient(135deg, #fff3e0 0%, #ffe0b3 100%);
+ }

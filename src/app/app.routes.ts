@@ -1,53 +1,60 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './features/auth/login/login.component';
-import { SignUpComponent } from './features/auth/sign-up/sign-up.component';
-import { ForgotPasswordComponent } from './features/auth/forgot-password/forgot-password.component';
-
+import { SignUpComponent } from './feature/auth/sign-up/sign-up.component';
+import { ForgotPasswordComponent } from './feature/auth/forgot-password/forgot-password.component';
+import { LoginComponent } from './feature/auth/login/login.component';
+import { HomeComponent } from './feature/home/home.component';
+import { CreateCourseComponent } from './feature/course-manage/create-course/create-course.component';
+import { CoursesDetailsComponent } from './feature/course-manage/course-details/course-details.component';
+import { authGuard } from './core/guards/auth-guard';
+import { ProfileComponent } from './feature/supplier-manage/profile.component';
+import { EditCourseComponent } from './feature/course-manage/edit-course/edit-course.component';
+import { UserDetailsComponent } from './feature/supplier-manage/supplier-details/supplier-details.component';
 
 export const routes: Routes = [
-  /**
-   * Redirects the base URL (`/`) to the login page.
-   * Ensures a default route is provided when no specific path is entered.
-   *
-   * @route /
-   */
   {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',
   },
 
-  /**
-   * Route for the login page.
-   * Displays the `LoginComponent` where users can authenticate.
-   *
-   * @route /login
-   * @component LoginComponent
-   */
   {
     path: 'login',
     component: LoginComponent,
   },
-  /**
-   * Route for the login page.
-   * Displays the `LoginComponent` where users can authenticate.
-   *
-   * @route /login
-   * @component LoginComponent
-   */
+
   {
     path: 'singUp',
     component: SignUpComponent,
   },
-  /**
-   * Route for the login page.
-   * Displays the `LoginComponent` where users can authenticate.
-   *
-   * @route /login
-   * @component LoginComponent
-   */
+
   {
     path: 'forgotPassword',
     component: ForgotPasswordComponent,
+  },
+
+  {
+    path: 'home',
+    component: HomeComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'createCourse',
+    component: CreateCourseComponent,
+  },
+  {
+    path: 'courseDetails/:id',
+    component: CoursesDetailsComponent,
+  },
+  {
+    path: 'edit/:id',
+    component: EditCourseComponent,
+  },
+  {
+    path: 'user/:id',
+    component: ProfileComponent,
+  },
+  {
+    path: 'userDetails/:id',
+    component: UserDetailsComponent,
   },
 ];

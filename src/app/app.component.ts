@@ -13,7 +13,7 @@ import { RouterModule } from '@angular/router';
   selector: 'app-root',
   standalone: true,
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+  styleUrls: ['./app.component.scss'],
   imports: [HttpClientModule, RouterModule],
 })
 export class AppComponent {

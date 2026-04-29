@@ -1,0 +1,13 @@
+ .hover-card {
+     transition: transform 0.2s ease, box-shadow 0.2s ease;
+ }
+
+ .hover-card:hover {
+     transform: translateY(-4px);
+     box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1) !important;
+ }
+
+ .loading-spinner {
+     width: 3rem;
+     height: 3rem;
+ }

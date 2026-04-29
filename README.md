@@ -4,13 +4,32 @@ WEB edu-hlg-web, para la gestión de un catálogo de cursos públicos y privados
 
 ### Tabla de Contenidos
 
-- Descripción del Proyecto:
+- Descripción del Proyecto
+- Instalación
+- Tecnologías Utilizadas
 
 ### Descripción del Proyecto
 
 Esta web constituye el frontend de un sistema de catálogo de cursos para la provincia de Holguín, 
 
 El proyecto nace de la necesidad de centralizar y digitalizar la oferta educativa en la provincia, facilitando el acceso a la información sobre cursos disponibles tanto en el sector estatal como privado.
+
+### Instalación
+
+- Primero se debe clonar el repositorio de gitHub
+
+- Luego, el usuario debe en la consola correr el comando de:
+
+```bash
+# At project's root directory
+npm install
+```
+- Una vez terminado ese proceso, correr el comando:
+
+```bash
+# At project's root directory
+ng serve
+```
 
 ### Tecnologías Utilizadas
 

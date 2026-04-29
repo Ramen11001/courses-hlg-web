@@ -4,12 +4,11 @@
         <div class="col-12">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
                 <!-- Welcome Section -->
-                <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-3 mb-4">
                     <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3">
                         <i class="bi bi-mortarboard-fill fs-4 text-primary"></i>
                     </div>
                     <div>
-
                         <h1 class="h3 fw-semibold text-dark mb-0">Bienvenido</h1>
                         <p class="text-secondary small mb-0">Explora y gestiona tus cursos</p>
                     </div>
@@ -17,343 +16,407 @@
 
                 <!-- Action Buttons -->
                 <div class="d-flex align-items-center gap-2">
+                    <!-- LG -->
                     <app-notification-bell></app-notification-bell>
-                    <div class="dropdown">
-                    <button class="btn btn-outline-secondary rounded-pill px-3 py-2 d-flex align-items-center gap-2"
-                        type="button" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                        <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-1">
-                            <i class="bi bi-person-circle fs-5 text-primary"></i>
+                    <div class="d-none d-sm-block">
+                        <div class="dropdown">
+                            <button
+                                class="btn btn-outline-secondary border-primary rounded-pill px-3 py-2 d-flex align-items-center gap-2"
+                                type="button" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-1">
+                                    <i class="bi bi-person-circle fs-5 text-primary"></i>
+                                </div>
+                                <span class="fw-semibold text-dark">Mi cuenta</span>
+                                <i class="bi bi-chevron-down fs-6 text-secondary"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end rounded-3 border-0 shadow-lg mt-2 p-2"
+                                aria-labelledby="userMenuButton" style="min-width: 200px;">
+                                <li>
+                                    <a class="dropdown-item rounded-2 px-3 py-2 d-flex align-items-center gap-3"
+                                        (click)="goToMyProfile()" style="cursor: pointer;">
+                                        <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-2">
+                                            <i class="bi bi-person fs-6 text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <span class="fw-semibold">Mi perfil</span>
+                                            <small class="text-secondary d-block">Ver y editar tu información</small>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider my-1">
+                                </li>
+                                <ng-container *ngIf="cantCreate">
+                                    <li>
+                                        <a class="dropdown-item rounded-2 px-3 py-2 d-flex align-items-center gap-3"
+                                            (click)="navigateToCreateCourse()" style="cursor: pointer;">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-2">
+                                                <i class="bi bi-plus-circle fs-6 text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <span class="fw-semibold">Crear curso</span>
+                                                <small class="text-secondary d-block">Solo profesores</small>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider my-1">
+                                    </li>
+                                </ng-container>
+                                <li>
+                                    <a class="dropdown-item rounded-2 px-3 py-2 d-flex align-items-center gap-3 text-danger"
+                                        (click)="onsubmit()" style="cursor: pointer;">
+                                        <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex p-2">
+                                            <i class="bi bi-box-arrow-right fs-6 text-danger"></i>
+                                        </div>
+                                        <div>
+                                            <span class="fw-semibold">Cerrar sesión</span>
+                                            <small class="text-secondary d-block">Salir de tu cuenta</small>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
-                        <span class="fw-semibold text-dark">Mi cuenta</span>
-                        <i class="bi bi-chevron-down fs-6 text-secondary"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end rounded-3 border-0 shadow-lg mt-2 p-2"
-                        aria-labelledby="userMenuButton" style="min-width: 200px;">
-                        <li>
-                            <a class="dropdown-item rounded-2 px-3 py-2 d-flex align-items-center gap-3"
-                                (click)="goToMyProfile()" style="cursor: pointer;">
-                                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-2">
-                                    <i class="bi bi-person fs-6 text-primary"></i>
+                    </div>
+                    <!-- SM -->
+                    <div class="small d-sm-none d-block mb-4">
+                        <div class="dropdown">
+                            <button
+                                class="btn btn-outline-secondary border-primary rounded-pill px-3 py-2 d-flex align-items-center gap-2"
+                                type="button" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+
+                                <span class="fw-semibold text-dark">...</span>
+                                <i class="bi bi-chevron-down fs-6 text-secondary"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end rounded-3 border-0 shadow-lg mt-2 p-2"
+                                aria-labelledby="userMenuButton" style="min-width: 200px;">
+                                <li>
+                                    <a class="dropdown-item rounded-2 px-3 py-2 d-flex align-items-center gap-3"
+                                        (click)="goToMyProfile()" style="cursor: pointer;">
+                                        <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-2">
+                                            <i class="bi bi-person fs-6 text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <span class="fw-semibold">Mi perfil</span>
+                                            <small class="text-secondary d-block">Ver y editar tu información</small>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider my-1">
+                                </li>
+                                <ng-container *ngIf="cantCreate">
+                                    <li>
+                                        <a class="dropdown-item rounded-2 px-3 py-2 d-flex align-items-center gap-3"
+                                            (click)="navigateToCreateCourse()" style="cursor: pointer;">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-2">
+                                                <i class="bi bi-plus-circle fs-6 text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <span class="fw-semibold">Crear curso</span>
+                                                <small class="text-secondary d-block">Solo profesores</small>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider my-1">
+                                    </li>
+                                </ng-container>
+                                <li>
+                                    <a class="dropdown-item rounded-2 px-3 py-2 d-flex align-items-center gap-3 text-danger"
+                                        (click)="onsubmit()" style="cursor: pointer;">
+                                        <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex p-2">
+                                            <i class="bi bi-box-arrow-right fs-6 text-danger"></i>
+                                        </div>
+                                        <div>
+                                            <span class="fw-semibold">Cerrar sesión</span>
+                                            <small class="text-secondary d-block">Salir de tu cuenta</small>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Filter Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <form [formGroup]="filterForm">
+                            <div class="row g-3 align-items-end">
+                                <!-- Search by Name -->
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                                        <i class="bi bi-search me-1"></i> Buscar curso
+                                    </label>
+                                    <input type="text" class="form-control rounded-3 border-0 bg-light"
+                                        formControlName="filterName" placeholder="Nombre del curso...">
                                 </div>
-                                <div>
-                                    <span class="fw-semibold">Mi perfil</span>
-                                    <small class="text-secondary d-block">Ver y editar tu información</small>
+
+                                <!-- Min Price -->
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                                        <i class="bi bi-currency-dollar me-1"></i> Precio mínimo
+                                    </label>
+                                    <input type="number" class="form-control rounded-3 border-0 bg-light"
+                                        formControlName="minPrice" placeholder="$ 0">
                                 </div>
-                            </a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider my-1">
-                        </li>
-                        <ng-container *ngIf="cantCreate">
-                            <li>
-                                <a class="dropdown-item rounded-2 px-3 py-2 d-flex align-items-center gap-3"
-                                    (click)="navigateToCreateCourse()" style="cursor: pointer;">
-                                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-2">
-                                        <i class="bi bi-plus-circle fs-6 text-primary"></i>
-                                    </div>
-                                    <div>
-                                        <span class="fw-semibold">Crear curso</span>
-                                        <small class="text-secondary d-block">Solo profesores</small>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider my-1">
-                            </li>
+
+                                <!-- Max Price -->
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                                        <i class="bi bi-currency-dollar me-1"></i> Precio máximo
+                                    </label>
+                                    <input type="number" class="form-control rounded-3 border-0 bg-light"
+                                        formControlName="maxPrice" placeholder="$ 1000">
+                                </div>
+
+                                <!-- Filter Button -->
+                                <div class="col-12 col-md-2">
+                                    <button class="btn btn-primary w-100 rounded-3 fw-semibold py-2" type="button"
+                                        (click)="getCourse()">
+                                        <i class="bi bi-funnel me-2"></i>
+                                        Filtrar
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Popular Courses Section -->
+        <div *ngIf="popularCourses.length > 0" class="row mb-5">
+            <div class="col-12">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center gap-2">
+                        <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex p-2">
+                            <i class="bi bi-stars fs-4 text-warning"></i>
+                        </div>
+                        <div>
+                            <h2 class="h4 fw-semibold text-dark mb-0">Destacados</h2>
+                            <p class="text-secondary small mb-0">Cursos con mejor calificación</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="d-flex justify-content-center gap-4 flex-wrap">
+                    <div class="card border-0 shadow-sm rounded-4 hover-card"
+                        style="min-width: 280px; max-width: 280px;" *ngFor="let popular of popularCourses">
+                        <div class="position-relative">
+                            <div class="position-absolute top-0 start-0 mt-2 ms-2">
+                                <span class="badge bg-warning rounded-pill px-2 py-1">
+                                    <i class="bi bi-fire me-1"></i>Hot
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-warning text-center py-4 rounded-top-4">
+                            <i class="bi bi-award-fill fs-1 text-warning"></i>
+                        </div>
+
+                        <div class="card-body p-3">
+                            <h6 class="card-title fw-semibold text-dark mb-2">{{ popular.title | slice:0:25 }}{{
+                                popular.title.length > 25 ? '...' : '' }}</h6>
+
+                            <div class="d-flex align-items-center gap-1 mb-2">
+                                <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
+                                    <i class="bi fs-6"
+                                        [ngClass]="{'bi-star-fill text-warning': $any(popular).averageRating > i, 'bi-star text-secondary': $any(popular).averageRating <= i}"></i>
+                                </ng-container>
+                                <span class="small text-secondary ms-1">{{ $any(popular).averageRating || 0 |
+                                    number:'1.1-1' }}</span>
+                            </div>
+
+                            <p class="text-secondary small mb-2">
+                                <i class="bi bi-currency-dollar me-1"></i>${{ popular.cost || 0 }}
+                            </p>
+
+                            <button class="btn btn-sm btn-outline-warning rounded-3 flex-grow-1 w-100"
+                                (click)="navigateToDetailsCourse(popular.id)">
+                                <i class="bi bi-play-circle me-1"></i>Ver curso
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Suggested Courses Section -->
+        <div *ngIf="suggestedCourses.length > 0" class="row mb-5">
+            <div class="col-12">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center gap-2">
+                        <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex p-2">
+                            <i class="bi bi-lightbulb fs-4 text-info"></i>
+                        </div>
+                        <div>
+                            <h2 class="h4 fw-semibold text-dark mb-0">Sugeridos para ti</h2>
+                            <p class="text-secondary small mb-0">Basado en tus cursos inscritos</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="d-flex justify-content-center gap-4 flex-wrap">
+                    <div class="card border-0 shadow-sm rounded-4 hover-card"
+                        style="min-width: 280px; max-width: 280px;" *ngFor="let suggested of suggestedCourses">
+                        <div class="bg-gradient-info text-center py-4 rounded-top-4">
+                            <i class="bi bi-stars fs-1 text-info"></i>
+                        </div>
+
+                        <div class="card-body p-3">
+                            <h6 class="card-title fw-semibold text-dark mb-2">{{ suggested.title | slice:0:25 }}{{
+                                suggested.title.length > 25 ? '...' : '' }}</h6>
+
+                            <p class="text-secondary small mb-2">
+                                <i class="bi bi-currency-dollar me-1"></i>${{ suggested.cost || 0 }}
+                            </p>
+
+                            <button class="btn btn-sm btn-outline-info rounded-3 flex-grow-1 w-100"
+                                (click)="navigateToDetailsCourse(suggested.id)">
+                                <i class="bi bi-play-circle me-1"></i>Ver curso
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+
+        <div *ngIf="isLoading" class="text-center py-5">
+            <div class="spinner-border text-primary loading-spinner" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="text-secondary mt-3">Cargando cursos...</p>
+        </div>
+
+        <!-- Courses Grid -->
+
+        <div *ngIf="!isLoading">
+            <div class="row g-4 mb-4">
+                <div class="col-12" *ngIf="course.length === 0">
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox fs-1 text-secondary opacity-50"></i>
+                        <p class="text-secondary mt-3">No hay cursos disponibles</p>
+                        <ng-container *ngIf="cantCreate === true">
+                            <button class="btn btn-outline-primary rounded-3 mt-2" (click)="navigateToCreateCourse()">
+                                <i class="bi bi-plus-circle me-2"></i>
+                                Crear el primer curso
+                            </button>
                         </ng-container>
-                        <li>
-                            <a class="dropdown-item rounded-2 px-3 py-2 d-flex align-items-center gap-3 text-danger"
-                                (click)="onsubmit()" style="cursor: pointer;">
-                                <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex p-2">
-                                    <i class="bi bi-box-arrow-right fs-6 text-danger"></i>
-                                </div>
-                                <div>
-                                    <span class="fw-semibold">Cerrar sesión</span>
-                                    <small class="text-secondary d-block">Salir de tu cuenta</small>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
+                <h6 class="h4 fw-semibold text-dark mb-0 text-center">Cursos Disponibles</h6>
+                <div class="col-12 col-sm-6 col-lg-4 col-xl-3" *ngFor="let c of course">
+                    <app-course-card [item]="c" [currentUserId]="id" (onView)="navigateToDetailsCourse($event)"
+                        (onEdit)="navigateToEditCourse($event)" (onDelete)="openDeleteModal($event)">
+                    </app-course-card>
 
-    <!-- Filter Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-body p-4">
-                    <form [formGroup]="filterForm">
-                        <div class="row g-3 align-items-end">
-                            <!-- Search by Name -->
-                            <div class="col-12 col-md-4">
-                                <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
-                                    <i class="bi bi-search me-1"></i> Buscar curso
-                                </label>
-                                <input type="text" class="form-control rounded-3 border-0 bg-light"
-                                    formControlName="filterName" placeholder="Nombre del curso...">
-                            </div>
+                </div>
 
-                            <!-- Min Price -->
-                            <div class="col-12 col-md-3">
-                                <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
-                                    <i class="bi bi-currency-dollar me-1"></i> Precio mínimo
-                                </label>
-                                <input type="number" class="form-control rounded-3 border-0 bg-light"
-                                    formControlName="minPrice" placeholder="$ 0">
-                            </div>
+                <!-- Users Section -->
+                <div class="row g-4 mb-5">
+                    <div class="col-12">
+                        <h3 class="h4 fw-semibold text-dark mb-3 text-center">
+                            <i class="bi bi-people me-2"></i>
+                            Usuarios ({{ user.length }})
+                        </h3>
+                    </div>
 
-                            <!-- Max Price -->
-                            <div class="col-12 col-md-3">
-                                <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
-                                    <i class="bi bi-currency-dollar me-1"></i> Precio máximo
-                                </label>
-                                <input type="number" class="form-control rounded-3 border-0 bg-light"
-                                    formControlName="maxPrice" placeholder="$ 1000">
-                            </div>
-
-                            <!-- Filter Button -->
-                            <div class="col-12 col-md-2">
-                                <button class="btn btn-primary w-100 rounded-3 fw-semibold py-2" type="button"
-                                    (click)="getCourse()">
-                                    <i class="bi bi-funnel me-2"></i>
-                                    Filtrar
-                                </button>
-                            </div>
+                    <!-- Loading Users -->
+                    <div *ngIf="isLoading" class="col-12 text-center py-4">
+                        <div class="spinner-border text-primary spinner-border-sm" role="status">
+                            <span class="visually-hidden">Cargando usuarios...</span>
                         </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Popular Courses Section -->
-    <div *ngIf="popularCourses.length > 0" class="row mb-5">
-        <div class="col-12">
-            <div class="text-center mb-4">
-                <div class="d-inline-flex align-items-center gap-2">
-                    <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex p-2">
-                        <i class="bi bi-stars fs-4 text-warning"></i>
-                    </div>
-                    <div>
-                        <h2 class="h4 fw-semibold text-dark mb-0">Destacados</h2>
-                        <p class="text-secondary small mb-0">Cursos con mejor calificación</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12">
-            <div class="d-flex justify-content-center gap-4 flex-wrap">
-                <div class="card border-0 shadow-sm rounded-4 hover-card" style="min-width: 280px; max-width: 280px;"
-                    *ngFor="let popular of popularCourses">
-                    <div class="position-relative">
-                        <div class="position-absolute top-0 start-0 mt-2 ms-2">
-                            <span class="badge bg-warning rounded-pill px-2 py-1">
-                                <i class="bi bi-fire me-1"></i>Hot
-                            </span>
-                        </div>
+                        <p class="text-secondary mt-2 small">Cargando usuarios...</p>
                     </div>
 
-                    <div class="bg-gradient-warning text-center py-4 rounded-top-4">
-                        <i class="bi bi-award-fill fs-1 text-warning"></i>
-                    </div>
-
-                    <div class="card-body p-3">
-                        <h6 class="card-title fw-semibold text-dark mb-2">{{ popular.title | slice:0:25 }}{{
-                            popular.title.length > 25 ? '...' : '' }}</h6>
-
-                        <div class="d-flex align-items-center gap-1 mb-2">
-                            <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
-                                <i class="bi fs-6"
-                                    [ngClass]="{'bi-star-fill text-warning': $any(popular).averageRating > i, 'bi-star text-secondary': $any(popular).averageRating <= i}"></i>
-                            </ng-container>
-                            <span class="small text-secondary ms-1">{{ $any(popular).averageRating || 0 |
-                                number:'1.1-1' }}</span>
+                    <!-- Users Cards -->
+                    <ng-container *ngIf="!isLoading">
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let userItem of user">
+                            <app-user-card [userItem]="userItem" (onViewProfile)="navigateToDetailsUser($event)">
+                            </app-user-card>
                         </div>
 
-                        <p class="text-secondary small mb-2">
-                            <i class="bi bi-currency-dollar me-1"></i>${{ popular.cost || 0 }}
-                        </p>
-
-                        <button class="btn btn-sm btn-outline-warning rounded-3 flex-grow-1 w-100"
-                            (click)="navigateToDetailsCourse(popular.id)">
-                            <i class="bi bi-play-circle me-1"></i>Ver curso
-                        </button>
-                    </div>
-                </div>
-            </div>
-    </div>
-  </div>
-
-  <!-- Suggested Courses Section -->
-  <div *ngIf="suggestedCourses.length > 0" class="row mb-5">
-    <div class="col-12">
-      <div class="text-center mb-4">
-        <div class="d-inline-flex align-items-center gap-2">
-          <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex p-2">
-            <i class="bi bi-lightbulb fs-4 text-info"></i>
-          </div>
-          <div>
-            <h2 class="h4 fw-semibold text-dark mb-0">Sugeridos para ti</h2>
-            <p class="text-secondary small mb-0">Basado en tus cursos inscritos</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-12">
-      <div class="d-flex justify-content-center gap-4 flex-wrap">
-        <div class="card border-0 shadow-sm rounded-4 hover-card" style="min-width: 280px; max-width: 280px;"
-             *ngFor="let suggested of suggestedCourses">
-          <div class="bg-gradient-info text-center py-4 rounded-top-4">
-            <i class="bi bi-stars fs-1 text-info"></i>
-          </div>
-
-          <div class="card-body p-3">
-            <h6 class="card-title fw-semibold text-dark mb-2">{{ suggested.title | slice:0:25 }}{{
-              suggested.title.length > 25 ? '...' : '' }}</h6>
-            
-            <p class="text-secondary small mb-2">
-              <i class="bi bi-currency-dollar me-1"></i>${{ suggested.cost || 0 }}
-            </p>
-
-            <button class="btn btn-sm btn-outline-info rounded-3 flex-grow-1 w-100"
-                    (click)="navigateToDetailsCourse(suggested.id)">
-              <i class="bi bi-play-circle me-1"></i>Ver curso
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Loading Spinner -->
-
-    <div *ngIf="isLoading" class="text-center py-5">
-        <div class="spinner-border text-primary loading-spinner" role="status">
-            <span class="visually-hidden">Cargando...</span>
-        </div>
-        <p class="text-secondary mt-3">Cargando cursos...</p>
-    </div>
-
-    <!-- Courses Grid -->
-
-    <div *ngIf="!isLoading">
-        <div class="row g-4 mb-4">
-            <div class="col-12" *ngIf="course.length === 0">
-                <div class="text-center py-5">
-                    <i class="bi bi-inbox fs-1 text-secondary opacity-50"></i>
-                    <p class="text-secondary mt-3">No hay cursos disponibles</p>
-                    <ng-container *ngIf="cantCreate === true">
-                        <button class="btn btn-outline-primary rounded-3 mt-2" (click)="navigateToCreateCourse()">
-                            <i class="bi bi-plus-circle me-2"></i>
-                            Crear el primer curso
-                        </button>
+                        <!-- No Users Message -->
+                        <div *ngIf="user.length === 0 && !isLoading" class="col-12">
+                            <div class="text-center py-4">
+                                <i class="bi bi-people fs-1 text-secondary opacity-50"></i>
+                                <p class="text-secondary mt-2">No hay usuarios registrados</p>
+                            </div>
+                        </div>
                     </ng-container>
                 </div>
             </div>
 
-            <h6 class="h4 fw-semibold text-dark mb-0 text-center">Cursos Disponibles</h6>
-            <div class="col-12 col-sm-6 col-lg-4 col-xl-3" *ngFor="let c of course">
-                <app-course-card [item]="c" [currentUserId]="id" (onView)="navigateToDetailsCourse($event)"
-                    (onEdit)="navigateToEditCourse($event)" (onDelete)="openDeleteModal($event)">
-                </app-course-card>
-
-            </div>
-
-            <!-- Users Section -->
-            <div class="row g-4 mb-5">
-                <div class="col-12">
-                    <h3 class="h4 fw-semibold text-dark mb-3 text-center">
-                        <i class="bi bi-people me-2"></i>
-                        Usuarios ({{ user.length }})
-                    </h3>
-                </div>
-
-                <!-- Loading Users -->
-                <div *ngIf="isLoading" class="col-12 text-center py-4">
-                    <div class="spinner-border text-primary spinner-border-sm" role="status">
-                        <span class="visually-hidden">Cargando usuarios...</span>
-                    </div>
-                    <p class="text-secondary mt-2 small">Cargando usuarios...</p>
-                </div>
-
-                <!-- Users Cards -->
-                <ng-container *ngIf="!isLoading">
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let userItem of user">
-                        <app-user-card [userItem]="userItem" (onViewProfile)="navigateToDetailsUser($event)">
-                        </app-user-card>
-                    </div>
-
-                    <!-- No Users Message -->
-                    <div *ngIf="user.length === 0 && !isLoading" class="col-12">
-                        <div class="text-center py-4">
-                            <i class="bi bi-people fs-1 text-secondary opacity-50"></i>
-                            <p class="text-secondary mt-2">No hay usuarios registrados</p>
-                        </div>
-                    </div>
-                </ng-container>
-            </div>
-        </div>
-
-        <!-- Modal ford delete course -->
-        <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content rounded-4 border-0 shadow-lg">
-                    <div class="modal-header border-0 pt-4 px-4">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex p-2">
-                                <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+            <!-- Modal ford delete course -->
+            <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content rounded-4 border-0 shadow-lg">
+                        <div class="modal-header border-0 pt-4 px-4">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex p-2">
+                                    <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+                                </div>
+                                <h5 class="modal-title fw-semibold text-dark">Confirmar eliminación</h5>
                             </div>
-                            <h5 class="modal-title fw-semibold text-dark">Confirmar eliminación</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body px-4">
-                        <p class="text-secondary mb-0">
-                            ¿Estás seguro de eliminar el curso
-                            <span class="text-primary fw-semibold">{{ selectedCourse?.title }}</span>?
-                        </p>
-                        <p class="text-secondary small mt-2 mb-0">
-                            <i class="bi bi-info-circle me-1"></i>
-                            Esta acción no se puede deshacer.
-                        </p>
-                    </div>
-                    <div class="modal-footer border-0 pb-4 px-4">
-                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4"
-                            data-bs-dismiss="modal">
-                            <i class="bi bi-x-circle me-2"></i>
-                            Cancelar
-                        </button>
-                        <button type="button" class="btn btn-danger rounded-pill px-4"
-                            (click)="deleteCourse(selectedCourse!.id)" data-bs-dismiss="modal">
-                            <i class="bi bi-trash me-2"></i>
-                            Confirmar
-                        </button>
+                        <div class="modal-body px-4">
+                            <p class="text-secondary mb-0">
+                                ¿Estás seguro de eliminar el curso
+                                <span class="text-primary fw-semibold">{{ selectedCourse?.title }}</span>?
+                            </p>
+                            <p class="text-secondary small mt-2 mb-0">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Esta acción no se puede deshacer.
+                            </p>
+                        </div>
+                        <div class="modal-footer border-0 pb-4 px-4">
+                            <button type="button" class="btn btn-outline-secondary rounded-pill px-4"
+                                data-bs-dismiss="modal">
+                                <i class="bi bi-x-circle me-2"></i>
+                                Cancelar
+                            </button>
+                            <button type="button" class="btn btn-danger rounded-pill px-4"
+                                (click)="deleteCourse(selectedCourse!.id)" data-bs-dismiss="modal">
+                                <i class="bi bi-trash me-2"></i>
+                                Confirmar
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Pagination -->
-        <div class="row" *ngIf="course.length > 0">
-            <div class="col-12">
-                <div class="d-flex justify-content-center gap-2">
-                    <button class="btn btn-outline-secondary rounded-3 px-4" [disabled]="currentPage === 1"
-                        (click)="prevPage()">
-                        <i class="bi bi-chevron-left me-1"></i>
-                        Anterior
-                    </button>
-                    <span class="align-self-center px-3 fw-semibold text-secondary">
-                        Página {{ currentPage }}
-                    </span>
-                    <button class="btn btn-outline-secondary rounded-3 px-4" [disabled]="!hasMore" (click)="nextPage()">
-                        Siguiente
-                        <i class="bi bi-chevron-right ms-1"></i>
-                    </button>
+            <!-- Pagination -->
+            <div class="row" *ngIf="course.length > 0">
+                <div class="col-12">
+                    <div class="d-flex justify-content-center gap-2">
+                        <button class="btn btn-outline-secondary rounded-3 px-4" [disabled]="currentPage === 1"
+                            (click)="prevPage()">
+                            <i class="bi bi-chevron-left me-1"></i>
+                            Anterior
+                        </button>
+                        <span class="align-self-center px-3 fw-semibold text-secondary">
+                            Página {{ currentPage }}
+                        </span>
+                        <button class="btn btn-outline-secondary rounded-3 px-4" [disabled]="!hasMore"
+                            (click)="nextPage()">
+                            Siguiente
+                            <i class="bi bi-chevron-right ms-1"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>

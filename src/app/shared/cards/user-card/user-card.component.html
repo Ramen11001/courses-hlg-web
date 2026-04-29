@@ -1,8 +1,8 @@
 <div class="card border-0 shadow-sm rounded-4 h-100 hover-card text-center">
     <div class="bg-primary bg-opacity-10 text-center py-4 rounded-top-4">
-        <div class="bg-primary bg-opacity-25 rounded-circle d-inline-flex p-3">
-            <span class="fs-2 fw-semibold text-primary">{{ getInitials() }}</span>
-        </div>
+
+        <span class="fs-2 fw-semibold text-primary">{{ getInitials() }}</span>
+
     </div>
 
     <div class="card-body p-4 d-flex flex-column">
@@ -22,8 +22,8 @@
                 'bg-danger bg-opacity-10 text-danger': userItem.role === 'ADMIN'
             }">
                 <i class="bi bi-person-badge text-light me-1"></i>
-                {{ userItem.role === 'COURSE_SUPPLIER' ? 'Profesor' : 
-                   userItem.role === 'ADMIN' ? 'Administrador' : 'Estudiante' }}
+                {{ userItem.role === 'COURSE_SUPPLIER' ? 'Profesor' :
+                userItem.role === 'ADMIN' ? 'Administrador' : 'Estudiante' }}
             </span>
         </div>
 
@@ -32,9 +32,8 @@
             Miembro desde {{ userItem.createdAt | date: 'MMM yyyy' }}
         </p>
 
-<div class="d-flex gap-2">
-            <button class="btn btn-outline-primary rounded-3 flex-grow-1"
-                (click)="onView()">
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary rounded-3 flex-grow-1" (click)="onView()">
                 <i class="bi bi-person me-1"></i>
                 Ver perfil
             </button>

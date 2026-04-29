@@ -52,13 +52,13 @@
             <!-- Edit/View Toggle -->
 
             <div class="d-flex justify-content-center gap-3 mb-4">
-              <button *ngIf="!isEditing" class="btn btn-outline-primary rounded-pill px-4" (click)="toggleEdit()">
-                <i class="bi bi-pencil me-2"></i>
-                Editar perfil
-              </button>
               <button *ngIf="!isEditing" class="btn btn-outline-primary rounded-pill px-4" (click)="navigateToHome()">
                 <i class="bi bi-arrow-left me-2"></i>
                 Volver
+              </button>
+              <button *ngIf="!isEditing" class="btn btn-outline-primary rounded-pill px-4" (click)="toggleEdit()">
+                <i class="bi bi-pencil me-2"></i>
+                Editar perfil
               </button>
 
               <button *ngIf="!isEditing" class="btn btn-outline-danger rounded-pill px-4" (click)="deleteUser(user.id)"

@@ -5,7 +5,7 @@
 
     <div class="card-body p-4 d-flex flex-column">
         <h5 class="card-title fw-semibold text-dark mb-2">{{ item.title }}</h5>
-        
+
         <div class="d-flex align-items-center gap-1 mb-2">
             <ng-container *ngFor="let star of stars; let starIndex = index">
                 <i class="bi fs-6" [ngClass]="{
@@ -32,15 +32,14 @@
             <button class="btn btn-outline-primary rounded-3 flex-grow-1" (click)="onView.emit(item.id)">
                 <i class="bi bi-eye me-1"></i> Ver
             </button>
-            
+
             <ng-container *ngIf="currentUserId === item.user_id">
-                <button class="btn btn-outline-warning rounded-3" (click)="onEdit.emit(item.id)">
+                <button class="btn btn-outline-primary rounded-3" (click)="onEdit.emit(item.id)">
                     <i class="bi bi-pencil"></i>
                 </button>
 
-                <button type="button" class="btn btn-outline-danger rounded-3" 
-                    data-bs-toggle="modal" data-bs-target="#deleteModal"
-                    (click)="onDelete.emit(item)">
+                <button type="button" class="btn btn-outline-danger rounded-3" data-bs-toggle="modal"
+                    data-bs-target="#deleteModal" (click)="onDelete.emit(item)">
                     <i class="bi bi-trash"></i>
                 </button>
             </ng-container>

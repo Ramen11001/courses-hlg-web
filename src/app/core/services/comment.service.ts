@@ -13,6 +13,7 @@ export class CommentsService {
   private http = inject(HttpClient);
   private _userService = inject(UserService);
 
+  //region GET
   /**
    * Fetches comments for a specific course.
    * - Sends HTTP GET request to `/comments` endpoint with courseId filter
@@ -43,6 +44,7 @@ export class CommentsService {
       .pipe(catchError(this.handleError));
   }
 
+  //region POST
   /**
    * Creates a comment.
    * - For new comments: Assigns current user as comment owner
@@ -95,7 +97,7 @@ export class CommentsService {
 
     return this.http
       .post<Comment>(`${this.apiUrl}/user/${targetUserId}`, fullCommentData, {
-        params: { expand: 'user' },
+      
       })
       .pipe(catchError(this.handleError));
   }
@@ -117,6 +119,7 @@ export class CommentsService {
     );
   }
 
+  //region DELETE
   /**
    * Deletes a comment by ID.
    * - Validates comment ID is provided

@@ -39,3 +39,37 @@
  .bg-gradient-warning {
      background: linear-gradient(135deg, #fff3e0 0%, #ffe0b3 100%);
  }
+
+ .bg-gradient-info {
+     background: linear-gradient(135deg, #e0f7fa 0%, #b3e5fc 100%);
+ }
+
+ /* Dropdown menu items hover effect */
+ .dropdown-item {
+     transition: background-color 0.15s ease, transform 0.15s ease;
+ }
+
+ .dropdown-item:hover {
+     background-color: rgba(0, 0, 0, 0.04);
+     transform: translateX(2px);
+ }
+
+ .dropdown-item:active {
+     transform: translateX(4px);
+ }
+
+ /* Admin config badge */
+ .admin-badge {
+     background: linear-gradient(135deg, #fff9e6 0%, #ffe066 100%);
+     border: 1px solid #ffc107;
+ }
+
+ /* Admin panel button */
+ .btn-warning {
+     transition: transform 0.2s ease, box-shadow 0.2s ease;
+ }
+
+ .btn-warning:hover {
+     transform: translateY(-2px);
+     box-shadow: 0 0.5rem 1rem rgba(255, 193, 7, 0.3) !important;
+ }

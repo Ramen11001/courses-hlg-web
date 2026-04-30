@@ -44,7 +44,7 @@
               <div class="mt-3">
                 <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">
                   <i class="bi bi-person-badge me-1"></i>
-                  Miembro desde {{ user.createdAt | date: 'MMMM yyyy' }}
+                  Miembro desde {{ user.createdAt | date: 'MMM yyyy' }}
                 </span>
               </div>
             </div>
@@ -74,6 +74,30 @@
               </button>
             </div>
 
+          </div>
+        </div>
+
+        <!-- Request Access Card -->
+        <div *ngIf="user.role === 'USER' || user.role === 'COURSE_SUPPLIER'" class="card border-0 shadow-lg rounded-4 mb-4">
+          <div class="card-body p-4 p-md-5">
+            <div class="d-flex flex-column flex-md-row align-items-md-center gap-4">
+              <div class="bg-warning bg-opacity-10 rounded-4 p-3 d-flex align-items-center justify-content-center" style="width: 72px; height: 72px;">
+                <i class="bi bi-send-check fs-2 text-warning"></i>
+              </div>
+              <div class="text-center text-md-start flex-grow-1">
+                <h3 class="h4 fw-semibold text-dark mb-2">
+                  {{ user.role === 'USER' ? '¿Quieres ser profesor?' : '¿Necesitas verificación?' }}
+                </h3>
+                <p class="text-secondary small mb-3">
+                  {{ user.role === 'USER'
+                    ? 'Envía una solicitud para convertirte en profesor y crear tus propios cursos.'
+                    : 'Solicita la verificación de tu cuenta para destacar como profesor verificado.' }}
+                </p>
+                <a routerLink="/request-role" class="btn btn-warning rounded-pill px-4 py-2 fw-semibold text-white">
+                  <i class="bi bi-send me-2"></i>Ir a solicitar acceso
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 

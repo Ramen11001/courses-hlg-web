@@ -10,8 +10,8 @@ export interface User {
   phone: string;
   password: string;
   role: string;
-  biography: Text;
   verified?: boolean;
+  biography: Text;
 
   //Models
   comments?: Comment[];

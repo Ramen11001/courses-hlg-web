@@ -1,0 +1,258 @@
+<div class="container-fluid px-4 py-5">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex p-3">
+                        <i class="bi bi-gear-fill fs-4 text-danger"></i>
+                    </div>
+                    <div>
+                        <h1 class="h3 fw-semibold text-dark mb-0">Configuración de Administrador</h1>
+                        <p class="text-secondary small mb-0">Gestiona roles y verificaciones de usuarios</p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-outline-primary rounded-pill px-3 py-2 d-flex align-items-center gap-2"
+                        (click)="navigateToHome()">
+                        <i class="bi bi-house-door fs-5"></i>
+                        <span class="fw-semibold">Volver</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <ul class="nav nav-pills gap-2 justify-content-center">
+                <li class="nav-item">
+                    <button class="btn rounded-pill px-4 py-2 fw-semibold"
+                        [ngClass]="activeTab === 'users' ? 'btn-primary' : 'btn-outline-secondary'"
+                        (click)="activeTab = 'users'">
+                        <i class="bi bi-people me-1"></i> Usuarios
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="btn rounded-pill px-4 py-2 fw-semibold position-relative"
+                        [ngClass]="activeTab === 'requests' ? 'btn-warning' : 'btn-outline-secondary'"
+                        (click)="activeTab = 'requests'; loadPendingRequests()">
+                        <i class="bi bi-envelope-paper me-1"></i> Solicitudes
+                        <span *ngIf="pendingRequests.length > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ pendingRequests.length }}
+                        </span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Filter Section (only for users tab) -->
+    <div *ngIf="activeTab === 'users'" class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                                <i class="bi bi-search me-1"></i> Buscar usuario
+                            </label>
+                            <input type="text" class="form-control rounded-3 border-0 bg-light"
+                                [(ngModel)]="filterName" placeholder="Nombre, apellido o email...">
+                        </div>
+                        <div class="col-12 col-md-2">
+                            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">
+                                <i class="bi bi-people me-1"></i>
+                                Total: {{ filteredUsers.length }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Tab -->
+    <div *ngIf="activeTab === 'users'">
+
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border text-primary loading-spinner" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="text-secondary mt-3">Cargando usuarios...</p>
+    </div>
+
+    <!-- Users Grid -->
+    <div *ngIf="!isLoading" class="row g-4">
+        <ng-container *ngIf="filteredUsers.length > 0; else noUsers">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let user of filteredUsers">
+                <div class="card border-0 shadow-sm rounded-4 h-100 hover-card">
+                    <div class="bg-primary bg-opacity-10 text-center py-4 rounded-top-4 position-relative">
+                        <span class="fs-2 fw-semibold text-primary">
+                            {{ user.firstName?.[0] }}{{ user.lastName?.[0] }}
+                        </span>
+                        <i *ngIf="user.verified" class="bi bi-patch-check-fill text-primary fs-4 position-absolute top-0 end-0 m-2"
+                           title="Usuario verificado"></i>
+                    </div>
+
+                    <div class="card-body p-4 d-flex flex-column">
+                        <h5 class="card-title fw-semibold text-dark mb-1">
+                            {{ user.firstName }} {{ user.lastName }}
+                        </h5>
+
+                        <p class="text-secondary small mb-2">
+                            <i class="bi bi-envelope me-1"></i>
+                            {{ user.email }}
+                        </p>
+
+                        <div class="mb-3">
+                            <span class="badge rounded-pill text-light px-3 py-2" [ngClass]="{
+                                'bg-primary bg-opacity-10 text-primary': user.role?.toUpperCase() === 'COURSE_SUPPLIER',
+                                'bg-success bg-opacity-10 text-success': user.role?.toUpperCase() === 'USER',
+                                'bg-danger bg-opacity-10 text-danger': user.role?.toUpperCase() === 'ADMINISTRADOR'
+                            }">
+                                <i class="bi bi-person-badge me-1"></i>
+                                {{ user.role === 'COURSE_SUPPLIER' ? 'Profesor' :
+                                user.role === 'ADMINISTRADOR' ? 'Administrador' : 'Estudiante' }}
+                            </span>
+                            <span *ngIf="user.verified" class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2 ms-1">
+                                <i class="bi bi-patch-check-fill me-1"></i>
+                                Verificado
+                            </span>
+                        </div>
+
+                        <div class="mt-auto d-flex flex-column gap-2">
+                            <button *ngIf="user.role === 'USER'"
+                                class="btn btn-outline-primary rounded-3 flex-grow-1"
+                                (click)="changeRoleToSupplier(user)">
+                                <i class="bi bi-person-badge me-1"></i>
+                                Hacer Profesor
+                            </button>
+
+                            <button *ngIf="user.role === 'COURSE_SUPPLIER'"
+                                class="btn rounded-3 flex-grow-1"
+                                [ngClass]="user.verified ? 'btn-outline-success' : 'btn-outline-warning'"
+                                (click)="toggleVerification(user)">
+                                <i class="bi" [ngClass]="user.verified ? 'bi-check-circle-fill' : 'bi-check-circle'"></i>
+                                {{ user.verified ? 'Verificado' : 'Verificar' }}
+                            </button>
+
+                            <button *ngIf="user.role !== 'USER' && user.role !== 'COURSE_SUPPLIER'"
+                                class="btn btn-outline-secondary rounded-3 flex-grow-1" disabled>
+                                <i class="bi bi-lock me-1"></i>
+                                Acción no disponible
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+
+        <ng-template #noUsers>
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="bi bi-people fs-1 text-secondary opacity-50"></i>
+                    <p class="text-secondary mt-3">No hay usuarios registrados</p>
+                </div>
+            </div>
+        </ng-template>
+    </div>
+    </div>
+
+    <!-- Requests Tab -->
+    <div *ngIf="activeTab === 'requests'">
+        <!-- Loading -->
+        <div *ngIf="isLoading" class="text-center py-5">
+            <div class="spinner-border text-primary loading-spinner" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+
+        <!-- Requests Grid -->
+        <div *ngIf="!isLoading" class="row g-4">
+            <ng-container *ngIf="pendingRequests.length > 0; else noRequests">
+                <div class="col-12 col-md-6 col-lg-4" *ngFor="let req of pendingRequests">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 hover-card">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <!-- User Info -->
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
+                                    style="width: 48px; height: 48px;">
+                                    <span class="fw-semibold text-primary">
+                                        {{ req.user?.firstName?.[0] }}{{ req.user?.lastName?.[0] }}
+                                    </span>
+                                </div>
+                                <div class="min-width-0">
+                                    <h6 class="fw-semibold text-dark mb-0 text-truncate">
+                                        {{ req.user?.firstName }} {{ req.user?.lastName }}
+                                    </h6>
+                                    <small class="text-secondary text-truncate d-block">
+                                        {{ req.user?.email }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Request Type -->
+                            <div class="mb-3">
+                                <span class="badge rounded-pill px-3 py-2" [ngClass]="req.type === 'become_teacher' ? 'bg-primary bg-opacity-10 text-primary' : 'bg-warning bg-opacity-10 text-warning'">
+                                    <i class="bi me-1" [ngClass]="req.type === 'become_teacher' ? 'bi-person-workspace' : 'bi-patch-check'"></i>
+                                    {{ req.type === 'become_teacher' ? 'Ser Profesor' : 'Verificación' }}
+                                </span>
+                            </div>
+
+                            <!-- User Message -->
+                            <div *ngIf="req.message" class="bg-light rounded-3 p-3 mb-3">
+                                <small class="text-dark">{{ req.message }}</small>
+                            </div>
+
+                            <!-- Timestamp -->
+                            <small class="text-muted mb-3">
+                                <i class="bi bi-clock me-1"></i>
+                                {{ req.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+                            </small>
+
+                            <!-- Review Form -->
+                            <ng-container *ngIf="selectedRequestId === req.id; else quickActions">
+                                <div class="mt-auto">
+                                    <div class="mb-2">
+                                        <input type="text" class="form-control rounded-3 border-0 bg-light form-control-sm"
+                                            [formGroup]="reviewForm" formControlName="message"
+                                            placeholder="Mensaje opcional...">
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-success btn-sm rounded-pill flex-grow-1"
+                                            (click)="reviewRequest(req.id, 'approved')">
+                                            <i class="bi bi-check-lg me-1"></i> Aprobar
+                                        </button>
+                                        <button class="btn btn-danger btn-sm rounded-pill flex-grow-1"
+                                            (click)="reviewRequest(req.id, 'rejected')">
+                                            <i class="bi bi-x-lg me-1"></i> Rechazar
+                                        </button>
+                                    </div>
+                                </div>
+                            </ng-container>
+                            <ng-template #quickActions>
+                                <button class="btn btn-outline-primary btn-sm rounded-pill mt-auto"
+                                    (click)="openReviewForm(req.id)">
+                                    <i class="bi bi-eye me-1"></i> Revisar
+                                </button>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+
+            <ng-template #noRequests>
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="bi bi-envelope-check fs-1 text-secondary opacity-50"></i>
+                        <p class="text-secondary mt-3">No hay solicitudes pendientes</p>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</div>

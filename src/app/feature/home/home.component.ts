@@ -33,6 +33,9 @@ import { NotificationBellComponent } from '../../shared/components/notification-
   ],
 })
 export class HomeComponent implements OnInit {
+logout() {
+throw new Error('Method not implemented.');
+}
   private _authService: AuthService = inject(AuthService);
   private _userService: UserService = inject(UserService);
   private _courseService: CourseService = inject(CourseService);
@@ -61,6 +64,7 @@ export class HomeComponent implements OnInit {
 
   //Role
   cantCreate: boolean = false;
+  isAdmin: boolean = false;
   selectedCourse: Course | null = null;
 
   //Reactive Form
@@ -230,6 +234,10 @@ export class HomeComponent implements OnInit {
         this.cantCreate = true;
         this._cdr.detectChanges();
       }
+      if (role === 'ADMIN' || role === 'ADMINISTRADOR') {
+        this.isAdmin = true;
+        this._cdr.detectChanges();
+      }
     });
   }
 
@@ -270,6 +278,10 @@ export class HomeComponent implements OnInit {
   }
   navigateToLogout(): void {
     this._authService.logout();
+  }
+
+  navigateToAdminConfig(): void {
+    this._router.navigate(['/admin-config']);
   }
 
   //region ONSUBMIT

@@ -85,19 +85,19 @@ export class UserService {
    * @returns {Observable<User>} Observable of saved user
    * @throws {Error} Authentication or ownership errors
    */
-  updatedUser(id: number, userData?: Partial<Omit<User, 'password' | 'id' | 'createdAt' | 'birthday' | 'role'>>) {
+  updatedUser(id: number, userData?: Partial<Omit<User, 'password' | 'id' | 'createdAt' | 'birthday'>>) {
     const currentUser = this.getCurrentUserId();
     if (!currentUser) {
       return throwError(() => new Error('No se encontró usuario logueado. Recarga la página e inicia sesión.'));
     }
     const currentUserRole = this.getCurrentUser()?.role;
-    if (id !== currentUser && currentUserRole !== 'ADMIN') {
+    if (id !== currentUser && currentUserRole !== 'ADMIN' && currentUserRole !== 'ADMINISTRADOR') {
       return throwError(() => 'Solo puedes editar tu usuario');
     }
     return this.http
       .put<User>(`${this.apiUrl}/${id}`, userData)
       .pipe(
-        catchError((error) => throwError(() => 'Error al actualizar el curso')),
+        catchError((error) => throwError(() => 'Error al actualizar el usuario')),
       );
   }
 

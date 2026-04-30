@@ -52,8 +52,9 @@ export class LoginComponent {
 
     this._authService.login(loginData).subscribe({
       next: (response) => {
-        const token = response.token;
-        const user = response.user;
+        console.log('Login response:', response);
+        const token = response.token || response.accessToken;
+        const user = response.user || response;
         const userEmail = user?.email;
         const firstName =
           user?.name ||
@@ -72,7 +73,11 @@ export class LoginComponent {
           );
           localStorage.setItem('user', JSON.stringify(user));
           this.navigateToHome();
-          this.loading = true;
+          this.loading = false;
+        } else {
+          console.error('Token or user data missing. Response:', response);
+          this.errorMessage = 'Error al procesar la respuesta del servidor';
+          this.loading = false;
         }
       },
       error: (err) => {

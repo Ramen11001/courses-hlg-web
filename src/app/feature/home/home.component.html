@@ -63,6 +63,23 @@
                                         <hr class="dropdown-divider my-1">
                                     </li>
                                 </ng-container>
+                                <ng-container *ngIf="isAdmin">
+                                    <li>
+                                        <a class="dropdown-item rounded-2 px-3 py-2 d-flex align-items-center gap-3"
+                                            (click)="navigateToAdminConfig()" style="cursor: pointer;">
+                                            <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex p-2">
+                                                <i class="bi bi-gear-fill fs-6 text-warning"></i>
+                                            </div>
+                                            <div>
+                                                <span class="fw-semibold">Admin Config</span>
+                                                <small class="text-secondary d-block">Gestionar usuarios</small>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider my-1">
+                                    </li>
+                                </ng-container>
                                 <li>
                                     <a class="dropdown-item rounded-2 px-3 py-2 d-flex align-items-center gap-3 text-danger"
                                         (click)="onsubmit()" style="cursor: pointer;">
@@ -115,6 +132,23 @@
                                             <div>
                                                 <span class="fw-semibold">Crear curso</span>
                                                 <small class="text-secondary d-block">Solo profesores</small>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider my-1">
+                                    </li>
+                                </ng-container>
+                                <ng-container *ngIf="isAdmin">
+                                    <li>
+                                        <a class="dropdown-item rounded-2 px-3 py-2 d-flex align-items-center gap-3"
+                                            (click)="navigateToAdminConfig()" style="cursor: pointer;">
+                                            <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex p-2">
+                                                <i class="bi bi-gear-fill fs-6 text-warning"></i>
+                                            </div>
+                                            <div>
+                                                <span class="fw-semibold">Admin Config</span>
+                                                <small class="text-secondary d-block">Gestionar usuarios</small>
                                             </div>
                                         </a>
                                     </li>

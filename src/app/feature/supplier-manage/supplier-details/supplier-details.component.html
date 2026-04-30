@@ -1,6 +1,6 @@
-<div class="container min-vh-100 py-5">
+<div class="container-fluid container-sm px-3 px-md-4 min-vh-100 py-4 py-md-5">
   <div class="row justify-content-center">
-    <div class="col-12 col-lg-10">
+    <div class="col-12 col-lg-10 col-xl-9">
 
       <!-- Loading State -->
       <div *ngIf="isLoading" class="text-center py-5">
@@ -20,34 +20,31 @@
       <div *ngIf="!isLoading && users">
 
         <!-- Return Button -->
-        <div class="mb-4">
-          <button (click)="navigateToHome()" class="btn btn-outline-secondary rounded-pill px-4 py-2">
+        <div class="mb-3 mb-md-4">
+          <button (click)="navigateToHome()" class="btn btn-outline-secondary rounded-pill px-3 px-md-4 py-2">
             <i class="bi bi-arrow-left me-2"></i> Volver
           </button>
         </div>
 
         <!-- Main User Card -->
         <div class="card border-0 shadow-lg rounded-4 mb-4">
-          <div class="card-body p-4 p-md-5">
+          <div class="card-body p-3 p-md-4 p-lg-5">
 
             <!-- User Header -->
             <div class="text-center mb-4">
-              <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-4 mb-3">
-                <span class="display-4 fw-semibold text-primary">{{ getInitials() }}</span>
+              <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3 p-md-4 mb-3">
+                <span class="display-5 display-md-4 fw-semibold text-primary">{{ getInitials() }}</span>
               </div>
-              <h1 class="h2 fw-semibold text-dark mb-1">
+              <h1 class="h3 h-md-2 fw-semibold text-dark mb-2">
                 {{ users.firstName }} {{ users.lastName }}
-                <span *ngIf="users.verified" class="badge bg-success ms-2">
-                  <i class="bi bi-patch-check-fill"></i> Verificado
-                </span>
               </h1>
-              <p class="text-secondary mb-2">
+              <p class="text-secondary small mb-1 text-break">
                 <i class="bi bi-envelope me-1"></i> {{ users.email }}
               </p>
-              <p class="text-secondary mb-0" *ngIf="users.phone">
+              <p class="text-secondary small mb-0" *ngIf="users.phone">
                 <i class="bi bi-telephone me-1"></i> {{ users.phone }}
               </p>
-              <div class="mt-3">
+              <div class="mt-3 d-flex flex-wrap justify-content-center gap-2">
                 <span class="badge rounded-pill text-light px-3 py-2" [ngClass]="{
                   'bg-primary bg-opacity-10 text-primary': users.role === 'COURSE_SUPPLIER',
                   'bg-success bg-opacity-10 text-success': users.role === 'USER',
@@ -57,11 +54,11 @@
                   {{ users.role === 'COURSE_SUPPLIER' ? 'Profesor' :
                   users.role === 'ADMIN' ? 'Administrador' : 'Estudiante' }}
                 </span>
-                <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-3 py-2 ms-2">
+                <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-3 py-2">
                   <i class="bi bi-calendar me-1"></i>
-                  Miembro desde {{ users.createdAt | date: 'MMMM yyyy' }}
+                  {{ users.createdAt | date: 'MMM yyyy' }}
                 </span>
-                <span *ngIf="users.verified" class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2 ms-2">
+                <span *ngIf="users.verified" class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
                   <i class="bi bi-patch-check-fill me-1"></i>
                   Verificado
                 </span>
@@ -71,17 +68,17 @@
               <div *ngIf="isAdmin && !isCurrentUser" class="mt-3 d-flex flex-wrap gap-2 justify-content-center">
                 <!-- Verify Button -->
                 <button *ngIf="users.role?.toUpperCase() === 'COURSE_SUPPLIER' && !users.verified"
-                  class="btn btn-success rounded-pill px-4" (click)="verifyUser()">
-                  <i class="bi bi-patch-check me-2"></i>
-                  Verificar profesor
+                  class="btn btn-success rounded-pill px-3 px-md-4 py-2" (click)="verifyUser()">
+                  <i class="bi bi-patch-check me-1 me-md-2"></i>
+                  <span>Verificar</span>
                 </button>
 
                 <!-- Role Change Dropdown -->
                 <div class="dropdown">
-                  <button class="btn btn-outline-primary rounded-pill px-4 dropdown-toggle" type="button"
+                  <button class="btn btn-outline-primary rounded-pill px-3 px-md-4 py-2 dropdown-toggle" type="button"
                     data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-person-gear me-2"></i>
-                    Cambiar rol
+                    <i class="bi bi-person-gear me-1 me-md-2"></i>
+                    <span>Cambiar rol</span>
                   </button>
                   <ul class="dropdown-menu">
                     <li>
@@ -97,8 +94,8 @@
                       </button>
                     </li>
                     <li>
-                      <button class="dropdown-item" (click)="changeRole('ADMIN')"
-                        [class.active]="users.role === 'ADMIN'">
+                      <button class="dropdown-item" (click)="changeRole('ADMINISTRADOR')"
+                        [class.active]="users.role === 'ADMINISTRADOR'">
                         <i class="bi bi-shield-lock me-2"></i> Administrador
                       </button>
                     </li>
@@ -120,8 +117,8 @@
 
         <!-- Courses Section (only for COURSE_SUPPLIER) -->
         <div *ngIf="users.role === 'COURSE_SUPPLIER'" class="card border-0 shadow-lg rounded-4 mb-4">
-          <div class="card-body p-4 p-md-5">
-            <h3 class="h4 fw-semibold text-dark mb-4">
+          <div class="card-body p-3 p-md-4 p-lg-5">
+            <h3 class="h5 fw-semibold text-dark mb-3 mb-md-4">
               <i class="bi bi-book me-2"></i>
               Cursos ({{ userCourses.length }})
             </h3>
@@ -133,7 +130,7 @@
             </div>
 
             <!-- Courses Grid -->
-            <div class="row g-4">
+            <div class="row g-3 g-md-4">
               <div class="col-12 col-md-6 col-lg-4" *ngFor="let course of userCourses">
                 <app-course-card [item]="course" [currentUserId]="currentUserId"
                   (onView)="navigateToCourseDetails($event)" (onEdit)="navigateToEditCourse($event)"
@@ -146,15 +143,15 @@
 
         <!-- Comments Section (only for others, not own user, not students) -->
         <div *ngIf="showComments && users.role === 'COURSE_SUPPLIER'" class="card border-0 shadow-lg rounded-4">
-          <div class="card-body p-4 p-md-5">
+          <div class="card-body p-3 p-md-4 p-lg-5">
 
-            <h3 class="h4 fw-semibold text-dark mb-4">
+            <h3 class="h5 fw-semibold text-dark mb-3 mb-md-4">
               <i class="bi bi-chat-dots me-2"></i>
               Comentarios ({{ comments.length }})
             </h3>
 
             <!-- Comment Form -->
-            <div *ngIf="!isCurrentUser && currentUserId" class="bg-light rounded-4 p-4 mb-4">
+            <div *ngIf="!isCurrentUser && currentUserId" class="bg-light rounded-4 p-3 p-md-4 mb-4">
               <h5 class="fw-semibold text-dark mb-3">Deja tu comentario</h5>
               <form [formGroup]="commentForm" (ngSubmit)="submitComment()">
                 <div class="mb-3">
@@ -180,9 +177,9 @@
                 </div>
                 <div class="d-flex justify-content-end">
                   <button type="submit" [disabled]="commentForm.invalid || isSubmitting"
-                    class="btn btn-primary rounded-pill px-4 py-2 fw-semibold">
-                    <i class="bi bi-send me-2"></i>
-                    Publicar
+                    class="btn btn-primary rounded-pill px-3 px-md-4 py-2 fw-semibold">
+                    <i class="bi bi-send me-1 me-md-2"></i>
+                    <span>Publicar</span>
                   </button>
                 </div>
               </form>
@@ -196,15 +193,15 @@
 
             <!-- Comments List -->
             <div *ngFor="let comment of comments" class="border-bottom pb-3 mb-3">
-              <div class="d-flex justify-content-between align-items-start mb-2">
-                <div class="d-flex align-items-center gap-2">
-                  <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
+              <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start mb-2">
+                <div class="d-flex align-items-center gap-2 w-100">
+                  <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
                     style="width: 40px; height: 40px;">
                     <span class="fw-semibold text-primary small">
                       {{ getCommentUserInitials(comment.User || comment.user) }}
                     </span>
                   </div>
-                  <div>
+                  <div class="min-width-0">
                     <div class="star-rating mb-1">
                       <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
                         <i class="bi" [ngClass]="{
@@ -222,7 +219,7 @@
                   </div>
                 </div>
               </div>
-              <p class="text-dark mb-0 ps-5">{{ comment.text }}</p>
+              <p class="text-dark mb-0 ms-0 ms-sm-4 mt-2 mt-sm-0">{{ comment.text }}</p>
             </div>
 
           </div>
@@ -234,9 +231,9 @@
       <div *ngIf="!isLoading && !users && !error" class="text-center py-5">
         <i class="bi bi-person-x display-1 text-secondary opacity-50"></i>
         <p class="text-secondary mt-3">Usuario no encontrado</p>
-        <button (click)="navigateToHome()" class="btn btn-primary rounded-pill px-4 py-2 mt-2">
-          <i class="bi bi-arrow-left me-2"></i>
-          Volver
+        <button (click)="navigateToHome()" class="btn btn-primary rounded-pill px-3 px-md-4 py-2 mt-2">
+          <i class="bi bi-arrow-left me-1 me-md-2"></i>
+          <span>Volver</span>
         </button>
       </div>
 

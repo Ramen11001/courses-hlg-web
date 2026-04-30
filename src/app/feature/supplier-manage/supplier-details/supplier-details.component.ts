@@ -137,20 +137,7 @@ export class UserDetailsComponent implements OnInit {
     return this.currentUserRole === 'USER';
   }
 
-  verifyUser(): void {
-    if (!this.users || !this.isAdmin) return;
-    this.users = { ...this.users };
-
-    this._userService.updatedUser(this.users.id, { verified: true }).subscribe({
-      next: (updatedUser) => {
-        this.users = updatedUser;
-        this._cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error al verificar usuario:', err);
-      },
-    });
-  }
+  
 
   getInitials(): string {
     if (!this.users?.firstName || !this.users?.lastName) return 'U';

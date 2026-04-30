@@ -9,6 +9,8 @@ import { authGuard } from './core/guards/auth-guard';
 import { ProfileComponent } from './feature/supplier-manage/profile.component';
 import { EditCourseComponent } from './feature/course-manage/edit-course/edit-course.component';
 import { UserDetailsComponent } from './feature/supplier-manage/supplier-details/supplier-details.component';
+import { AdminConfigComponent } from './feature/admin-config/admin-config.component';
+import { RequestRoleComponent } from './feature/supplier-manage/request-role/request-role.component';
 
 export const routes: Routes = [
   {
@@ -56,5 +58,15 @@ export const routes: Routes = [
   {
     path: 'userDetails/:id',
     component: UserDetailsComponent,
+  },
+  {
+    path: 'admin-config',
+    component: AdminConfigComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'request-role',
+    component: RequestRoleComponent,
+    canActivate: [authGuard],
   },
 ];

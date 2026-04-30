@@ -1,0 +1,149 @@
+<div class="container-fluid px-3 px-md-4 min-vh-100 py-4 py-md-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8 col-xl-7">
+
+      <!-- Return Button -->
+      <div class="mb-3 mb-md-4">
+        <button (click)="navigateToHome()" class="btn btn-outline-secondary rounded-pill px-3 px-md-4 py-2">
+          <i class="bi bi-arrow-left me-2"></i> Volver
+        </button>
+      </div>
+
+      <!-- Main Card -->
+      <div class="card border-0 shadow-lg rounded-4 mb-4">
+        <div class="card-body p-3 p-md-4 p-lg-5">
+
+          <!-- Header -->
+          <div class="text-center mb-4">
+            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3 p-md-4 mb-3">
+              <i class="bi bi-send-check fs-2 text-primary"></i>
+            </div>
+            <h2 class="h3 fw-bold text-dark mb-2">Solicitar acceso</h2>
+            <p class="text-secondary small mb-0">
+              Solicita ser profesor o la verificación de tu cuenta
+            </p>
+          </div>
+
+          <!-- Success Message -->
+          <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show rounded-3" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            {{ successMessage }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+
+          <!-- Error Message -->
+          <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {{ errorMessage }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+
+          <!-- Request Form -->
+          <form [formGroup]="requestForm" (ngSubmit)="submit()">
+
+            <!-- Request Type -->
+            <div class="mb-3 mb-lg-4">
+              <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                <i class="bi bi-clipboard-check me-1"></i> Tipo de solicitud
+              </label>
+              <div class="d-flex flex-column gap-3">
+                <!-- Become Teacher -->
+                <div class="form-check p-3 rounded-3 border" [class.border-primary]="requestForm.get('type')?.value === 'become_teacher'" [class.bg-primary]="requestForm.get('type')?.value === 'become_teacher'">
+                  <input class="form-check-input" type="radio" formControlName="type" value="become_teacher"
+                    id="typeTeacher" [disabled]="!canRequestTeacher">
+                  <label class="form-check-label w-100" for="typeTeacher">
+                    <div class="d-flex align-items-center gap-2">
+                      <i class="bi bi-person-workspace fs-5"></i>
+                      <div>
+                        <span class="fw-semibold d-block">Convertirme en Profesor</span>
+                        <small class="text-muted" *ngIf="!canRequestTeacher">Solo disponible para estudiantes</small>
+                      </div>
+                    </div>
+                  </label>
+                </div>
+
+                <!-- Request Verification -->
+                <div class="form-check p-3 rounded-3 border" [class.border-warning]="requestForm.get('type')?.value === 'request_verification'" [class.bg-warning]="requestForm.get('type')?.value === 'request_verification'">
+                  <input class="form-check-input" type="radio" formControlName="type" value="request_verification"
+                    id="typeVerification" [disabled]="!canRequestVerification">
+                  <label class="form-check-label w-100" for="typeVerification">
+                    <div class="d-flex align-items-center gap-2">
+                      <i class="bi bi-patch-check fs-5"></i>
+                      <div>
+                        <span class="fw-semibold d-block">Solicitar verificación</span>
+                        <small class="text-muted" *ngIf="!canRequestVerification">Solo disponible para profesores</small>
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Message -->
+            <div class="mb-3 mb-lg-4">
+              <label for="message" class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                <i class="bi bi-chat-text me-1"></i> Mensaje <span class="text-muted fw-normal">(opcional)</span>
+              </label>
+              <textarea id="message" formControlName="message" rows="3"
+                class="form-control rounded-3 border-0 bg-light"
+                placeholder="Explica por qué deseas esta solicitud..."></textarea>
+              <small class="text-secondary mt-1 d-block" *ngIf="requestForm.get('message')?.value?.length > 0">
+                {{ requestForm.get('message')?.value?.length }}/500 caracteres
+              </small>
+            </div>
+
+            <!-- Submit -->
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-semibold py-3"
+                [disabled]="loading || requestForm.invalid || !requestForm.get('type')?.value">
+                <span *ngIf="loading" class="d-flex align-items-center justify-content-center gap-2">
+                  <span class="spinner-border spinner-border-sm"></span>
+                  Enviando...
+                </span>
+                <span *ngIf="!loading">
+                  <i class="bi bi-send me-2"></i>Enviar solicitud
+                </span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- My Requests History -->
+      <div class="card border-0 shadow-lg rounded-4" *ngIf="myRequests.length > 0">
+        <div class="card-body p-3 p-md-4 p-lg-5">
+          <h3 class="h5 fw-semibold text-dark mb-3 mb-md-4">
+            <i class="bi bi-clock-history me-2"></i>
+            Mis solicitudes
+          </h3>
+
+          <div *ngFor="let req of myRequests" class="card border-0 bg-light rounded-3 mb-3">
+            <div class="card-body p-3">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi" [ngClass]="req.type === 'become_teacher' ? 'bi-person-workspace text-primary' : 'bi-patch-check text-warning'"></i>
+                  <span class="fw-semibold small">
+                    {{ req.type === 'become_teacher' ? 'Profesor' : 'Verificación' }}
+                  </span>
+                </div>
+                <span class="badge rounded-pill px-2 py-1" [ngClass]="getStatusBadgeClass(req.status)">
+                  {{ getStatusLabel(req.status) }}
+                </span>
+              </div>
+              <p class="text-secondary small mb-1" *ngIf="req.message">{{ req.message }}</p>
+              <small class="text-muted">
+                <i class="bi bi-calendar me-1"></i>
+                {{ req.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+              </small>
+              <div *ngIf="req.review_message" class="mt-2 p-2 bg-white rounded-2 small">
+                <i class="bi bi-chat-left-text me-1"></i>
+                <span class="fw-semibold">Respuesta:</span> {{ req.review_message }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

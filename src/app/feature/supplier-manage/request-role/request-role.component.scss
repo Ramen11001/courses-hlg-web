@@ -1,0 +1,8 @@
+.form-check-input {
+  margin-top: 0.25rem;
+}
+
+.form-check-input:checked {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}

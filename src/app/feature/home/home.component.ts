@@ -153,7 +153,7 @@ throw new Error('Method not implemented.');
     this.isLoading = true;
     this._userService.allUsers().subscribe({
       next: (users) => {
-        // Trae todos menos el usuario logueado
+      
         this.user = users.filter((user) => user.id !== this.id);
         this.isLoading = false;
         this._cdr.detectChanges();

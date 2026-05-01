@@ -66,12 +66,6 @@
                 <i class="bi bi-trash me-2"></i>
                 Eliminar cuenta
               </button>
-
-
-              <button *ngIf="isEditing" class="btn btn-outline-secondary rounded-pill px-4" (click)="toggleEdit()">
-                <i class="bi bi-x-circle me-2"></i>
-                Cancelar
-              </button>
             </div>
 
           </div>
@@ -341,7 +335,7 @@
                   <p class="text-secondary small mb-0">Comentarios que has realizado en cursos</p>
                 </div>
               </div>
-              <!-- TODO: Para hacer comentarios en perfiles, agregarlo -->
+              
               <!-- Comments Grid -->
               <div *ngIf="userComments.length === 0" class="text-center py-5">
                 <i class="bi bi-chat-square-text display-1 text-secondary opacity-50"></i>
@@ -413,8 +407,7 @@
               </p>
             </div>
             <div class="modal-footer border-0 pb-4 px-4">
-              <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal"
-                (click)="navigateToProfile()">
+              <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
                 <i class="bi bi-x-circle me-2"></i>
                 Cancelar
               </button>

@@ -72,8 +72,11 @@ export class RequestRoleComponent implements OnInit {
     });
   }
 
-  navigateToHome() {
-    this._router.navigate(['/home']);
+ goToMyProfile() {
+    const id = this._userService.getCurrentUserId();
+    if (id) {
+      this._router.navigate(['/user', id]);
+    }
   }
 
   get canRequestTeacher() {

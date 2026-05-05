@@ -30,9 +30,11 @@
         <div class="card border-0 shadow-lg rounded-4 mb-4">
           <div class="card-body p-4 p-md-5">
 
+            <app-image-carousel [images]="getCourseImages()" height="250px" *ngIf="getCourseImages().length > 0" />
+
             <!-- Course Header -->
             <div class="text-center mb-4">
-              <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
+              <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3" *ngIf="getCourseImages().length === 0">
                 <i class="bi bi-book-half fs-1 text-primary"></i>
               </div>
               <h1 class="h2 fw-semibold text-dark mb-2">{{ course.title }}</h1>
@@ -125,7 +127,13 @@
 
                 <!-- Enrollment Status -->
                 <div *ngIf="isAuthenticated" class="text-center">
-                  <div *ngIf="!isEnrolled">
+                  <div *ngIf="isOwnCourse">
+                    <div class="alert alert-info rounded-4">
+                      <i class="bi bi-info-circle-fill me-2"></i>
+                      Este es tu propio curso. No puedes inscribirte ni comentarlo.
+                    </div>
+                  </div>
+                  <div *ngIf="!isEnrolled && !isOwnCourse">
                     <button class="btn btn-success btn-lg rounded-pill px-5 py-3 fw-semibold shadow-sm"
                       (click)="enrollInCourse()" [disabled]="isEnrolling">
                       <div *ngIf="isEnrolling" class="d-flex align-items-center gap-2">
@@ -149,7 +157,7 @@
                       ¡Estás inscrito en este curso!
                     </div>
                     <div class="d-flex justify-content-center gap-3">
-                      <button class="btn btn-outline-danger rounded-pill px-4" (click)="cancelEnrollment()">
+                      <button class="btn btn-outline-danger rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#cancelEnrollmentModal">
                         <i class="bi bi-x-circle me-2"></i>
                         Cancelar inscripción
                       </button>
@@ -182,7 +190,7 @@
             </h3>
 
             <!-- Comment Form -->
-            <div *ngIf="isAuthenticated" class="bg-light rounded-4 p-4 mb-4">
+            <div *ngIf="isAuthenticated && !isOwnCourse" class="bg-light rounded-4 p-4 mb-4">
               <h5 class="fw-semibold text-dark mb-3">Deja tu comentario</h5>
               <form [formGroup]="commentForm" (ngSubmit)="onSubmit()">
                 <div class="mb-3">
@@ -214,6 +222,11 @@
                   </button>
                 </div>
               </form>
+            </div>
+
+            <div *ngIf="isAuthenticated && isOwnCourse" class="alert alert-info rounded-4 mb-4">
+              <i class="bi bi-info-circle-fill me-2"></i>
+              No puedes comentar tu propio curso.
             </div>
 
             <!-- Comments List -->
@@ -273,6 +286,38 @@
         </button>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<!-- Cancel Enrollment Modal -->
+<div class="modal fade" id="cancelEnrollmentModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="modal-header border-0 pt-4 px-4 pb-0">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body px-4 pb-4 text-center">
+        <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
+          <i class="bi bi-exclamation-triangle fs-2 text-danger"></i>
+        </div>
+        <h5 class="fw-semibold text-dark mb-2">Cancelar inscripción</h5>
+        <p class="text-secondary small mb-1">¿Estás seguro de que deseas cancelar tu inscripción?</p>
+        <p class="text-danger small fw-semibold mb-0">
+          <i class="bi bi-info-circle me-1"></i>
+          Esta acción no se puede deshacer.
+        </p>
+      </div>
+      <div class="modal-footer border-0 pt-0 pb-4 px-4 d-flex justify-content-center gap-3">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle me-2"></i>
+          Volver
+        </button>
+        <button type="button" class="btn btn-danger rounded-pill px-4" (click)="cancelEnrollment()" data-bs-dismiss="modal">
+          <i class="bi bi-trash me-2"></i>
+          Confirmar
+        </button>
+      </div>
     </div>
   </div>
 </div>

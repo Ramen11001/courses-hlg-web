@@ -45,6 +45,16 @@ export class EnrollmentService {
   }
 
   /**
+   * Get enrollment object for a specific course
+   * @param courseId - Course ID
+   */
+  getEnrollment(courseId: number): Observable<Enrollment | null> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<Enrollment | null>(`${this.apiUrl}/enrollment/${courseId}`, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
    * Get user's enrolled courses
    */
   getMyEnrollments(): Observable<EnrollmentWithCourse[]> {

@@ -143,6 +143,7 @@ export class CourseService {
         location: courseData.location,
         duration: courseData.duration,
         tags: courseData.tags,
+        images: courseData.images || [],
         user_id: currentUserId,
       };
 

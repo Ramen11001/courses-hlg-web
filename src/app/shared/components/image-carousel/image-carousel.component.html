@@ -1,0 +1,25 @@
+<div class="carousel-container" [style.height]="height">
+  <div *ngIf="hasImages" class="carousel-slide">
+    <img [src]="images[currentIndex]" alt="Image {{ currentIndex + 1 }}" class="carousel-image" [class.rounded]="rounded" />
+  </div>
+
+  <div *ngIf="!hasImages" class="carousel-placeholder" [class.rounded]="rounded">
+    <i class="bi bi-image fs-1 text-muted"></i>
+  </div>
+
+  <button *ngIf="showControls" class="carousel-btn carousel-btn-prev" (click)="prev()" type="button">
+    <i class="bi bi-chevron-left"></i>
+  </button>
+  <button *ngIf="showControls" class="carousel-btn carousel-btn-next" (click)="next()" type="button">
+    <i class="bi bi-chevron-right"></i>
+  </button>
+
+  <div *ngIf="showControls" class="carousel-indicators">
+    <span
+      *ngFor="let img of images; let i = index"
+      class="indicator"
+      [class.active]="i === currentIndex"
+      (click)="goTo(i)"
+    ></span>
+  </div>
+</div>

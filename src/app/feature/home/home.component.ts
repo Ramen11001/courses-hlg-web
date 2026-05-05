@@ -249,6 +249,11 @@ throw new Error('Method not implemented.');
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   }
 
+  get isFiltering(): boolean {
+    const { filterName, minPrice, maxPrice } = this.filterForm.value;
+    return !!filterName || minPrice !== null || maxPrice !== null;
+  }
+
   // region NAVIGATE:
   // Navigates to the course details page.
   navigateToDetailsCourse(id: number): void {

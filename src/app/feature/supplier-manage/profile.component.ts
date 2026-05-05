@@ -15,6 +15,7 @@ import { User } from '../../core/interfaces/user';
 import { CommentsService } from '../../core/services/comment.service';
 import { Comment } from '../../core/interfaces/comment';
 import { CourseCardComponent } from '../../shared/cards/course-card/course-card.component';
+import { ImageCarouselComponent } from '../../shared/components/image-carousel/image-carousel.component';
 
 @Component({
   selector: 'app-profile',
@@ -24,6 +25,7 @@ import { CourseCardComponent } from '../../shared/cards/course-card/course-card.
     ReactiveFormsModule,
     RouterModule,
     CourseCardComponent,
+    ImageCarouselComponent,
   ],
   templateUrl: './profile.component.html',
 })
@@ -88,6 +90,7 @@ export class ProfileComponent implements OnInit {
     this._userService.getUserById(userId).subscribe({
       next: (user) => {
         this.user = user;
+        console.log('User loaded from API:', user);
         this.profileForm.patchValue({
           firstName: user.firstName,
           lastName: user.lastName,
@@ -195,6 +198,10 @@ export class ProfileComponent implements OnInit {
     this._router.navigate(['/home']);
   }
 
+  navigateToLogout(): void {
+    this._authService.logout();
+  }
+
   navigateToEditCourse(id: number): void {
     this._router.navigate(['edit/' + id]);
   }
@@ -229,6 +236,23 @@ export class ProfileComponent implements OnInit {
     );
   }
 
+  getUserImages(): string[] {
+    if (!this.user) return [];
+    const imgs = (this.user as any).images;
+    console.log('Profile images:', imgs);
+    if (!imgs) return [];
+    if (Array.isArray(imgs) && imgs.length > 0) return imgs;
+    if (typeof imgs === 'string') {
+      try {
+        const parsed = JSON.parse(imgs);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  }
+
   //region DELETE
   /**
    * Deletes a courses by ID and updates local course list.
@@ -250,14 +274,27 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  deleteUser(id: number): void {
-    if (!id) {
-      console.error('No existe el usuario');
-      return;
+  openDeleteAccountModal(): void {
+    const modalEl = document.getElementById('deleteAccountModal');
+    if (modalEl) {
+      const modal = new (window as any).bootstrap.Modal(modalEl);
+      modal.show();
     }
-    this._userService.deleteUser(id).subscribe({
+  }
+
+  confirmDeleteAccount(): void {
+    if (!this.user?.id) return;
+    this._userService.deleteUser(this.user.id).subscribe({
       next: () => {
-        this.users = this.users.filter((u) => u.id !== id);
+        const modalEl = document.getElementById('deleteAccountModal');
+        if (modalEl) {
+          const modal = (window as any).bootstrap.Modal.getInstance(modalEl);
+          if (modal) modal.hide();
+        }
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
         this._router.navigate(['/login']);
       },
       error: (err) => {

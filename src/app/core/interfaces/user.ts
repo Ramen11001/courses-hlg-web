@@ -12,6 +12,7 @@ export interface User {
   role: string;
   verified?: boolean;
   biography: Text;
+  images?: string[];
 
   //Models
   comments?: Comment[];

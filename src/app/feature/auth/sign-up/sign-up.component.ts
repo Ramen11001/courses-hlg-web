@@ -26,6 +26,8 @@ export class SignUpComponent {
 
   errorMessage: string = '';
   loading: boolean = false;
+  imageFiles: File[] = [];
+  imagePreviews: string[] = [];
 
   /**
    * FORM
@@ -60,7 +62,33 @@ export class SignUpComponent {
     ]),
   });
 
-  submit(): void {
+  onImagesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      const newFiles = Array.from(input.files);
+      this.imageFiles = [...this.imageFiles, ...newFiles];
+      newFiles.forEach((file) => {
+        this.imagePreviews.push(URL.createObjectURL(file));
+      });
+    }
+  }
+
+  removeImage(index: number): void {
+    URL.revokeObjectURL(this.imagePreviews[index]);
+    this.imageFiles.splice(index, 1);
+    this.imagePreviews.splice(index, 1);
+  }
+
+  private fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async submit(): Promise<void> {
     if (this.signUpForm.invalid) {
       this.errorMessage =
         'Por favor, completa los campos correctamente siguiendo las reglas indicadas.';
@@ -71,7 +99,19 @@ export class SignUpComponent {
     this.loading = true;
     this.errorMessage = '';
 
-    // Preparación de datos
+    const images: string[] = [];
+    if (this.imageFiles.length > 0) {
+      try {
+        for (const file of this.imageFiles) {
+          const base64 = await this.fileToBase64(file);
+          images.push(base64);
+        }
+        console.log('Images to send:', images.length, 'images');
+      } catch (err) {
+        console.error('Error reading images:', err);
+      }
+    }
+
     const rawValues = this.signUpForm.value;
     const encryptedPassword = md5(rawValues.password ?? '').toString();
 
@@ -83,7 +123,10 @@ export class SignUpComponent {
       phone: rawValues.phone || undefined,
       entity_type: rawValues.entity_type,
       password: encryptedPassword,
+      images,
     };
+
+    console.log('Sending signup data:', { ...signUpData, images: signUpData.images?.length + ' images' });
 
     this._userService.signUp(signUpData).subscribe({
       next: (response: any) => {

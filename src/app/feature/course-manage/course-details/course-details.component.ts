@@ -16,11 +16,12 @@ import { Comment } from '../../../core/interfaces/comment';
 import { UserService } from '../../../core/services/user.service.service';
 import { Enrollment } from '../../../core/interfaces/enrollment';
 import { EnrollmentService } from '../../../core/services/enrollment.service';
+import { ImageCarouselComponent } from '../../../shared/components/image-carousel/image-carousel.component';
 
 @Component({
   selector: 'app-course-details',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ImageCarouselComponent],
   templateUrl: './course-details.component.html',
 })
 export class CoursesDetailsComponent implements OnInit {
@@ -103,6 +104,7 @@ export class CoursesDetailsComponent implements OnInit {
     this._courseService.getcourseId(id).subscribe({
       next: (course) => {
         this.course = course;
+        this.checkEnrollmentStatus(id);
         this.loadComments(id);
       },
       error: (err) => {
@@ -158,9 +160,10 @@ export class CoursesDetailsComponent implements OnInit {
   checkEnrollmentStatus(courseId: number): void {
     if (!this._authService.isAuthenticated()) return;
 
-    this._enrollmentService.isEnrolled(courseId).subscribe({
-      next: (enrolled) => {
-        this.isEnrolled = enrolled;
+    this._enrollmentService.getEnrollment(courseId).subscribe({
+      next: (enrollment) => {
+        this.enrollment = enrollment;
+        this.isEnrolled = !!enrollment;
       },
       error: (err) => {
         console.error('Error checking enrollment:', err);
@@ -231,6 +234,11 @@ export class CoursesDetailsComponent implements OnInit {
   get isAuthenticated(): boolean {
     return this._authService.isAuthenticated();
   }
+
+  get isOwnCourse(): boolean {
+    return this.course ? this.currentUserId === this.course.user_id : false;
+  }
+
   /**
    * Deletes a comment by ID.
    * - Validates comment ID
@@ -276,5 +284,22 @@ export class CoursesDetailsComponent implements OnInit {
       this.router.navigate(['/home']);
     }
     
+  }
+
+  getCourseImages(): string[] {
+    if (!this.course) return [];
+    const imgs = (this.course as any).images;
+    console.log('Course images:', imgs);
+    if (!imgs) return [];
+    if (Array.isArray(imgs) && imgs.length > 0) return imgs;
+    if (typeof imgs === 'string') {
+      try {
+        const parsed = JSON.parse(imgs);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
   }
 }

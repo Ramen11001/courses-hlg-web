@@ -1,9 +1,10 @@
 <div class="card border-0 shadow-sm rounded-4 h-100 hover-card text-center">
-    <div class="bg-primary bg-opacity-10 text-center py-4 rounded-top-4 position-relative">
+    <app-image-carousel [images]="images" height="180px" *ngIf="images.length > 0" />
+
+    <div class="bg-primary bg-opacity-10 text-center py-3 rounded-0 position-relative" *ngIf="!images.length">
         <span class="fs-2 fw-semibold text-primary">{{ getInitials() }}</span>
         <i *ngIf="userItem.verified" class="bi bi-patch-check-fill text-primary fs-4 position-absolute top-0 end-0 m-2" 
            title="Usuario verificado" style="filter: drop-shadow(0 0 2px rgba(0,0,0,0.3));"></i>
-       
     </div>
 
     <div class="card-body p-4 d-flex flex-column">

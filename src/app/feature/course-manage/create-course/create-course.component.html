@@ -261,6 +261,33 @@
               </div>
             </div>
 
+            <!-- Row 8: Images -->
+            <div class="row g-4 mb-4">
+              <div class="col-12">
+                <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                  <i class="bi bi-image me-1"></i> Imágenes del curso <span class="text-muted fw-normal">(opcional)</span>
+                </label>
+                <div class="bg-light rounded-3 p-4">
+                  <input type="file" class="form-control rounded-3 border-0" id="courseImages"
+                    accept="image/*" multiple (change)="onImagesSelected($event)">
+                  <small class="text-secondary mt-2 d-block">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Puedes seleccionar varias imágenes. Formatos: JPG, PNG, GIF, WebP
+                  </small>
+                </div>
+                <!-- Image Previews -->
+                <div class="mt-3 d-flex flex-wrap gap-3 justify-content-center" *ngIf="imageFiles.length > 0">
+                  <div *ngFor="let preview of imagePreviews; let i = index" class="position-relative">
+                    <img [src]="preview" class="rounded-3 shadow-sm" style="width: 120px; height: 120px; object-fit: cover;" />
+                    <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute top-0 end-0 translate-middle m-1"
+                      style="width: 24px; height: 24px; font-size: 12px;" (click)="removeImage(i)">
+                      <i class="bi bi-x"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Submit Button -->
             <div class="row g-4 mt-2">
               <div class="col-12">

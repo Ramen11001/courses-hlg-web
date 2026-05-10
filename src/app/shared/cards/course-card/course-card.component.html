@@ -1,5 +1,7 @@
 <div class="card border-0 shadow-sm rounded-4 h-100 hover-card">
-    <div class="bg-primary bg-opacity-10 text-center py-4 rounded-top-4">
+    <app-image-carousel [images]="images" height="180px" *ngIf="images.length > 0" />
+
+    <div class="bg-primary bg-opacity-10 text-center py-4 rounded-top-4" *ngIf="!images.length">
         <i class="bi bi-book fs-1 text-primary"></i>
     </div>
 

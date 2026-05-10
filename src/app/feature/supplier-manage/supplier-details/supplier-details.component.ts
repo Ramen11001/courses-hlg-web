@@ -15,11 +15,12 @@ import { CourseService } from '../../../core/services/course.service';
 import { Comment } from '../../../core/interfaces/comment';
 import { UserService } from '../../../core/services/user.service.service';
 import { CourseCardComponent } from '../../../shared/cards/course-card/course-card.component';
+import { ImageCarouselComponent } from '../../../shared/components/image-carousel/image-carousel.component';
 
 @Component({
   selector: 'app-supplier-course-details',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CourseCardComponent],
+  imports: [CommonModule, ReactiveFormsModule, CourseCardComponent, ImageCarouselComponent],
   templateUrl: './supplier-details.component.html',
 })
 export class UserDetailsComponent implements OnInit {
@@ -142,6 +143,22 @@ export class UserDetailsComponent implements OnInit {
   getInitials(): string {
     if (!this.users?.firstName || !this.users?.lastName) return 'U';
     return (this.users.firstName[0] + this.users.lastName[0]).toUpperCase();
+  }
+
+  getUserImages(): string[] {
+    if (!this.users) return [];
+    const imgs = (this.users as any).images;
+    if (!imgs) return [];
+    if (Array.isArray(imgs) && imgs.length > 0) return imgs;
+    if (typeof imgs === 'string') {
+      try {
+        const parsed = JSON.parse(imgs);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
   }
 
   getCommentUserInitials(user?: User): string {

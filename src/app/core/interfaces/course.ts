@@ -24,6 +24,8 @@ export interface Course {
   tags?: Tag[];
   duration?: Duration[];
   comments?: Comment[];
+  images?: string[];
+  averageRating?: number;
 
   //Enums:
   area: CourseArea;

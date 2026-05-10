@@ -21,6 +21,8 @@ export class CreateCourseComponent {
   courseForm: FormGroup;
   isLoading = false;
   tags: { name: string; color: string }[] = [];
+  imageFiles: File[] = [];
+  imagePreviews: string[] = [];
 
   constructor(private fb: FormBuilder) {
     this.courseForm = this.fb.group({
@@ -61,7 +63,33 @@ export class CreateCourseComponent {
     this.courseForm.patchValue({ tags: this.tags });
   }
 
-  onSubmit() {
+  onImagesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      const newFiles = Array.from(input.files);
+      this.imageFiles = [...this.imageFiles, ...newFiles];
+      newFiles.forEach((file) => {
+        this.imagePreviews.push(URL.createObjectURL(file));
+      });
+    }
+  }
+
+  removeImage(index: number): void {
+    URL.revokeObjectURL(this.imagePreviews[index]);
+    this.imageFiles.splice(index, 1);
+    this.imagePreviews.splice(index, 1);
+  }
+
+  private fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async onSubmit() {
     this.courseForm.markAllAsTouched();
 
     if (this.courseForm.valid) {
@@ -79,6 +107,18 @@ export class CreateCourseComponent {
         });
       }
 
+      const images: string[] = [];
+      if (this.imageFiles.length > 0) {
+        try {
+          for (const file of this.imageFiles) {
+            const base64 = await this.fileToBase64(file);
+            images.push(base64);
+          }
+        } catch (err) {
+          console.error('Error reading images:', err);
+        }
+      }
+
       const formData = {
         title: this.courseForm.value.title,
         cost: Number(this.courseForm.value.cost),
@@ -91,6 +131,7 @@ export class CreateCourseComponent {
         location: this.courseForm.value.location,
         duration: duration,
         tags: this.tags,
+        images,
         user_id: this._userService.getCurrentUserId(),
       };
 

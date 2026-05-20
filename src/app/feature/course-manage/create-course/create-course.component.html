@@ -194,21 +194,45 @@
                 <div class="bg-light rounded-3 p-4">
                   <div class="row g-3">
                     <div class="col-12 col-md-6">
+                      <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                        <i class="bi bi-calendar me-1"></i> Fecha de inicio
+                      </label>
                       <input type="date" class="form-control rounded-3 border-0" formControlName="init_date"
-                        placeholder="Fecha inicio">
+                        [class.is-invalid]="courseForm.get('init_date')?.hasError('futureDate') ">
+                      <div class="invalid-feedback small mt-1">
+                        <i class="bi bi-info-circle me-1"></i>
+                        La fecha de inicio no puede ser anterior a hoy
+                      </div>
                     </div>
                     <div class="col-12 col-md-6">
+                      <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                        <i class="bi bi-calendar-check me-1"></i> Fecha final
+                      </label>
                       <input type="date" class="form-control rounded-3 border-0" formControlName="end_date"
-                        placeholder="Fecha fin">
+                        [class.is-invalid]="courseForm.get('end_date')?.hasError('futureDate') ">
+                      <div class="invalid-feedback small mt-1">
+                        <i class="bi bi-info-circle me-1"></i>
+                        La fecha de fin no puede ser anterior a hoy
+                      </div>
+                    </div>
+                     <div *ngIf="courseForm.hasError('endBeforeInit')" class="col-12">
+                      <div class="text-danger small mt-1">
+                        <i class="bi bi-info-circle me-1"></i>
+                        La fecha de fin no puede ser anterior a la fecha de inicio
+                      </div>
                     </div>
                     <div class="col-12">
-                      <input type="text" class="form-control rounded-3 border-0" formControlName="duration_time"
-                        placeholder="Ej: 12 semanas, 3 meses, 40 horas">
+                      <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">
+                        <i class="bi bi-hourglass-split me-1"></i> Duración estimada
+                      </label>
+                      <p class="form-control rounded-3 border-0 bg-white mb-0" style="min-height: 38px; display: flex; align-items: center;">
+                        {{ courseForm.get('init_date')?.hasError('futureDate') || courseForm.get('end_date')?.hasError('futureDate') || courseForm.hasError('endBeforeInit') ? 'Corrige las fechas primero' : courseForm.get('duration_time')?.value || 'Selecciona las fechas para calcular la duración' }}
+                      </p>
                     </div>
                   </div>
                   <small class="text-secondary mt-3 d-block">
                     <i class="bi bi-info-circle me-1"></i>
-                    Fechas del curso y tiempo estimado de duración
+                    La duración se calcula automáticamente según las fechas seleccionadas
                   </small>
                 </div>
               </div>
@@ -342,3 +366,4 @@
     </div>
   </div>
 </div>
+

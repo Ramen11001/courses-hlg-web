@@ -20,7 +20,7 @@
             </div>
             <h2 class="h3 fw-bold text-dark mb-2">Solicitar acceso</h2>
             <p class="text-secondary small mb-0">
-              Solicita ser profesor o la verificación de tu cuenta
+              {{ userRole === 'USER' ? 'Solicita convertirte en profesor' : 'Solicita la verificación de tu cuenta' }}
             </p>
           </div>
 
@@ -47,31 +47,31 @@
                 <i class="bi bi-clipboard-check me-1"></i> Tipo de solicitud
               </label>
               <div class="d-flex flex-column gap-3">
-                <!-- Become Teacher -->
-                <div class="form-check p-3 rounded-3 border" [class.border-primary]="requestForm.get('type')?.value === 'become_teacher'" [class.bg-primary]="requestForm.get('type')?.value === 'become_teacher'">
+                <!-- Become Teacher (only for USER) -->
+                <div *ngIf="userRole === 'USER'" class="form-check p-3 rounded-3 border border-primary">
                   <input class="form-check-input" type="radio" formControlName="type" value="become_teacher"
-                    id="typeTeacher" [disabled]="!canRequestTeacher">
+                    id="typeTeacher" checked>
                   <label class="form-check-label w-100" for="typeTeacher">
                     <div class="d-flex align-items-center gap-2">
                       <i class="bi bi-person-workspace fs-5"></i>
                       <div>
                         <span class="fw-semibold d-block">Convertirme en Profesor</span>
-                        <small class="text-muted" *ngIf="!canRequestTeacher">Solo disponible para estudiantes</small>
+                        <small class="text-muted">Solicita acceso para crear y gestionar tus propios cursos</small>
                       </div>
                     </div>
                   </label>
                 </div>
 
-                <!-- Request Verification -->
-                <div class="form-check p-3 rounded-3 border" [class.border-warning]="requestForm.get('type')?.value === 'request_verification'" [class.bg-warning]="requestForm.get('type')?.value === 'request_verification'">
+                <!-- Request Verification (only for COURSE_SUPPLIER) -->
+                <div *ngIf="userRole === 'COURSE_SUPPLIER'" class="form-check p-3 rounded-3 border border-warning">
                   <input class="form-check-input" type="radio" formControlName="type" value="request_verification"
-                    id="typeVerification" [disabled]="!canRequestVerification">
+                    id="typeVerification" checked>
                   <label class="form-check-label w-100" for="typeVerification">
                     <div class="d-flex align-items-center gap-2">
                       <i class="bi bi-patch-check fs-5"></i>
                       <div>
                         <span class="fw-semibold d-block">Solicitar verificación</span>
-                        <small class="text-muted" *ngIf="!canRequestVerification">Solo disponible para profesores</small>
+                        <small class="text-muted">Destaca como profesor verificado en la plataforma</small>
                       </div>
                     </div>
                   </label>

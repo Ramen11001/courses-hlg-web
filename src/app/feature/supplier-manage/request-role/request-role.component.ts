@@ -34,8 +34,9 @@ export class RequestRoleComponent implements OnInit {
       return;
     }
     this.userRole = this._userService.getUserRole() || '';
+    const defaultType = this.userRole === 'USER' ? 'become_teacher' : this.userRole === 'COURSE_SUPPLIER' ? 'request_verification' : '';
     this.requestForm = this._fb.group({
-      type: ['', Validators.required],
+      type: [defaultType, Validators.required],
       message: ['', [Validators.maxLength(500)]],
     });
     this.loadMyRequests();

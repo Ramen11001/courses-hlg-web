@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
-import { finalize } from 'rxjs';
 import { User } from '../../core/interfaces/user';
 import { UserService } from '../../core/services/user.service.service';
 import { AuthService } from '../../core/services/auth.service';
+import { NotificationService } from '../../core/services/notification.service';
 import { UserCardComponent } from '../../shared/cards/user-card/user-card.component';
 import { RequestService } from '../../core/services/request.service';
 
@@ -26,6 +26,7 @@ export class AdminConfigComponent implements OnInit {
   private _router: Router = inject(Router);
   private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private _requestService: RequestService = inject(RequestService);
+  private _notificationService: NotificationService = inject(NotificationService);
 
   users: User[] = [];
   pendingRequests: any[] = [];
@@ -88,6 +89,7 @@ export class AdminConfigComponent implements OnInit {
         this.selectedRequestId = null;
         this._cdr.detectChanges();
         this.loadUsers();
+        this._notificationService.loadNotifications();
       },
       error: (err) => {
         console.error('Error al revisar solicitud:', err);
@@ -124,10 +126,8 @@ export class AdminConfigComponent implements OnInit {
     if (user.role !== 'COURSE_SUPPLIER') return;
 
     const newVerifiedState = !user.verified;
-    console.log('Enviando PUT:', { verified: newVerifiedState });
     this._userService.updatedUser(user.id, { verified: newVerifiedState }).subscribe({
-      next: (updatedUser: any) => {
-        console.log('Respuesta del PUT:', updatedUser);
+      next: () => {
         user.verified = newVerifiedState;
         this._cdr.detectChanges();
       },

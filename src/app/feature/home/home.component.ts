@@ -154,7 +154,7 @@ throw new Error('Method not implemented.');
     this._userService.allUsers().subscribe({
       next: (users) => {
       
-        this.user = users.filter((user) => user.id !== this.id);
+        this.user = users.filter((user) => user.id !== this.id && user.role !== 'ADMINISTRADOR');
         this.isLoading = false;
         this._cdr.detectChanges();
       },

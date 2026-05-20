@@ -1,24 +1,24 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { ChangeDetectorRef, Component, inject, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { Router, RouterModule, ActivatedRoute } from "@angular/router";
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
-} from '@angular/forms';
-import { AuthService } from '../../core/services/auth.service';
-import { UserService } from '../../core/services/user.service.service';
-import { CourseService } from '../../core/services/course.service';
-import { Course } from '../../core/interfaces/course';
-import { User } from '../../core/interfaces/user';
-import { CommentsService } from '../../core/services/comment.service';
-import { Comment } from '../../core/interfaces/comment';
-import { CourseCardComponent } from '../../shared/cards/course-card/course-card.component';
-import { ImageCarouselComponent } from '../../shared/components/image-carousel/image-carousel.component';
+} from "@angular/forms";
+import { AuthService } from "../../core/services/auth.service";
+import { UserService } from "../../core/services/user.service.service";
+import { CourseService } from "../../core/services/course.service";
+import { Course } from "../../core/interfaces/course";
+import { User } from "../../core/interfaces/user";
+import { CommentsService } from "../../core/services/comment.service";
+import { Comment } from "../../core/interfaces/comment";
+import { CourseCardComponent } from "../../shared/cards/course-card/course-card.component";
+import { ImageCarouselComponent } from "../../shared/components/image-carousel/image-carousel.component";
 
 @Component({
-  selector: 'app-profile',
+  selector: "app-profile",
   standalone: true,
   imports: [
     CommonModule,
@@ -27,7 +27,7 @@ import { ImageCarouselComponent } from '../../shared/components/image-carousel/i
     CourseCardComponent,
     ImageCarouselComponent,
   ],
-  templateUrl: './profile.component.html',
+  templateUrl: "./profile.component.html",
 })
 export class ProfileComponent implements OnInit {
   private _authService = inject(AuthService);
@@ -55,22 +55,26 @@ export class ProfileComponent implements OnInit {
   profileForm: FormGroup;
   comments: Comment | null = null;
   delete: boolean = false;
-  title: any = '';
+  title: any = "";
   cantCreate: boolean = false;
+  imageFiles: File[] = [];
+  imagePreviews: string[] = [];
+  existingImages: string[] = [];
+  removedExisting: boolean[] = [];
 
   constructor() {
     this.profileForm = this._fb.group({
-      firstName: ['', [Validators.required, Validators.minLength(2)]],
-      lastName: ['', [Validators.required, Validators.minLength(2)]],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.pattern(/^[0-9+\-\s]+$/)]],
-      bio: ['', [Validators.maxLength(500)]],
+      firstName: ["", [Validators.required, Validators.minLength(2)]],
+      lastName: ["", [Validators.required, Validators.minLength(2)]],
+      email: ["", [Validators.required, Validators.email]],
+      phone: ["", [Validators.pattern(/^[0-9+\-\s]+$/)]],
+      bio: ["", [Validators.maxLength(500)]],
     });
   }
 
   ngOnInit(): void {
     this.currentUserId = this._userService.getCurrentUserId();
-    const userID = this._route.snapshot.paramMap.get('id');
+    const userID = this._route.snapshot.paramMap.get("id");
     if (userID) {
       this.profileUserId = parseInt(userID);
       this.rolePermisson();
@@ -78,7 +82,7 @@ export class ProfileComponent implements OnInit {
       this.loadUserCourses(this.profileUserId);
       (this, this.loadUserComments(this.profileUserId));
     } else {
-      this.errorMessage = 'Usuario no encontrado';
+      this.errorMessage = "Usuario no encontrado";
       this.isLoading = false;
     }
   }
@@ -90,18 +94,32 @@ export class ProfileComponent implements OnInit {
     this._userService.getUserById(userId).subscribe({
       next: (user) => {
         this.user = user;
-        console.log('User loaded from API:', user);
         this.profileForm.patchValue({
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
-          phone: user.phone || '',
-          bio: user.biography || '',
+          phone: user.phone || "",
+          bio: user.biography || "",
         });
+
+        const imgs = (user as any).images;
+        if (Array.isArray(imgs) && imgs.length > 0) {
+          this.existingImages = imgs;
+          this.removedExisting = imgs.map(() => false);
+        } else if (typeof imgs === "string") {
+          try {
+            const parsed = JSON.parse(imgs);
+            if (Array.isArray(parsed)) {
+              this.existingImages = parsed;
+              this.removedExisting = parsed.map(() => false);
+            }
+          } catch {}
+        }
+
         this.isLoading = false;
       },
       error: (err) => {
-        this.errorMessage = 'Error al cargar el perfil';
+        this.errorMessage = "Error al cargar el perfil";
         this.isLoading = false;
         console.error(err);
       },
@@ -120,7 +138,7 @@ export class ProfileComponent implements OnInit {
         });
       },
       error: (err) => {
-        console.error('Error al cargar cursos del usuario:', err);
+        console.error("Error al cargar cursos del usuario:", err);
       },
     });
   }
@@ -137,7 +155,7 @@ export class ProfileComponent implements OnInit {
         });
       },
       error: (err) => {
-        console.error('Error al cargar cursos del usuario:', err);
+        console.error("Error al cargar cursos del usuario:", err);
       },
     });
   }
@@ -152,21 +170,40 @@ export class ProfileComponent implements OnInit {
         firstName: this.user.firstName,
         lastName: this.user.lastName,
         email: this.user.email,
-        phone: this.user.phone || '',
-        bio: this.user.biography || '',
+        phone: this.user.phone || "",
+        bio: this.user.biography || "",
       });
     }
   }
 
-  onSubmit(): void {
+  async onSubmit() {
     if (this.profileForm.invalid || !this.profileUserId) {
-      this.errorMessage = 'Por favor, corrige los errores en el formulario';
+      this.errorMessage = "Por favor, corrige los errores en el formulario";
       return;
     }
 
     this.isLoading = true;
 
-    const updatedData = {
+    const images: string[] = [];
+
+    this.existingImages.forEach((img, i) => {
+      if (!this.removedExisting[i]) {
+        images.push(img);
+      }
+    });
+
+    if (this.imageFiles.length > 0) {
+      try {
+        for (const file of this.imageFiles) {
+          const base64 = await this.fileToBase64(file);
+          images.push(base64);
+        }
+      } catch (err) {
+        console.error("Error reading images:", err);
+      }
+    }
+
+    const updatedData: any = {
       firstName: this.profileForm.value.firstName,
       lastName: this.profileForm.value.lastName,
       email: this.profileForm.value.email,
@@ -174,16 +211,20 @@ export class ProfileComponent implements OnInit {
       biography: this.profileForm.value.bio,
     };
 
+    if (images.length > 0 || this.existingImages.length > 0) {
+      updatedData.images = images;
+    }
+
     this._userService.updatedUser(this.profileUserId, updatedData).subscribe({
       next: (response) => {
         this.user = response;
-        this.successMessage = 'Perfil actualizado exitosamente';
+        this.successMessage = "Perfil actualizado exitosamente";
         this.isEditing = false;
         this.isLoading = false;
         setTimeout(() => (this.successMessage = null), 3000);
       },
       error: (err) => {
-        this.errorMessage = 'Error al actualizar el perfil';
+        this.errorMessage = "Error al actualizar el perfil";
         this.isLoading = false;
       },
     });
@@ -191,11 +232,11 @@ export class ProfileComponent implements OnInit {
 
   // region NAVIGATE
   navigateToCourse(id: number): void {
-    this._router.navigate(['/courseDetails/' + id]);
+    this._router.navigate(["/courseDetails/" + id]);
   }
 
   navigateToHome(): void {
-    this._router.navigate(['/home']);
+    this._router.navigate(["/home"]);
   }
 
   navigateToLogout(): void {
@@ -203,46 +244,45 @@ export class ProfileComponent implements OnInit {
   }
 
   navigateToEditCourse(id: number): void {
-    this._router.navigate(['edit/' + id]);
+    this._router.navigate(["edit/" + id]);
   }
 
   navigateToCreateCourse(): void {
-    this._router.navigate(['/createCourse']);
+    this._router.navigate(["/createCourse"]);
   }
 
   navigateToProfile(): void {
     const id = this._userService.getCurrentUserId();
     if (id) {
-      this._router.navigate(['/user/' + id]);
+      this._router.navigate(["/user/" + id]);
     } else {
-      this._router.navigate(['/home']);
+      this._router.navigate(["/home"]);
     }
   }
 
   //region GET:
 
   getInitials(): string {
-    if (!this.user) return 'U';
-    const firstName = this.user.firstName || '';
-    const lastName = this.user.lastName || '';
+    if (!this.user) return "U";
+    const firstName = this.user.firstName || "";
+    const lastName = this.user.lastName || "";
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   }
 
   getFullName(): string {
-    if (!this.user) return 'Usuario';
+    if (!this.user) return "Usuario";
     return (
-      `${this.user.firstName || ''} ${this.user.lastName || ''}`.trim() ||
-      'Usuario'
+      `${this.user.firstName || ""} ${this.user.lastName || ""}`.trim() ||
+      "Usuario"
     );
   }
 
   getUserImages(): string[] {
     if (!this.user) return [];
     const imgs = (this.user as any).images;
-    console.log('Profile images:', imgs);
     if (!imgs) return [];
     if (Array.isArray(imgs) && imgs.length > 0) return imgs;
-    if (typeof imgs === 'string') {
+    if (typeof imgs === "string") {
       try {
         const parsed = JSON.parse(imgs);
         return Array.isArray(parsed) ? parsed : [];
@@ -251,6 +291,47 @@ export class ProfileComponent implements OnInit {
       }
     }
     return [];
+  }
+
+  onImagesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      const newFiles = Array.from(input.files);
+      this.imageFiles = [...this.imageFiles, ...newFiles];
+      newFiles.forEach((file) => {
+        this.imagePreviews.push(URL.createObjectURL(file));
+      });
+    }
+  }
+
+  removeNewImage(index: number): void {
+    URL.revokeObjectURL(this.imagePreviews[index]);
+    this.imageFiles.splice(index, 1);
+    this.imagePreviews.splice(index, 1);
+  }
+
+  removeExistingImage(index: number): void {
+    this.removedExisting[index] = true;
+  }
+
+  restoreExistingImage(index: number): void {
+    this.removedExisting[index] = false;
+  }
+
+  private fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  get imageCount(): number {
+    const kept = this.existingImages.filter(
+      (_, i) => !this.removedExisting[i],
+    ).length;
+    return kept + this.imageFiles.length;
   }
 
   //region DELETE
@@ -265,17 +346,19 @@ export class ProfileComponent implements OnInit {
     this._cdr.detectChanges();
     this._courseService.deleteCourse(id).subscribe({
       next: () => {
-        this.userCourses = this.userCourses.filter((course_id) => course_id.id !== id);
+        this.userCourses = this.userCourses.filter(
+          (course_id) => course_id.id !== id,
+        );
         this._cdr.detectChanges();
       },
       error: (err: any) => {
-        console.error('Error deleting course:', err);
+        console.error("Error deleting course:", err);
       },
     });
   }
 
   openDeleteAccountModal(): void {
-    const modalEl = document.getElementById('deleteAccountModal');
+    const modalEl = document.getElementById("deleteAccountModal");
     if (modalEl) {
       const modal = new (window as any).bootstrap.Modal(modalEl);
       modal.show();
@@ -286,19 +369,21 @@ export class ProfileComponent implements OnInit {
     if (!this.user?.id) return;
     this._userService.deleteUser(this.user.id).subscribe({
       next: () => {
-        const modalEl = document.getElementById('deleteAccountModal');
+        const modalEl = document.getElementById("deleteAccountModal");
         if (modalEl) {
           const modal = (window as any).bootstrap.Modal.getInstance(modalEl);
           if (modal) modal.hide();
         }
-        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-        document.body.classList.remove('modal-open');
-        document.body.style.overflow = '';
-        document.body.style.paddingRight = '';
-        this._router.navigate(['/login']);
+        document
+          .querySelectorAll(".modal-backdrop")
+          .forEach((el) => el.remove());
+        document.body.classList.remove("modal-open");
+        document.body.style.overflow = "";
+        document.body.style.paddingRight = "";
+        this._router.navigate(["/login"]);
       },
       error: (err) => {
-        console.error('Error deleting user:', err);
+        console.error("Error deleting user:", err);
       },
     });
   }
@@ -313,7 +398,7 @@ export class ProfileComponent implements OnInit {
     const user = this._userService.getUserById(user_id);
     user.forEach((is_curse_supplier) => {
       const role = is_curse_supplier.role;
-      if (role === 'COURSE_SUPPLIER') {
+      if (role === "COURSE_SUPPLIER") {
         this.cantCreate = true;
         this._cdr.detectChanges();
       }

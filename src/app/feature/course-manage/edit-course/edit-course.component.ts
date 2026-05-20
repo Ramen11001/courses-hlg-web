@@ -25,6 +25,11 @@ export class EditCourseComponent {
   courseId: number;
   errorMessage: string | null = null;
   canEdit = false;
+  imageFiles: File[] = [];
+  imagePreviews: string[] = [];
+  existingImages: string[] = [];
+  removedExisting: boolean[] = [];
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -44,7 +49,7 @@ export class EditCourseComponent {
   ngOnInit(): void {
     this.loadCourse();
   }
-  // Loads course data from API and checks edit permissions.
+
   loadCourse(): void {
     this.isLoading = true;
     this.errorMessage = null;
@@ -71,6 +76,21 @@ export class EditCourseComponent {
           study_plan: course.study_plan,
           location: course.location,
         });
+
+        const imgs = (course as any).images;
+        if (Array.isArray(imgs) && imgs.length > 0) {
+          this.existingImages = imgs;
+          this.removedExisting = imgs.map(() => false);
+        } else if (typeof imgs === 'string') {
+          try {
+            const parsed = JSON.parse(imgs);
+            if (Array.isArray(parsed)) {
+              this.existingImages = parsed;
+              this.removedExisting = parsed.map(() => false);
+            }
+          } catch {}
+        }
+
         this.isLoading = false;
       },
       error: (err: any) => {
@@ -97,19 +117,78 @@ export class EditCourseComponent {
     this.router.navigate(['/home']);
   }
 
+  onImagesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      const newFiles = Array.from(input.files);
+      this.imageFiles = [...this.imageFiles, ...newFiles];
+      newFiles.forEach((file) => {
+        this.imagePreviews.push(URL.createObjectURL(file));
+      });
+    }
+  }
+
+  removeNewImage(index: number): void {
+    URL.revokeObjectURL(this.imagePreviews[index]);
+    this.imageFiles.splice(index, 1);
+    this.imagePreviews.splice(index, 1);
+  }
+
+  removeExistingImage(index: number): void {
+    this.removedExisting[index] = true;
+  }
+
+  restoreExistingImage(index: number): void {
+    this.removedExisting[index] = false;
+  }
+
+  private fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  get imageCount(): number {
+    const kept = this.existingImages.filter((_, i) => !this.removedExisting[i]).length;
+    return kept + this.imageFiles.length;
+  }
+
   /**
    * Handles form submission for course updates.
    */
-  onSubmit(): void {
+  async onSubmit() {
     this.courseForm.markAllAsTouched();
 
     if (this.courseForm.valid) {
       this.isLoading = true;
       this.errorMessage = null;
 
+      const images: string[] = [];
+
+      this.existingImages.forEach((img, i) => {
+        if (!this.removedExisting[i]) {
+          images.push(img);
+        }
+      });
+
+      if (this.imageFiles.length > 0) {
+        try {
+          for (const file of this.imageFiles) {
+            const base64 = await this.fileToBase64(file);
+            images.push(base64);
+          }
+        } catch (err) {
+          console.error('Error reading images:', err);
+        }
+      }
+
       const formData = {
         ...this.courseForm.value,
         cost: Number(this.courseForm.value.cost),
+        images,
         userId: this._userService.getCurrentUserId()!,
       };
 

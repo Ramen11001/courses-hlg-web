@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Notification } from '../interfaces/notification';
 
@@ -10,9 +10,15 @@ import { Notification } from '../interfaces/notification';
 export class NotificationService {
   private baseUrl = `${environment.baseUrl}/notifications`;
   private http = inject(HttpClient);
+  private notificationsSubject = new BehaviorSubject<Notification[]>([]);
 
-  getNotifications(): Observable<Notification[]> {
-    return this.http.get<Notification[]>(this.baseUrl);
+  notifications$ = this.notificationsSubject.asObservable();
+
+  loadNotifications(): void {
+    this.http.get<Notification[]>(this.baseUrl).subscribe({
+      next: (notifications) => this.notificationsSubject.next(notifications),
+      error: (err) => console.error('[NotificationService] Error loading notifications:', err),
+    });
   }
 
   markAsViewed(id: number): Observable<Notification> {

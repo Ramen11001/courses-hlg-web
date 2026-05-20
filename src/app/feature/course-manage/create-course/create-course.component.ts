@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CourseService } from '../../../core/services/course.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserService } from '../../../core/services/user.service.service';
@@ -35,12 +35,48 @@ export class CreateCourseComponent {
       description: ['', [Validators.required, Validators.minLength(20), Validators.maxLength(1000)]],
       study_plan: ['', [Validators.maxLength(5000)]],
       location: ['', [Validators.required, Validators.maxLength(200)]],
-      init_date: [''],
-      end_date: [''],
+      init_date: ['', [futureDateValidator()]],
+      end_date: ['', [futureDateValidator()]],
       duration_time: [''],
       tagName: [''],
       tagColor: ['primary'],
-    });
+    }, { validators: endDateAfterInitDateValidator() });
+
+    this.courseForm.get('init_date')?.valueChanges.subscribe(() => this.calculateDuration());
+    this.courseForm.get('end_date')?.valueChanges.subscribe(() => this.calculateDuration());
+  }
+
+  private calculateDuration(): void {
+    const init = this.courseForm.get('init_date')?.value;
+    const end = this.courseForm.get('end_date')?.value;
+    if (!init || !end) {
+      this.courseForm.get('duration_time')?.setValue('', { emitEvent: false });
+      return;
+    }
+    const initDate = new Date(init);
+    const endDate = new Date(end);
+    initDate.setHours(0, 0, 0, 0);
+    endDate.setHours(0, 0, 0, 0);
+    const diffMs = endDate.getTime() - initDate.getTime();
+    if (diffMs < 0) {
+      this.courseForm.get('duration_time')?.setValue('', { emitEvent: false });
+      return;
+    }
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDays === 0) {
+      this.courseForm.get('duration_time')?.setValue('', { emitEvent: false });
+      return;
+    }
+    const weeks = Math.floor(diffDays / 7);
+    const days = diffDays % 7;
+    let result = '';
+    if (weeks > 0) result += `${weeks} ${weeks === 1 ? 'semana' : 'semanas'}`;
+    if (days > 0) {
+      if (result) result += ', ';
+      result += `${days} ${days === 1 ? 'día' : 'días'}`;
+    }
+    if (!result) result = `${diffDays} días`;
+    this.courseForm.get('duration_time')?.setValue(result, { emitEvent: false });
   }
 
   navigateToHome() {
@@ -151,4 +187,28 @@ export class CreateCourseComponent {
       });
     }
   }
+}
+
+function futureDateValidator(): (control: AbstractControl) => ValidationErrors | null {
+  return (control: AbstractControl): ValidationErrors | null => {
+    if (!control.value) return null;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const inputDate = new Date(control.value);
+    inputDate.setHours(0, 0, 0, 0);
+    return inputDate < today ? { futureDate: true } : null;
+  };
+}
+
+function endDateAfterInitDateValidator(): (group: AbstractControl) => ValidationErrors | null {
+  return (group: AbstractControl): ValidationErrors | null => {
+    const initDate = group.get('init_date')?.value;
+    const endDate = group.get('end_date')?.value;
+    if (!initDate || !endDate) return null;
+    const init = new Date(initDate);
+    const end = new Date(endDate);
+    init.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+    return end < init ? { endBeforeInit: true } : null;
+  };
 }

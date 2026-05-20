@@ -215,6 +215,40 @@
                   </small>
                 </div>
                 <div class="col-12">
+                  <label class="form-label fw-semibold text-secondary small text-uppercase">
+                    <i class="bi bi-image me-1"></i> Imágenes del perfil
+                  </label>
+                  <div class="d-flex flex-wrap gap-2 mb-2">
+                    <div *ngFor="let img of existingImages; let i = index">
+                      <div *ngIf="!removedExisting[i]" class="position-relative d-inline-block">
+                        <img [src]="img" class="rounded-3 border" style="width: 80px; height: 80px; object-fit: cover;" />
+                        <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 p-0 d-flex align-items-center justify-content-center" style="width: 22px; height: 22px; transform: translate(25%, -25%);" (click)="removeExistingImage(i)">
+                          <i class="bi bi-x fs-6 text-white"></i>
+                        </button>
+                      </div>
+                      <div *ngIf="removedExisting[i]" class="position-relative d-inline-flex align-items-center justify-content-center rounded-3 border bg-light" style="width: 80px; height: 80px;">
+                        <small class="text-secondary text-center px-1">Eliminada</small>
+                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-circle position-absolute" style="width: 22px; height: 22px;" (click)="restoreExistingImage(i)">
+                          <i class="bi bi-arrow-counterclockwise fs-6"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div *ngFor="let preview of imagePreviews; let i = index">
+                      <div class="position-relative d-inline-block">
+                        <img [src]="preview" class="rounded-3 border" style="width: 80px; height: 80px; object-fit: cover;" />
+                        <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 p-0 d-flex align-items-center justify-content-center" style="width: 22px; height: 22px; transform: translate(25%, -25%);" (click)="removeNewImage(i)">
+                          <i class="bi bi-x fs-6 text-white"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <input type="file" accept="image/*" multiple (change)="onImagesSelected($event)" class="form-control form-control-sm rounded-3 border-0 bg-light" id="profileImages" />
+                  <small class="text-secondary mt-1 d-block">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Formatos: JPG, PNG, GIF. Puedes seleccionar varias.
+                  </small>
+                </div>
+                <div class="col-12">
                   <div class="d-flex justify-content-end gap-3">
                     <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="toggleEdit()">
                       Cancelar

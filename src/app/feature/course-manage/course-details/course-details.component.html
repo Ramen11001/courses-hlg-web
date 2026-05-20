@@ -10,6 +10,12 @@
         <p class="text-secondary mt-3">Cargando detalles del curso...</p>
       </div>
 
+      <!-- Notification Alert -->
+      <div *ngIf="notificationAlert" class="alert alert-info rounded-4 shadow-sm fade show" role="alert">
+        <i class="bi bi-bell-fill me-2"></i>
+        <strong>{{ notificationAlert.title }}</strong>: {{ notificationAlert.message }}
+      </div>
+
       <!-- Error Message -->
       <div *ngIf="error && !isLoading" class="alert alert-danger rounded-4 shadow-sm" role="alert">
         <i class="bi bi-exclamation-triangle-fill me-2"></i>

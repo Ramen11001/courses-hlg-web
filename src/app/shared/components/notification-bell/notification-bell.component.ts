@@ -14,6 +14,7 @@ import { Subscription, interval } from 'rxjs';
 export class NotificationBellComponent implements OnInit, OnDestroy {
   private notificationService = inject(NotificationService);
   private refreshSubscription?: Subscription;
+  private notificationsSubscription?: Subscription;
   private elementRef = inject(ElementRef);
 
   notifications: Notification[] = [];
@@ -28,36 +29,29 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.loadNotifications();
+    this.notificationsSubscription = this.notificationService.notifications$.subscribe((notifications) => {
+      this.notifications = notifications;
+      this.unviewedCount = notifications.filter((n) => !n.viewed).length;
+    });
+    this.notificationService.loadNotifications();
     this.startPolling();
   }
 
   ngOnDestroy() {
-    if (this.refreshSubscription) {
-      this.refreshSubscription.unsubscribe();
-    }
+    this.notificationsSubscription?.unsubscribe();
+    this.refreshSubscription?.unsubscribe();
   }
 
   startPolling() {
-    this.refreshSubscription = interval(60000).subscribe(() => {
-      this.loadNotifications();
-    });
-  }
-
-  loadNotifications() {
-    this.notificationService.getNotifications().subscribe({
-      next: (notifications) => {
-        this.notifications = notifications;
-        this.unviewedCount = notifications.filter((n) => !n.viewed).length;
-      },
-      error: (err) => console.error('Error loading notifications:', err),
+    this.refreshSubscription = interval(15000).subscribe(() => {
+      this.notificationService.loadNotifications();
     });
   }
 
   toggleNotifications() {
     this.isOpen = !this.isOpen;
     if (this.isOpen) {
-      this.loadNotifications();
+      this.notificationService.loadNotifications();
     }
   }
 

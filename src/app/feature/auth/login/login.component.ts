@@ -1,32 +1,32 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from "@angular/core";
+import { CommonModule } from "@angular/common";
 import {
   FormGroup,
   FormControl,
   ReactiveFormsModule,
   Validators,
-} from '@angular/forms';
+} from "@angular/forms";
 
-import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
+import { Router, RouterModule } from "@angular/router";
+import { AuthService } from "../../../core/services/auth.service";
 
 @Component({
-  selector: 'app-login',
+  selector: "app-login",
   standalone: true,
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
+  templateUrl: "./login.component.html",
+  styleUrls: ["./login.component.scss"],
   imports: [CommonModule, RouterModule, ReactiveFormsModule],
 })
 export class LoginComponent {
   private _authService: AuthService = inject(AuthService);
   private _router = inject(Router);
 
-  errorMessage: string = '';
+  errorMessage: string = "";
   loading: boolean = false;
 
   loginForm = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [
+    email: new FormControl("", [Validators.required, Validators.email]),
+    password: new FormControl("", [
       Validators.required,
       Validators.minLength(6),
     ]),
@@ -34,16 +34,16 @@ export class LoginComponent {
 
   submit() {
     this.loading = true;
-    this.errorMessage = '';
+    this.errorMessage = "";
 
     if (this.loginForm.invalid) {
-      this.errorMessage = 'El formulario no es válido.';
+      this.errorMessage = "El formulario no es válido.";
       this.loading = false;
       return;
     }
 
-    const email = this.loginForm.value.email ?? '';
-    const password = this.loginForm.value.password ?? '';
+    const email = this.loginForm.value.email ?? "";
+    const password = this.loginForm.value.password ?? "";
 
     const loginData = {
       email: email,
@@ -52,14 +52,10 @@ export class LoginComponent {
 
     this._authService.login(loginData).subscribe({
       next: (response) => {
-        console.log('Login response:', response);
         const token = response.token || response.accessToken;
         const user = response.user || response;
         const userEmail = user?.email;
-        const firstName =
-          user?.name ||
-          user?.firstName ||
-          user?.fristName;
+        const firstName = user?.name || user?.firstName || user?.fristName;
         const role = user?.role;
         const userId = user?.id;
 
@@ -71,18 +67,18 @@ export class LoginComponent {
             role,
             firstName,
           );
-          localStorage.setItem('user', JSON.stringify(user));
+          localStorage.setItem("user", JSON.stringify(user));
           this.navigateToHome();
           this.loading = false;
         } else {
-          console.error('Token or user data missing. Response:', response);
-          this.errorMessage = 'Error al procesar la respuesta del servidor';
+          console.error("Token or user data missing. Response:", response);
+          this.errorMessage = "Error al procesar la respuesta del servidor";
           this.loading = false;
         }
       },
       error: (err) => {
         this.errorMessage =
-          err.error?.error || 'Usuario o contraseña incorrectos';
+          err.error?.error || "Usuario o contraseña incorrectos";
         this.loading = false;
       },
     });
@@ -90,14 +86,14 @@ export class LoginComponent {
 
   //region NAVIGATE
   navigateToSingUp() {
-    this._router.navigate(['/singUp']);
+    this._router.navigate(["/singUp"]);
   }
 
   navigateToForgotPassword() {
-    this._router.navigate(['/forgotPassword']);
+    this._router.navigate(["/forgotPassword"]);
   }
 
   navigateToHome() {
-    this._router.navigate(['/home']);
+    this._router.navigate(["/home"]);
   }
 }

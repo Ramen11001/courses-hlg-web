@@ -83,13 +83,12 @@ export class AuthService {
     return !!token; // Cheek if token exist
   }
 
-  /**
-   * Resets user password directly by email
-   * @param {object} data - Contains email and newPassword
-   * @returns {Observable<any>}
-   */
-  resetPassword(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/auth/reset-password`, data);
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/auth/forgot-password`, { email });
+  }
+
+  confirmResetPassword(token: string, newPassword: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/auth/reset-password/${token}`, { newPassword });
   }
 
   //get user firstName

@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { SignUpComponent } from './feature/auth/sign-up/sign-up.component';
 import { ForgotPasswordComponent } from './feature/auth/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './feature/auth/reset-password/reset-password.component';
 import { LoginComponent } from './feature/auth/login/login.component';
 import { HomeComponent } from './feature/home/home.component';
 import { CreateCourseComponent } from './feature/course-manage/create-course/create-course.component';
@@ -32,6 +33,11 @@ export const routes: Routes = [
   {
     path: 'forgotPassword',
     component: ForgotPasswordComponent,
+  },
+
+  {
+    path: 'reset-password/:token',
+    component: ResetPasswordComponent,
   },
 
   {

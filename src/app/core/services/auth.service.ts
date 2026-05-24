@@ -91,6 +91,10 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/auth/reset-password/${token}`, { newPassword });
   }
 
+  setupAdmin(data: { setupKey: string; firstName: string; lastName: string; email: string; password: string; birthday?: string; entity_type?: string; phone?: string }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/auth/setup-admin`, data);
+  }
+
   //get user firstName
   getCurrentUserName(): string | null {
     return localStorage.getItem('firstName') || localStorage.getItem('fristName');

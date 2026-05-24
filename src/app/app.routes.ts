@@ -12,6 +12,7 @@ import { EditCourseComponent } from './feature/course-manage/edit-course/edit-co
 import { UserDetailsComponent } from './feature/supplier-manage/supplier-details/supplier-details.component';
 import { AdminConfigComponent } from './feature/admin-config/admin-config.component';
 import { RequestRoleComponent } from './feature/supplier-manage/request-role/request-role.component';
+import { SetupAdminComponent } from './feature/setup-admin/setup-admin.component';
 
 export const routes: Routes = [
   {
@@ -74,5 +75,9 @@ export const routes: Routes = [
     path: 'request-role',
     component: RequestRoleComponent,
     canActivate: [authGuard],
+  },
+  {
+    path: 'setup-admin',
+    component: SetupAdminComponent,
   },
 ];

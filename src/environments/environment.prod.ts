@@ -1,4 +1,7 @@
 export const environment = {
   production: true,
-  baseUrl: 'https://courses-hlg-api.onrender.com'
+  baseUrl: 'https://courses-hlg-api.onrender.com',
+  setup: {
+    enabled: false,
+  },
 };

@@ -49,6 +49,7 @@ export class CoursesDetailsComponent implements OnInit {
   isEnrolled: boolean = false;
   enrollment: Enrollment | null = null;
   isEnrolling: boolean = false;
+  isAdmin: boolean = false;
   successMessage: string | null = null;
   notificationAlert: { title: string; message: string } | null = null;
 
@@ -71,6 +72,8 @@ export class CoursesDetailsComponent implements OnInit {
   ngOnInit(): void {
     const course_id = this.route.snapshot.paramMap.get("id");
     this.currentUserId = this._userService.getCurrentUserId();
+    const role = localStorage.getItem('role');
+    this.isAdmin = role === 'ADMINISTRADOR' || role === 'ADMIN';
     if (course_id) {
       this.loadCourse(parseInt(course_id));
     } else {
@@ -133,6 +136,11 @@ export class CoursesDetailsComponent implements OnInit {
       return;
     }
 
+    if (this.isAdmin) {
+      this.error = "Los administradores no pueden comentar.";
+      return;
+    }
+
     const commentData = {
       text: this.commentForm.value.text,
       rating: Number(this.commentForm.value.rating),
@@ -182,6 +190,11 @@ export class CoursesDetailsComponent implements OnInit {
   enrollInCourse(): void {
     if (!this._authService.isAuthenticated()) {
       this.router.navigate(["/login"]);
+      return;
+    }
+
+    if (this.isAdmin) {
+      this.error = "Los administradores no pueden inscribirse en cursos.";
       return;
     }
 
@@ -305,10 +318,12 @@ export class CoursesDetailsComponent implements OnInit {
    * Uses Angular Router to navigate to '/porfile' route.
    * @returns {void}
    */
-  navigateToHome() {
-    const id = this._userService.getCurrentUserId();
-    if (id) {
-      this.router.navigate(["/home"]);
+  navigateBack() {
+    const role = localStorage.getItem('role');
+    if (role === 'ADMINISTRADOR' || role === 'ADMIN') {
+      this.router.navigate(['/admin-config']);
+    } else {
+      this.router.navigate(['/home']);
     }
   }
 

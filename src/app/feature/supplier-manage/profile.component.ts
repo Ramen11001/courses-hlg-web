@@ -394,14 +394,16 @@ export class ProfileComponent implements OnInit {
 
   //region ROLE PERMISSION:
   rolePermisson() {
-    const user_id = this._userService.getCurrentUserId()!;
-    const user = this._userService.getUserById(user_id);
-    user.forEach((is_curse_supplier) => {
-      const role = is_curse_supplier.role;
-      if (role === "COURSE_SUPPLIER") {
-        this.cantCreate = true;
-        this._cdr.detectChanges();
-      }
+    const user_id = this._userService.getCurrentUserId();
+    if (!user_id) return;
+    this._userService.getUserById(user_id).subscribe({
+      next: (user) => {
+        if (user.role === "COURSE_SUPPLIER") {
+          this.cantCreate = true;
+          this._cdr.detectChanges();
+        }
+      },
+      error: () => {},
     });
   }
 

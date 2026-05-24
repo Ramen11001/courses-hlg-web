@@ -91,6 +91,7 @@ export class UserDetailsComponent implements OnInit {
     if (!this.currentUserId) return false;
     if (user.id === this.currentUserId) return false;
     if (this.currentUserRole === 'USER') return false;
+    if (this.isAdmin) return false;
     if (user.role === 'USER') return false;
     return true;
   }
@@ -127,7 +128,7 @@ export class UserDetailsComponent implements OnInit {
   }
 
   get isAdmin(): boolean {
-    return this.currentUserRole === 'ADMIN';
+    return this.currentUserRole === 'ADMIN' || this.currentUserRole === 'ADMINISTRADOR';
   }
 
   get showComments(): boolean {
@@ -185,6 +186,11 @@ export class UserDetailsComponent implements OnInit {
       return;
     if (!this._authService.isAuthenticated()) {
       this.router.navigate(['/login']);
+      return;
+    }
+
+    if (this.isAdmin) {
+      this.error = 'Los administradores no pueden comentar.';
       return;
     }
 

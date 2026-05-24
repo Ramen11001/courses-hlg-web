@@ -94,6 +94,11 @@ export class LoginComponent {
   }
 
   navigateToHome() {
-    this._router.navigate(["/home"]);
+    const role = localStorage.getItem('role');
+    if (role === 'ADMINISTRADOR' || role === 'ADMIN') {
+      this._router.navigate(['/admin-config']);
+    } else {
+      this._router.navigate(['/home']);
+    }
   }
 }

@@ -134,8 +134,8 @@ export class SignUpComponent {
             response.token,
             response.user.email,
             response.user.id,
-            response.user.firstName,
             response.user.role,
+            response.user.firstName,
           );
           this._router.navigate(["/login"]);
         } else {

@@ -27,8 +27,8 @@
 
         <!-- Return Button -->
         <div class="mb-4">
-          <button (click)="navigateToHome()" class="btn btn-outline-secondary rounded-pill px-4 py-2">
-            <i class="bi bi-arrow-left me-2"></i> Volver a cursos
+          <button (click)="navigateBack()" class="btn btn-outline-secondary rounded-pill px-4 py-2">
+            <i class="bi bi-arrow-left me-2"></i> Volver
           </button>
         </div>
 
@@ -139,7 +139,13 @@
                       Este es tu propio curso. No puedes inscribirte ni comentarlo.
                     </div>
                   </div>
-                  <div *ngIf="!isEnrolled && !isOwnCourse">
+                  <div *ngIf="isAdmin && !isOwnCourse">
+                    <div class="alert alert-warning rounded-4">
+                      <i class="bi bi-shield-lock me-2"></i>
+                      Los administradores no pueden inscribirse en cursos.
+                    </div>
+                  </div>
+                  <div *ngIf="!isEnrolled && !isOwnCourse && !isAdmin">
                     <button class="btn btn-success btn-lg rounded-pill px-5 py-3 fw-semibold shadow-sm"
                       (click)="enrollInCourse()" [disabled]="isEnrolling">
                       <div *ngIf="isEnrolling" class="d-flex align-items-center gap-2">
@@ -196,7 +202,7 @@
             </h3>
 
             <!-- Comment Form -->
-            <div *ngIf="isAuthenticated && !isOwnCourse" class="bg-light rounded-4 p-4 mb-4">
+            <div *ngIf="isAuthenticated && !isOwnCourse && !isAdmin" class="bg-light rounded-4 p-4 mb-4">
               <h5 class="fw-semibold text-dark mb-3">Deja tu comentario</h5>
               <form [formGroup]="commentForm" (ngSubmit)="onSubmit()">
                 <div class="mb-3">
@@ -230,9 +236,9 @@
               </form>
             </div>
 
-            <div *ngIf="isAuthenticated && isOwnCourse" class="alert alert-info rounded-4 mb-4">
+            <div *ngIf="isAuthenticated && (isOwnCourse || isAdmin)" class="alert alert-info rounded-4 mb-4">
               <i class="bi bi-info-circle-fill me-2"></i>
-              No puedes comentar tu propio curso.
+              {{ isAdmin ? 'Los administradores no pueden comentar.' : 'No puedes comentar tu propio curso.' }}
             </div>
 
             <!-- Comments List -->
@@ -286,9 +292,9 @@
       <div *ngIf="!isLoading && !course && !error" class="text-center py-5">
         <i class="bi bi-book-x display-1 text-secondary opacity-50"></i>
         <p class="text-secondary mt-3">Curso no encontrado</p>
-        <button (click)="navigateToHome()" class="btn btn-primary rounded-pill px-4 py-2 mt-2">
+        <button (click)="navigateBack()" class="btn btn-primary rounded-pill px-4 py-2 mt-2">
           <i class="bi bi-arrow-left me-2"></i>
-          Volver a cursos
+          Volver
         </button>
       </div>
 

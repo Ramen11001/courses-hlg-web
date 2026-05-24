@@ -34,12 +34,31 @@ export class RequestRoleComponent implements OnInit {
       return;
     }
     this.userRole = this._userService.getUserRole() || '';
+    this.initForm();
+    this.loadMyRequests();
+    this.loadUserRole();
+  }
+
+  private loadUserRole() {
+    const userId = this._userService.getCurrentUserId();
+    if (!userId) return;
+    this._userService.getUserById(userId).subscribe({
+      next: (user) => {
+        this.userRole = user.role;
+        const correctType = user.role === 'USER' ? 'become_teacher' : user.role === 'COURSE_SUPPLIER' ? 'request_verification' : '';
+        if (correctType && this.requestForm.get('type')?.value !== correctType) {
+          this.requestForm.get('type')?.setValue(correctType);
+        }
+      },
+    });
+  }
+
+  private initForm() {
     const defaultType = this.userRole === 'USER' ? 'become_teacher' : this.userRole === 'COURSE_SUPPLIER' ? 'request_verification' : '';
     this.requestForm = this._fb.group({
       type: [defaultType, Validators.required],
       message: ['', [Validators.maxLength(500)]],
     });
-    this.loadMyRequests();
   }
 
   loadMyRequests() {

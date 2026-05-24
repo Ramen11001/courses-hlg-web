@@ -153,7 +153,7 @@
             </h3>
 
             <!-- Comment Form -->
-            <div *ngIf="!isCurrentUser && currentUserId" class="bg-light rounded-4 p-3 p-md-4 mb-4">
+            <div *ngIf="!isCurrentUser && currentUserId && !isAdmin" class="bg-light rounded-4 p-3 p-md-4 mb-4">
               <h5 class="fw-semibold text-dark mb-3">Deja tu comentario</h5>
               <form [formGroup]="commentForm" (ngSubmit)="submitComment()">
                 <div class="mb-3">

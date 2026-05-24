@@ -78,18 +78,25 @@ throw new Error('Method not implemented.');
     const token = this._authService.getToken();
     if (!token) {
       this._router.navigate(['/login']);
-    } else {
-      this.rolePermisson();
-      this.id;
-      this.getCourse();
-      this.loadSuggestions();
-      this.loadAllUsers();
-
-      this.filterForm.valueChanges.subscribe((_values) => {
-        this.currentPage = 1;
-        this.getCourse();
-      });
+      return;
     }
+
+    const role = localStorage.getItem('role');
+    if (role === 'ADMINISTRADOR' || role === 'ADMIN') {
+      this._router.navigate(['/admin-config']);
+      return;
+    }
+
+    this.rolePermisson();
+    this.id;
+    this.getCourse();
+    this.loadSuggestions();
+    this.loadAllUsers();
+
+    this.filterForm.valueChanges.subscribe((_values) => {
+      this.currentPage = 1;
+      this.getCourse();
+    });
   }
 
   //region GET AND LOAD
@@ -226,18 +233,20 @@ throw new Error('Method not implemented.');
 
   //region ROLE PERMISSION:
   rolePermisson() {
-    const user_id = this._userService.getCurrentUserId()!;
-    const user = this._userService.getUserById(user_id);
-    user.forEach((is_curse_supplier) => {
-      const role = is_curse_supplier.role;
-      if (role === 'COURSE_SUPPLIER') {
-        this.cantCreate = true;
-        this._cdr.detectChanges();
-      }
-      if (role === 'ADMIN' || role === 'ADMINISTRADOR') {
-        this.isAdmin = true;
-        this._cdr.detectChanges();
-      }
+    const user_id = this._userService.getCurrentUserId();
+    if (!user_id) return;
+    this._userService.getUserById(user_id).subscribe({
+      next: (user) => {
+        if (user.role === 'COURSE_SUPPLIER') {
+          this.cantCreate = true;
+          this._cdr.detectChanges();
+        }
+        if (user.role === 'ADMIN' || user.role === 'ADMINISTRADOR') {
+          this.isAdmin = true;
+          this._cdr.detectChanges();
+        }
+      },
+      error: () => {},
     });
   }
 
@@ -287,6 +296,10 @@ throw new Error('Method not implemented.');
 
   navigateToAdminConfig(): void {
     this._router.navigate(['/admin-config']);
+  }
+
+  navigateToRequestRole(): void {
+    this._router.navigate(['/request-role']);
   }
 
   //region ONSUBMIT
